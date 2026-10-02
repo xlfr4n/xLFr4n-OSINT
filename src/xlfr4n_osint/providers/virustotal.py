@@ -2,16 +2,17 @@ from __future__ import annotations
 
 import ipaddress
 import os
+import re
 import urllib.parse
 
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.domain import normalize_domain
 from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
-from xlfr4n_osint.providers.base import DomainProvider, IPProvider, ProviderError
+from xlfr4n_osint.providers.base import DomainProvider, HashProvider, IPProvider, ProviderError
 
 
-class VirusTotalProvider(DomainProvider, IPProvider):
+class VirusTotalProvider(DomainProvider, IPProvider, HashProvider):
     name = "virustotal"
     base_url = "https://www.virustotal.com/api/v3"
 
@@ -85,3 +86,10 @@ class VirusTotalProvider(DomainProvider, IPProvider):
         except ValueError as exc:
             raise ValueError("invalid IP address") from exc
         return self._lookup(clean, target_type="ip")
+
+
+    def search_hash(self, value: str) -> list[Finding]:
+        clean = value.strip().lower()
+        if not re.fullmatch(r"[0-9a-f]{32}|[0-9a-f]{40}|[0-9a-f]{64}", clean):
+            raise ValueError("hash must be MD5, SHA-1 or SHA-256")
+        return self._lookup(clean, target_type="file")
