@@ -17,6 +17,8 @@ COMMAND_REQUIREMENTS: dict[str, str] = {
 
 CREDENTIAL_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "hibp-breaches": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "hibp-pastes": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "hibp-stealerlogs": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
     "censys": (
         "XLFR4N_OSINT_CENSYS_PAT",
         "XLFR4N_OSINT_CENSYS_ORGANIZATION_ID",
