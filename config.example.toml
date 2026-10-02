@@ -4,3 +4,5 @@
 [scan]
 timeout = 10.0
 user_agent = "xLFr4n-OSINT/0.1.0"
+# Maximum concurrent providers per investigation.
+provider_workers = 6
