@@ -58,3 +58,9 @@ jobs:
           name: xlfr4n-osint-report-${{ github.run_id }}
           path: reports/
           retention-days: 14
+
+      - name: Send optional summary notification
+        if: steps.gate.outputs.enabled == 'true' && env.XLFR4N_OSINT_WEBHOOK_URL != ''
+        env:
+          XLFR4N_OSINT_WEBHOOK_URL: ${{ secrets.XLFR4N_OSINT_WEBHOOK_URL }}
+        run: python -m xlfr4n_osint notify reports/scheduled.json
