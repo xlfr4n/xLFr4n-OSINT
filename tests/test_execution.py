@@ -61,3 +61,12 @@ def test_execute_providers_runs_concurrently_and_records_statuses() -> None:
     assert by_name["empty"].status == "no-findings"
     assert by_name["broken"].status == "error"
     assert by_name["broken"].error == "synthetic failure"
+
+
+def test_timeout_classification_uses_exception_type() -> None:
+    from xlfr4n_osint.execution import _status_for_error
+    from xlfr4n_osint.providers.base import ProviderError
+    from xlfr4n_osint.tooling import ExternalToolTimeoutError
+
+    assert _status_for_error(ProviderError("usage mentions timeout but command failed")) == "error"
+    assert _status_for_error(ExternalToolTimeoutError("external tool timed out")) == "timeout"
