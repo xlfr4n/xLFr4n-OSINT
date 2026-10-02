@@ -78,7 +78,7 @@
       { "Content-Type": "application/json" },
       request.headers || {}
     );
-    const response = await fetch(path, Object.assign({}, request, { headers: headers }));
+    const response = await fetch(path, Object.assign({}, request, {\n      headers: headers,\n      cache: request.cache || "no-store"\n    }));
     const body = await response.json().catch(function() { return {}; });
     if (!response.ok) {
       throw new Error(body.error || ("HTTP " + response.status));
@@ -476,18 +476,43 @@
   }
 
   async function waitForJob(jobId) {
+    let transientErrors = 0;
+    const startedAt = Date.now();
+
     while (true) {
-      const job = await api("/api/jobs/" + encodeURIComponent(jobId));
-      if (job.status === "completed" && job.report) {
-        return job.report;
+      let job;
+      try {
+        job = await api("/api/jobs/" + encodeURIComponent(jobId));
+        transientErrors = 0;
+      } catch (error) {
+        transientErrors += 1;
+        if (transientErrors >= 8) {
+          throw new Error("Unable to read investigation status after several retries: " + error.message);
+        }
+        $("#scan-btn-text").textContent = "Reconnecting…";
+        await sleep(Math.min(1000 * transientErrors, 4000));
+        continue;
       }
+
+      if (job.status === "completed") {
+        if (job.report) {
+          return job.report;
+        }
+        if (job.scan_id) {
+          return await api("/api/reports/" + encodeURIComponent(job.scan_id));
+        }
+        throw new Error("Investigation completed but no report was returned.");
+      }
+
       if (job.status === "failed") {
         throw new Error(job.error || "Investigation job failed.");
       }
+
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
       if (job.stage === "queued") {
-        $("#scan-btn-text").textContent = "Queued…";
+        $("#scan-btn-text").textContent = "Queued… " + elapsed + "s";
       } else {
-        $("#scan-btn-text").textContent = "Collecting intelligence…";
+        $("#scan-btn-text").textContent = "Collecting intelligence… " + elapsed + "s";
       }
       await sleep(700);
     }
