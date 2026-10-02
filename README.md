@@ -123,7 +123,7 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-Los providers públicos son solo la primera capa. Las siguientes fases incorporarán fuentes de exposición, herramientas externas y collectors especializados sin convertir el núcleo en una colección opaca de scrapers.
+Los providers públicos forman el núcleo; encima ya existen adapters de exposición, herramientas externas, archives, infraestructura, hashes, archivos locales y APIs autenticadas.
 
 ---
 
@@ -208,7 +208,7 @@ JSON reports include a `correlation` object with the grouped entities.
 
 **xLFr4n-OSINT** is the laboratory for researching, normalizing and automating **OSINT (Open-Source Intelligence)** workflows using publicly available information.
 
-The repository has just been established and this first stage is intentionally **docs-first**: architecture, source provenance and operational boundaries come before collectors, correlation and automation.
+The repository has moved beyond the initial docs-first stage: collectors, external-tool adapters, correlation, evidence, batch execution and scheduled automation are now implemented and tested.
 
 ### 🧭 Direction
 
