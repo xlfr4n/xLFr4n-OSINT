@@ -21,10 +21,7 @@ CREDENTIAL_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "hibp-stealerlogs": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
     "hibp-domain-breaches": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
     "hibp-stealerlogs-domain": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
-    "censys": (
-        "XLFR4N_OSINT_CENSYS_PAT",
-        "XLFR4N_OSINT_CENSYS_ORGANIZATION_ID",
-    ),
+    "censys": ("XLFR4N_OSINT_CENSYS_PAT",),
     "shodan": ("XLFR4N_OSINT_SHODAN_API_KEY",),
     "securitytrails": ("XLFR4N_OSINT_SECURITYTRAILS_API_KEY",),
     "virustotal": ("XLFR4N_OSINT_VIRUSTOTAL_API_KEY",),
