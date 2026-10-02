@@ -42,7 +42,7 @@ def render_markdown_report(report: ScanReport) -> str:
         "",
         "## Provider execution",
         "",
-            ]
+        ]
 
     if report.provider_runs:
         for execution in report.provider_runs:
@@ -61,6 +61,7 @@ def render_markdown_report(report: ScanReport) -> str:
     else:
         lines.extend(["No provider execution records.", ""])
 
+    lines.extend(["## Findings", ""])
     if report.findings:
         for finding in report.findings:
             lines.extend([
