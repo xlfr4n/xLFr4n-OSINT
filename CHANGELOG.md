@@ -4,6 +4,11 @@ All notable changes to **xLFr4n-OSINT** are documented here.
 
 ## 2026-10-02
 
+- Added provider readiness doctor and Kali external-tool bootstrap.
+- GUI provider registry now exposes dependency/credential readiness.
+- Added real Markdown report export from the local GUI.
+
+
 ### Added
 
 - 🔎 Repository foundation and bilingual README.
