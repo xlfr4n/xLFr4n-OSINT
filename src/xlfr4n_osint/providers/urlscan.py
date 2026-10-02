@@ -6,7 +6,6 @@ import urllib.parse
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.domain import normalize_domain
 from xlfr4n_osint.http import get_json
-from xlfr4n_osint.identifiers import normalize_email
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import DomainProvider, IPProvider, ProviderError
 
