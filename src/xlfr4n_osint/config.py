@@ -60,8 +60,7 @@ class ScanConfig:
             raise ValueError("scan.provider_workers must be an integer")
 
         if "XLFR4N_OSINT_TIMEOUT" in os.environ:
-            values["timeout"] = float(os.environ["XLFR4N_OSINT_TIMEOUT"]
-            )
+            values["timeout"] = float(os.environ["XLFR4N_OSINT_TIMEOUT"])
         if "XLFR4N_OSINT_USER_AGENT" in os.environ:
             values["user_agent"] = os.environ["XLFR4N_OSINT_USER_AGENT"]
         if "XLFR4N_OSINT_PROVIDER_WORKERS" in os.environ:
