@@ -98,3 +98,10 @@ class PersonProvider(Provider):
     def search_person(self, name: str) -> list[Finding]:
         """Return public-source findings for a person/name query."""
         raise NotImplementedError
+
+
+class HashProvider(Provider):
+    @abstractmethod
+    def search_hash(self, value: str) -> list[Finding]:
+        """Return public intelligence for a file hash."""
+        raise NotImplementedError
