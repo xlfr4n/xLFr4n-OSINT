@@ -102,6 +102,9 @@ A provider enters the project only after its source, limits, provenance and test
 - [x] Provider registry view
 - [x] Password-redaction safeguards
 - [x] GUI service tests
+- [x] asynchronous GUI scan jobs
+- [x] Markdown report export
+- [x] provider readiness states in GUI
 - [x] GUI package assets included in distributions
 - [x] CI syntax check for frontend JavaScript
 
