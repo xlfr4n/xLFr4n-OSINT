@@ -106,3 +106,26 @@ def test_password_scan_never_keeps_query(
 
     saved = Path(tmp_path, report["scan_id"] + ".json").read_text()
     assert "secret-pass" not in saved
+
+
+def test_gui_assets_are_packaged() -> None:
+    html, html_type = InvestigationService.asset("index.html")
+    css, css_type = InvestigationService.asset("styles.css")
+    js, js_type = InvestigationService.asset("app.js")
+    icon, icon_type = InvestigationService.asset("favicon.svg")
+
+    assert b"<title>xLFr4n // OSINT Console</title>" in html
+    assert css_type == "text/css"
+    assert b"async function runScan" in js
+    assert js_type in {"text/javascript", "application/javascript"}
+    assert b"<svg" in icon
+    assert icon_type == "image/svg+xml"
+    assert html_type == "text/html"
+
+
+def test_gui_rejects_remote_binding_by_default() -> None:
+    import pytest
+    from xlfr4n_osint.gui import run_gui
+
+    with pytest.raises(ValueError, match="refusing non-loopback"):
+        run_gui(host="0.0.0.0", port=0, open_browser=False)
