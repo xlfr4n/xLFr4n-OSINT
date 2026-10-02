@@ -3,6 +3,7 @@ from __future__ import annotations
 import urllib.parse
 
 from xlfr4n_osint.config import ScanConfig
+from xlfr4n_osint.domain import normalize_domain
 from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import DomainProvider, ProviderError
@@ -19,30 +20,6 @@ class RDAPProvider(DomainProvider):
     ) -> None:
         self.config = ScanConfig(timeout=timeout, user_agent=user_agent)
         self._services: dict[str, tuple[str, ...]] | None = None
-
-    @staticmethod
-    def normalize_domain(domain: str) -> str:
-        value = domain.strip().rstrip(".").lower()
-        if "://" in value or "/" in value:
-            raise ValueError("domain must not include a URL scheme or path")
-        if not value or len(value) > 253:
-            raise ValueError("invalid domain")
-
-        try:
-            value = value.encode("idna").decode("ascii")
-        except UnicodeError as exc:
-            raise ValueError("domain contains invalid IDN data") from exc
-
-        labels = value.split(".")
-        if len(labels) < 2 or any(
-            not label
-            or len(label) > 63
-            or label.startswith("-")
-            or label.endswith("-")
-            for label in labels
-        ):
-            raise ValueError("invalid domain")
-        return value
 
     def _load_services(self) -> dict[str, tuple[str, ...]]:
         if self._services is not None:
@@ -100,7 +77,7 @@ class RDAPProvider(DomainProvider):
         return result
 
     def search_domain(self, domain: str) -> list[Finding]:
-        clean = self.normalize_domain(domain)
+        clean = normalize_domain(domain)
         base_url = self._find_base_url(clean)
         encoded = urllib.parse.quote(clean, safe="")
         source_url = f"{base_url}/domain/{encoded}"
