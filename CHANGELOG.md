@@ -15,6 +15,8 @@ All notable changes to **xLFr4n-OSINT** are documented here.
 - 🔗 Exact public-selector correlation across distinct providers without identity assertions.
 - ⚙️ Configurable provider concurrency via TOML/environment.
 - 🖥️ GUI collection ledger and explicit skipped-provider state.
+- 🧹 Hardened external username findings: generic Sherlock homepages are filtered, tool-only account results are explicitly marked, and SpiderFoot seed echoes are discarded.
+- 🧠 Correlation graphs now use bounded exact-selector edges instead of quadratic cliques, while preserving selector evidence.
 
 ### Documentation
 
