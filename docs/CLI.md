@@ -74,6 +74,7 @@ Reports contain:
 - source provenance;
 - deterministic correlation entities;
 - exact shared-selector relationships;
+- bounded correlation graph edges that preserve selector evidence without generating quadratic edge noise for large exact-match groups;
 - duplicate groups;
 - evidence fingerprints;
 - investigation summary;
