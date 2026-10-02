@@ -501,17 +501,16 @@ def _run_identifier(
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name=method_name,
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=query or args.value.strip())
-    for provider in providers:
-        try:
-            method = getattr(provider, method_name)
-            report.findings.extend(method(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(
         report,
@@ -709,16 +708,16 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="search_domain",
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value.strip())
-    for provider in providers:
-        try:
-            report.findings.extend(provider.search_domain(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
