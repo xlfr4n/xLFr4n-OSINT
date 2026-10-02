@@ -62,16 +62,14 @@ def inspect_provider(name: str, *, default_enabled: bool = False) -> dict[str, A
     if env_names:
         result["requirement"] = "credential: " + " or ".join(env_names)
         if key == "censys":
-            if not all(os.getenv(item) for item in env_names):
+            token_name = env_names[0]
+            if not os.getenv(token_name):
                 result["status"] = "missing-credentials"
             else:
-                result["configured_by"] = ", ".join(env_names)
-        else:
-            selected = _first_set(env_names)
-            if selected is None:
-                result["status"] = "missing-credentials"
-            else:
-                result["configured_by"] = selected
+                selected = [token_name]
+                if os.getenv(env_names[1]):
+                    selected.append(env_names[1])
+                result["configured_by"] = ", ".join(selected)
         return result
 
     if key in PUBLIC_OPT_IN:
