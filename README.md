@@ -146,6 +146,24 @@ python -m xlfr4n_osint domain example.com --output reports/example.json --format
 python -m xlfr4n_osint domain example.com --output reports/example.md --format markdown
 ```
 
+### Configuration
+
+The CLI can load an optional TOML file from:
+
+```text
+~/.config/xlfr4n-osint/config.toml
+```
+
+Start from `config.example.toml`.
+
+Environment overrides:
+
+```bash
+export XLFR4N_OSINT_TIMEOUT=5
+export XLFR4N_OSINT_USER_AGENT="xLFr4n-Lab/1.0"
+```
+
+Explicit CLI values take precedence over file and environment configuration.
 ### Enabled sources
 
 ```bash
