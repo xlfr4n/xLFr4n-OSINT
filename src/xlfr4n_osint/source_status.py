@@ -11,7 +11,7 @@ COMMAND_REQUIREMENTS: dict[str, str] = {
     "subfinder": "subfinder",
     "amass": "amass",
     "theharvester": "theHarvester",
-    "spiderfoot": os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "sf.py"),
+    "spiderfoot": os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "spiderfoot"),
     "exiftool": "exiftool",
 }
 
@@ -63,15 +63,15 @@ def inspect_provider(name: str, *, default_enabled: bool = False) -> dict[str, A
     env_names = CREDENTIAL_REQUIREMENTS.get(key)
     if env_names:
         result["requirement"] = "credential: " + " or ".join(env_names)
-        if key == "censys":
-            token_name = env_names[0]
-            if not os.getenv(token_name):
-                result["status"] = "missing-credentials"
-            else:
-                selected = [token_name]
-                if os.getenv(env_names[1]):
-                    selected.append(env_names[1])
-                result["configured_by"] = ", ".join(selected)
+        configured = _first_set(env_names)
+        if configured is None:
+            result["status"] = "missing-credentials"
+        else:
+            selected = [configured]
+            for env_name in env_names:
+                if env_name != configured and os.getenv(env_name):
+                    selected.append(env_name)
+            result["configured_by"] = ", ".join(selected)
         return result
 
     if key in PUBLIC_OPT_IN:
