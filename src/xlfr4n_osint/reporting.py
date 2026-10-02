@@ -72,7 +72,7 @@ def render_markdown_report(report: ScanReport) -> str:
                 f"- **URL:** {finding.url}",
                 f"- **Observed:** `{finding.observed_at}`",
                 f"- **Confidence:** `{finding.confidence}`",
-                *([f"- **Verification:** `{finding.data["verification"]}`"] if finding.data.get("verification") else []),
+                *([f"- **Verification:** `{finding.data['verification']}`"] if finding.data.get("verification") else []),
                 "",
                 "```json",
                 json.dumps(finding.data, ensure_ascii=False, indent=2, sort_keys=True),
