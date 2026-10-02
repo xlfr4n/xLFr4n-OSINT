@@ -17,6 +17,11 @@ from xlfr4n_osint.reporting import (
     write_markdown,
 )
 from xlfr4n_osint.providers.crtsh import CRTShProvider
+from xlfr4n_osint.providers.censys import CensysProvider
+from xlfr4n_osint.providers.shodan import ShodanProvider
+from xlfr4n_osint.providers.securitytrails import SecurityTrailsProvider
+from xlfr4n_osint.providers.virustotal import VirusTotalProvider
+from xlfr4n_osint.providers.hunter import HunterProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
@@ -59,6 +64,11 @@ def build_registry() -> ProviderRegistry:
     registry.register("theharvester", TheHarvesterProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn"}, default_enabled=False)
     registry.register("urlscan", URLScanProvider, capabilities={"domain", "ip"}, default_enabled=False)
+    registry.register("censys", CensysProvider, capabilities={"ip"}, default_enabled=False)
+    registry.register("shodan", ShodanProvider, capabilities={"ip"}, default_enabled=False)
+    registry.register("securitytrails", SecurityTrailsProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("virustotal", VirusTotalProvider, capabilities={"domain", "ip"}, default_enabled=False)
+    registry.register("hunter", HunterProvider, capabilities={"domain", "email"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
     return registry
