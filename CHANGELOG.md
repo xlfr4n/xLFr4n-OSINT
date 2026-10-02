@@ -28,6 +28,11 @@ All notable changes to **xLFr4n-OSINT** are documented here.
 - 🧪 Deterministic provider and orchestration tests.
 - ✅ GitHub Actions validation for the complete test suite.
 
+### Core
+
+- 🔐 Verified TLS certificate inspection on TCP/443.
+- 🌐 Domain CLI routing through explicit provider capabilities.
+
 ### Documentation
 
 - 🧱 Architecture and source inventory.
