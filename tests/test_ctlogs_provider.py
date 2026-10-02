@@ -27,7 +27,7 @@ def test_ctlogs_provider_normalizes_certificate_hosts() -> None:
                 "a": ["192.0.2.11"],
             },
         ],
-        "has_next": false,
+        "has_next": False,
     }
 
     with patch(
