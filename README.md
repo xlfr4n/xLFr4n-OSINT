@@ -100,9 +100,26 @@ PHASE 06  Automation
 
 ### 🚧 Estado actual
 
-🟡 **Foundation / Fundación**
+🟢 **Core v0.1 / Núcleo v0.1**
 
-Este repositorio se está estructurando antes de incorporar la implementación. El estado publicado debe reflejar siempre el código realmente disponible.
+La primera base funcional ya está disponible:
+
+- 🐍 paquete Python sin dependencias externas;
+- 🧩 arquitectura de providers intercambiables;
+- 🔎 búsqueda inicial de username mediante fuente pública de GitHub;
+- 🧾 modelo normalizado de findings con timestamp y provenance;
+- 📦 salida JSON para automatización;
+- 🧪 tests iniciales;
+- ⚙️ CLI reproducible.
+
+Ejemplo:
+
+```bash
+python -m xlfr4n_osint username xlfr4n
+python -m xlfr4n_osint username xlfr4n --json
+```
+
+La búsqueda de GitHub es solo el **primer provider**. Las siguientes fases ampliarán fuentes y tipos de investigación sin convertir el proyecto en una colección opaca de scrapers.
 
 ---
 
@@ -135,9 +152,26 @@ Evidence, provenance, public sources, reproducibility, rate-limit awareness, dat
 
 ### 🚧 Current status
 
-🟡 **Foundation**
+🟢 **Core v0.1**
 
-The repository is being structured before implementation is introduced. Published documentation should always match the actual code and tested behavior.
+The first functional foundation is now available:
+
+- 🐍 dependency-free Python package;
+- 🧩 interchangeable provider architecture;
+- 🔎 initial public GitHub username lookup;
+- 🧾 normalized findings with timestamps and provenance;
+- 📦 JSON output for automation;
+- 🧪 initial tests;
+- ⚙️ reproducible CLI.
+
+Example:
+
+```bash
+python -m xlfr4n_osint username xlfr4n
+python -m xlfr4n_osint username xlfr4n --json
+```
+
+GitHub is only the **first provider**. Future phases will expand sources and investigation types while keeping evidence, provenance and reproducibility explicit.
 
 ---
 
