@@ -62,8 +62,8 @@ def build_registry() -> ProviderRegistry:
     registry.register("subfinder", SubfinderProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("amass", AmassProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("theharvester", TheHarvesterProvider, capabilities={"domain"}, default_enabled=False)
-    registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn"}, default_enabled=False)
-    registry.register("urlscan", URLScanProvider, capabilities={"domain", "ip"}, default_enabled=False)
+    registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn", "person"}, default_enabled=False)
+    registry.register("urlscan", URLScanProvider, capabilities={"domain", "ip", "url"}, default_enabled=False)
     registry.register("censys", CensysProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("shodan", ShodanProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("securitytrails", SecurityTrailsProvider, capabilities={"domain"}, default_enabled=False)
@@ -241,6 +241,34 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     )
     batch.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
+    url = subparsers.add_parser(
+        "url",
+        help="Research public historical intelligence for a URL.",
+    )
+    url.add_argument("value", help="HTTP or HTTPS URL to research.")
+    url.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
+    url.add_argument("--source", action="append", choices=registry.names("url"))
+    url.add_argument("--timeout", type=float, default=None)
+    url.add_argument("--user-agent", default=None)
+    url.add_argument("--config")
+    url.add_argument("--json", action="store_true")
+    url.add_argument("--output")
+    url.add_argument("--format", choices=["json", "markdown"], default="json")
+
+    person = subparsers.add_parser(
+        "person",
+        help="Research a public name/person query.",
+    )
+    person.add_argument("value", help="Name or public person query.")
+    person.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
+    person.add_argument("--source", action="append", choices=registry.names("person"))
+    person.add_argument("--timeout", type=float, default=None)
+    person.add_argument("--user-agent", default=None)
+    person.add_argument("--config")
+    person.add_argument("--json", action="store_true")
+    person.add_argument("--output")
+    person.add_argument("--format", choices=["json", "markdown"], default="json")
+
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
@@ -413,6 +441,26 @@ def _run_identifier(
         output_format=args.format,
     )
     return 0 if not report.errors else 2
+
+
+def _run_url(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    return _run_identifier(
+        args,
+        registry,
+        capability="url",
+        subject="url",
+        method_name="search_url",
+    )
+
+
+def _run_person(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    return _run_identifier(
+        args,
+        registry,
+        capability="person",
+        subject="person",
+        method_name="search_person",
+    )
 
 
 def _run_email(args: argparse.Namespace, registry: ProviderRegistry) -> int:
@@ -623,6 +671,12 @@ def main() -> int:
 
     if args.command == "email":
         return _run_email(args, registry)
+
+    if args.command == "url":
+        return _run_url(args, registry)
+
+    if args.command == "person":
+        return _run_person(args, registry)
 
     if args.command == "phone":
         return _run_phone(args, registry)
