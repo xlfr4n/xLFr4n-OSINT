@@ -89,7 +89,7 @@ class RDAPProvider(DomainProvider):
                 user_agent=self.config.user_agent,
             )
         except ProviderError as exc:
-            if str(exc) == "HTTP 404":
+            if isinstance(exc, ProviderNotFoundError):
                 return []
             raise ProviderError(f"rdap {exc}") from exc
 
