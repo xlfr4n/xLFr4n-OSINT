@@ -1,3 +1,4 @@
+from xlfr4n_osint.providers.archives import CommonCrawlProvider, WaybackProvider
 from xlfr4n_osint.providers.censys import CensysProvider
 from xlfr4n_osint.providers.crtsh import CRTShProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
@@ -26,6 +27,7 @@ from xlfr4n_osint.providers.http import HTTPProvider
 
 __all__ = [
     "AmassProvider",
+    "CommonCrawlProvider",
     "CensysProvider",
     "CRTShProvider",
     "CTLogsProvider",
@@ -53,4 +55,5 @@ __all__ = [
     "TLSProvider",
     "URLScanProvider",
     "VirusTotalProvider",
+    "WaybackProvider",
 ]
