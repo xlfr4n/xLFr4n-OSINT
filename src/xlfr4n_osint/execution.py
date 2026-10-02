@@ -8,6 +8,7 @@ from typing import Any, Callable
 
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import Provider
+from xlfr4n_osint.source_status import inspect_provider
 
 
 def _now() -> str:
@@ -29,6 +30,7 @@ class ProviderExecution:
     finding_count: int = 0
     error: str | None = None
     error_type: str | None = None
+    skip_reason: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload = {
@@ -42,6 +44,8 @@ class ProviderExecution:
         if self.error:
             payload["error"] = self.error
             payload["error_type"] = self.error_type or "Exception"
+        if self.skip_reason:
+            payload["skip_reason"] = self.skip_reason
         return payload
 
 
@@ -62,6 +66,23 @@ def execute_providers(
     def invoke(provider: Provider) -> tuple[ProviderExecution, list[Finding], dict[str, str] | None]:
         started_at = _now()
         started = monotonic()
+        readiness = inspect_provider(provider.name)
+        if readiness.get("status") != "ready":
+            reason = str(readiness.get("status") or "unavailable")
+            requirement = str(readiness.get("requirement") or "")
+            detail = reason + (": " + requirement if requirement else "")
+            return (
+                ProviderExecution(
+                    provider=provider.name,
+                    status="skipped",
+                    started_at=started_at,
+                    finished_at=_now(),
+                    duration_seconds=0.0,
+                    skip_reason=detail,
+                ),
+                [],
+                None,
+            )
         try:
             method: Callable[[str], list[Finding]] = getattr(provider, method_name)
             findings = method(value)
