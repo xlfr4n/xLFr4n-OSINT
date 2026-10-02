@@ -42,3 +42,9 @@ Record:
 ## Signature
 
 > **⚡ xLFr4n · Investigate → Verify → Document**
+
+## Canonical ecosystem standard
+
+This project follows the shared [xLFr4n ecosystem standard](https://github.com/xlfr4n/xLFr4n/blob/main/ECOSYSTEM.md).
+
+> **⚡ xLFr4n — One signature. Different laboratories.**
