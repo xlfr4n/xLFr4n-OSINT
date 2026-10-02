@@ -9,10 +9,18 @@ CLI
  ↓
 Scan orchestration
  ↓
-Provider interface
- ├─ GitHub
- ├─ future public providers
- └─ future specialist providers
+provider interface
+ ↓
+ ├─ username providers
+ │   ├─ GitHub
+ │   ├─ GitLab
+ │   └─ Gitea
+ └─ domain providers
+     └─ RDAP
+ ↓
+Normalized Finding
+ ↓
+Report / JSON
  ↓
 Normalized Finding
  ↓
@@ -53,3 +61,4 @@ The same architecture rules apply in English: providers stay isolated, findings 
 ## 🛡️ Operational boundary
 
 The initial implementation is intentionally limited to public-source lookups. Future providers should document their source, access method, rate limits and data boundaries before being enabled.
+
