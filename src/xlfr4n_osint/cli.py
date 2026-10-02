@@ -100,6 +100,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research a public username across enabled providers.",
     )
     username.add_argument("value", help="Public username/handle to research.")
+    username.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     username.add_argument(
         "--source",
         action="append",
@@ -118,6 +119,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research public registration data for a domain.",
     )
     domain.add_argument("value", help="Domain name to research.")
+    domain.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     domain.add_argument(
         "--source",
         action="append",
@@ -136,6 +138,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research public RDAP registration data for an IP address.",
     )
     ip.add_argument("value", help="IPv4 or IPv6 address to research.")
+    ip.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     ip.add_argument(
         "--source",
         action="append",
@@ -154,6 +157,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research public RDAP registration data for an AS number.",
     )
     asn.add_argument("value", help="AS number, with or without the AS prefix.")
+    asn.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     asn.add_argument(
         "--source",
         action="append",
