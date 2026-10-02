@@ -8,11 +8,17 @@ from typing import Any
 from xlfr4n_osint.providers.base import ProviderError
 
 
-def get_json(url: str, *, timeout: float, user_agent: str) -> Any:
+def get_json(
+    url: str,
+    *,
+    timeout: float,
+    user_agent: str,
+    accept: str = "application/json",
+) -> Any:
     request = urllib.request.Request(
         url,
         headers={
-            "Accept": "application/json",
+            "Accept": accept,
             "User-Agent": user_agent,
         },
     )
