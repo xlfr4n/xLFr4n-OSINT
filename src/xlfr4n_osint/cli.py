@@ -4,11 +4,20 @@ import argparse
 import json
 
 from xlfr4n_osint.models import ScanReport
-from xlfr4n_osint.providers.base import Provider
 from xlfr4n_osint.providers.github import GitHubProvider
+from xlfr4n_osint.registry import ProviderRegistry
+from xlfr4n_osint.scanner import UsernameScanner
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_registry() -> ProviderRegistry:
+    registry = ProviderRegistry()
+    registry.register("github", GitHubProvider)
+    return registry
+
+
+def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentParser:
+    registry = registry or build_registry()
+
     parser = argparse.ArgumentParser(
         prog="xlfr4n-osint",
         description="Public-source OSINT toolkit by xLFr4n.",
@@ -23,39 +32,45 @@ def build_parser() -> argparse.ArgumentParser:
     username.add_argument(
         "--source",
         action="append",
-        choices=["github"],
-        help="Limit the scan to a provider. May be repeated.",
+        choices=registry.names(),
+        help="Limit the scan to one or more enabled providers.",
     )
     username.add_argument("--timeout", type=float, default=10.0)
     username.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
+    sources = subparsers.add_parser("sources", help="List enabled providers.")
+    sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+
     return parser
 
 
-def _providers(args: argparse.Namespace) -> list[Provider]:
-    selected = args.source or ["github"]
-    providers: list[Provider] = []
-    if "github" in selected:
-        providers.append(GitHubProvider(timeout=args.timeout))
-    return providers
+def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    try:
+        providers = registry.build(args.source, timeout=args.timeout)
+    except (ValueError, TypeError) as exc:
+        report = ScanReport(query=args.value.strip())
+        report.errors.append({
+            "source": "registry",
+            "error": str(exc),
+            "type": type(exc).__name__,
+        })
+        _print_report(report, args.json)
+        return 2
+
+    report = UsernameScanner(providers).run(args.value)
+
+    _print_report(report, args.json)
+    return 0 if not report.errors else 2
 
 
-def run_username(args: argparse.Namespace) -> int:
-    query = args.value.strip()
-    report = ScanReport(query=query)
-
-    for provider in _providers(args):
-        try:
-            report.findings.extend(provider.search_username(query))
-        except Exception as exc:
-            report.errors.append({"source": provider.name, "error": str(exc)})
-
-    if args.json:
+def _print_report(report: ScanReport, as_json: bool) -> None:
+    if as_json:
         print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
-        return 0 if not report.errors else 2
+        return
 
-    print(f"⚡ xLFr4n // OSINT — username: {query}")
+    print(f"⚡ xLFr4n // OSINT — username: {report.query}")
     print()
+
     if report.findings:
         for finding in report.findings:
             print(f"[{finding.source}] {finding.title}")
@@ -70,14 +85,24 @@ def run_username(args: argparse.Namespace) -> int:
         for error in report.errors:
             print(f"  - {error['source']}: {error['error']}")
 
-    return 0 if not report.errors else 2
-
 
 def main() -> int:
-    parser = build_parser()
+    registry = build_registry()
+    parser = build_parser(registry)
     args = parser.parse_args()
+
     if args.command == "username":
-        return run_username(args)
+        return _run_username(args, registry)
+
+    if args.command == "sources":
+        if args.json:
+            print(json.dumps({"sources": list(registry.names())}, indent=2))
+        else:
+            print("⚡ xLFr4n // OSINT — enabled sources")
+            for name in registry.names():
+                print(f"  - {name}")
+        return 0
+
     parser.error("unknown command")
     return 2
 
