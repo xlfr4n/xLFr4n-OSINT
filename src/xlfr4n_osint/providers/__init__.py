@@ -5,6 +5,7 @@ from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.http import HTTPProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.hudsonrock import HudsonRockProvider
+from xlfr4n_osint.providers.intelligence_x import IntelligenceXProvider
 from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
@@ -25,6 +26,7 @@ __all__ = [
     "HTTPProvider",
     "HIBPPwnedPasswordsProvider",
     "HudsonRockProvider",
+    "IntelligenceXProvider",
     "HIBPBreachesProvider",
     "GitHubProvider",
     "GitLabProvider",
