@@ -10,6 +10,7 @@ from xlfr4n_osint.providers.external_username import MaigretProvider, SherlockPr
 from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.tls import TLSProvider
+from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
 
 __all__ = [
     "CTLogsProvider",
@@ -23,6 +24,7 @@ __all__ = [
     "RDAPProvider",
     "RDAPNumberProvider",
     "TLSProvider",
+    "SpiderFootProvider",
     "MaigretProvider",
     "SherlockProvider",
 ]
