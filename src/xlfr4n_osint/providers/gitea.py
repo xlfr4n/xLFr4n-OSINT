@@ -5,7 +5,7 @@ import urllib.parse
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
-from xlfr4n_osint.providers.base import ProviderError, UsernameProvider
+from xlfr4n_osint.providers.base import ProviderError, ProviderNotFoundError, UsernameProvider
 
 
 class GiteaProvider(UsernameProvider):
@@ -34,7 +34,7 @@ class GiteaProvider(UsernameProvider):
                 user_agent=self.config.user_agent,
             )
         except ProviderError as exc:
-            if str(exc) == "HTTP 404":
+            if isinstance(exc, ProviderNotFoundError):
                 return []
             raise ProviderError(f"gitea {exc}") from exc
 
