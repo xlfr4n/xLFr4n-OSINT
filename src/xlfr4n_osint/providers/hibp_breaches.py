@@ -5,6 +5,7 @@ import urllib.parse
 
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.http import get_json
+from xlfr4n_osint.identifiers import normalize_email
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import EmailProvider, ProviderError, ProviderNotFoundError
 
@@ -25,7 +26,7 @@ class HIBPBreachesProvider(EmailProvider):
         )
 
     def search_email(self, email: str) -> list[Finding]:
-        clean = email.strip()
+        clean = normalize_email(email)
         if not clean:
             return []
         if not self.api_key:
