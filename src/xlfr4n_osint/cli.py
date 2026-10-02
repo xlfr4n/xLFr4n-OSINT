@@ -4,6 +4,7 @@ import argparse
 import json
 
 from xlfr4n_osint.correlation import CorrelationEngine
+from xlfr4n_osint.evidence import EvidenceBundle
 
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.providers.github import GitHubProvider
@@ -137,6 +138,7 @@ def _print_report(
     if as_json:
         payload = report.to_dict()
         payload["correlation"] = CorrelationEngine().build(report).to_dict()
+        payload["evidence"] = EvidenceBundle.from_report(report).to_dict()
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return
 
