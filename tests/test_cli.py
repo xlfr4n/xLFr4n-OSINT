@@ -131,6 +131,14 @@ def test_parser_exposes_doctor_command() -> None:
     assert args.json is True
 
 
+def test_parser_exposes_doctor_strict_mode() -> None:
+    parser = build_parser(build_registry())
+    args = parser.parse_args(["doctor", "--strict", "--json"])
+    assert args.command == "doctor"
+    assert args.strict is True
+    assert args.json is True
+
+
 def test_parser_exposes_gui_command() -> None:
     parser = build_parser(build_registry())
     args = parser.parse_args([
