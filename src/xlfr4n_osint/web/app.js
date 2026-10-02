@@ -429,6 +429,28 @@
     $("#scan-error").classList.remove("hidden");
   }
 
+  function sleep(ms) {
+    return new Promise(function(resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function waitForJob(jobId) {
+    while (true) {
+      const job = await api("/api/jobs/" + encodeURIComponent(jobId));
+      if (job.status === "completed" && job.report) {
+        return job.report;
+      }
+      if (job.status === "failed") {
+        throw new Error(job.error || "Investigation job failed.");
+      }
+      if (job.stage === "queued") {
+        $("#scan-btn-text").textContent = "Queued…";
+      } else {
+        $("#scan-btn-text").textContent = "Collecting intelligence…";
+      }
+      await sleep(700);
+    }
+  }
+
   async function runScan() {
     const value = $("#target-value").value.trim();
     const mode = $("#source-mode").value;
@@ -441,7 +463,7 @@
     $("#scan-error").classList.add("hidden");
     $("#run-scan-btn").disabled = true;
     $("#run-scan-btn").classList.add("loading");
-    $("#scan-btn-text").textContent = "Collecting intelligence…";
+    $("#scan-btn-text").textContent = "Submitting…";
     $("#scan-btn-icon").textContent = "◌";
 
     const payload = {
@@ -453,10 +475,11 @@
     };
 
     try {
-      const report = await api("/api/scan", {
+      const job = await api("/api/jobs", {
         method: "POST",
         body: JSON.stringify(payload)
       });
+      const report = await waitForJob(job.job_id);
       state.report = report;
       await refreshHistory();
       renderResults(report);
