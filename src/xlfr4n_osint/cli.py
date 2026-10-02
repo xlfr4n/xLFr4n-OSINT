@@ -7,6 +7,7 @@ from getpass import getpass
 from xlfr4n_osint.batch import load_jsonl, run_batch
 from xlfr4n_osint.filemeta import ExifToolProvider
 from xlfr4n_osint.logging_utils import configure_logging
+from xlfr4n_osint.notifications import notify_report_file
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.models import ScanReport
@@ -306,6 +307,15 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     person.add_argument("--output")
     person.add_argument("--format", choices=["json", "markdown"], default="json")
 
+    notify_cmd = subparsers.add_parser(
+        "notify",
+        help="Send a report summary to the configured webhook.",
+    )
+    notify_cmd.add_argument("input", help="JSON report file.")
+    notify_cmd.add_argument("--webhook", default=None)
+    notify_cmd.add_argument("--timeout", type=float, default=None)
+    notify_cmd.add_argument("--user-agent", default=None)
+    
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
@@ -524,6 +534,23 @@ def _run_file(args: argparse.Namespace, registry: ProviderRegistry) -> int:
 
     _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
+
+
+def _run_notify(args: argparse.Namespace) -> int:
+    try:
+        config = ScanConfig.from_file(None)
+        timeout = args.timeout if args.timeout is not None else config.timeout
+        user_agent = args.user_agent or config.user_agent
+        notify_report_file(
+            args.input,
+            url=args.webhook,
+            timeout=timeout,
+            user_agent=user_agent,
+        )
+    except (OSError, ValueError, TypeError) as exc:
+        print(f"Notification error: {exc}")
+        return 2
+    return 0
 
 
 def _run_url(args: argparse.Namespace, registry: ProviderRegistry) -> int:
@@ -782,6 +809,9 @@ def main() -> int:
 
     if args.command == "batch":
         return _run_batch(args, registry)
+
+    if args.command == "notify":
+        return _run_notify(args)
 
     if args.command == "sources":
         if args.json:
