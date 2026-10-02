@@ -68,10 +68,10 @@ A provider enters the project only after its source, limits, provenance and test
 ## Phase 04 — Correlation
 
 - [x] entity model
-- [ ] relationship model
+- [x] relationship model
 - [x] deterministic correlation rules
-- [ ] evidence graph
-- [ ] duplicate handling
+- [x] evidence graph
+- [x] duplicate handling
 
 ## Phase 05 — Evidence & Reporting
 
