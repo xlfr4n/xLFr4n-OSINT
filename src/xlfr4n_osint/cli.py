@@ -6,7 +6,6 @@ import json
 from xlfr4n_osint.config import ScanConfig
 
 from xlfr4n_osint.correlation import CorrelationEngine
-from xlfr4n_osint.evidence import EvidenceBundle
 
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.reporting import build_json_report, write_json, write_markdown
@@ -108,7 +107,7 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         return 2
 
     report = UsernameScanner(providers).run(args.value)
-    _print_report(report, args.json, subject="username")
+    _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
 
 
@@ -144,7 +143,7 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
                 "type": type(exc).__name__,
             })
 
-    _print_report(report, args.json, subject="domain")
+    _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
 
 
