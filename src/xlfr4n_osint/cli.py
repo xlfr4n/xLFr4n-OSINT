@@ -10,6 +10,7 @@ from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
+from xlfr4n_osint.providers.tls import TLSProvider
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.scanner import UsernameScanner
 
@@ -22,6 +23,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("rdap", RDAPProvider, capabilities={"domain"})
     registry.register("dns", DNSProvider, capabilities={"domain"})
     registry.register("ctlogs", CTLogsProvider, capabilities={"domain"})
+    registry.register("tls", TLSProvider, capabilities={"domain"})
     return registry
 
 
