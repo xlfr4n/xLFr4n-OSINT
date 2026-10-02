@@ -33,7 +33,7 @@ def test_render_markdown_contains_key_sections() -> None:
 
     assert "# ⚡ xLFr4n-OSINT Investigation Report" in markdown
     assert "## Findings" in markdown
-    assert "## Correlation" in markdown
+    assert "## Exact-selector correlation" in markdown
     assert "## Evidence ledger" in markdown
 
 
