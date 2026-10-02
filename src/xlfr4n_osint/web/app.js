@@ -281,7 +281,9 @@
       ["Entities", Number(summary.entity_count || 0)],
       ["Relationships", Number(summary.relationship_count || 0)]
     ];
-    const coverage = Number(summary.provider_count || (report.provider_runs || []).length);\n    metrics.push(["Providers", coverage]);\n    return "<div class=\"metric-grid\">" + metrics.map(function(metric) {
+    const coverage = Number(summary.provider_count || (report.provider_runs || []).length);
+    metrics.push(["Providers", coverage]);
+    return "<div class=\"metric-grid\">" + metrics.map(function(metric) {
       return "<div class=\"metric\"><span>" + metric[0] + "</span><strong>" + metric[1] + "</strong></div>";
     }).join("") + "</div>";
   }
@@ -427,7 +429,9 @@
       "<div class=\"card-body\">" + renderGraph(report.correlation) + "</div></section>" +
       "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Correlated entities</h3></div></div>" +
       "<div class=\"card-body\">" + renderEntities(report.correlation) + "</div></section>" +
-      "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION LEDGER</div><h3>Provider execution</h3></div></div>" +\n      "<div class=\"card-body\">" + renderProviderRuns(report) + "</div></section>" +\n      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider errors</h3></div></div>" +
+      "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION LEDGER</div><h3>Provider execution</h3></div></div>" +
+      "<div class=\"card-body\">" + renderProviderRuns(report) + "</div></section>" +
+      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider errors</h3></div></div>" +
       "<div class=\"card-body\">" + renderErrors(errors) + "</div></section>" +
       "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">EVIDENCE</div><h3>Raw normalized report</h3></div></div>" +
       "<div class=\"card-body\"><pre class=\"raw\">" + escapeHtml(JSON.stringify(report, null, 2)) + "</pre></div></section>" +
