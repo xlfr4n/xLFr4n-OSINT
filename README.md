@@ -192,6 +192,8 @@ See [`SECURITY.md`](./SECURITY.md) for reporting guidance and data boundaries.
 - [`SECURITY.md`](./SECURITY.md) — secrets, reporting and data boundaries.
 - [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) — collaboration baseline.
 - [`CHANGELOG.md`](./CHANGELOG.md) — documented project evolution.
+- [`docs/SOURCES.md`](./docs/SOURCES.md) — public source inventory and data boundaries.
+- [`docs/PROVENANCE.md`](./docs/PROVENANCE.md) — provenance contract for findings.
 
 ---
 
