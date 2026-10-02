@@ -302,7 +302,7 @@
         "<div class=\"finding-foot\">" +
         "<span class=\"confidence\">" + escapeHtml(item.category) + "</span>" +
         "<span class=\"confidence\">" + escapeHtml(item.confidence) + "</span>" +
-        "<span class=\"confidence\">" + escapeHtml(fmtDate(item.observed_at)) + "</span>" +
+        "<span class=\"confidence\">" + escapeHtml(fmtDate(item.observed_at)) + "</span>" +\n        (item.data && item.data.verification ? "<span class=\"confidence\">" + escapeHtml(item.data.verification) + "</span>" : "") +
         "</div></div>";
     }).join("");
   }
@@ -428,9 +428,9 @@
       "<div class=\"results-grid\">" +
       "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION</div><h3>Findings</h3></div></div>" +
       "<div class=\"card-body\">" + renderFindings(report) + "</div></section>" +
-      "<section class=\"panel results-card graph-wrap\"><div class=\"panel-head\"><div><div class=\"eyebrow\">CORRELATION</div><h3>Exact-match graph</h3></div></div>" +
+      "<section class=\"panel results-card graph-wrap\"><div class=\"panel-head\"><div><div class=\"eyebrow\">EXACT MATCHES</div><h3>Shared-selector graph</h3></div></div>" +
       "<div class=\"card-body\">" + renderGraph(report.correlation) + "</div></section>" +
-      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Correlated entities</h3></div></div>" +
+      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Exact-selector entities</h3></div></div>" +
       "<div class=\"card-body\">" + renderEntities(report.correlation) + "</div></section>" +
       "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION LEDGER</div><h3>Provider execution</h3></div></div>" +
       "<div class=\"card-body\">" + renderProviderRuns(report) + "</div></section>" +
