@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import urllib.error
 import urllib.request
+from collections.abc import Mapping
 from typing import Any
 
 from xlfr4n_osint.providers.base import (
@@ -20,14 +21,15 @@ def get_json(
     timeout: float,
     user_agent: str,
     accept: str = "application/json",
+    headers: Mapping[str, str] | None = None,
 ) -> Any:
-    request = urllib.request.Request(
-        url,
-        headers={
-            "Accept": accept,
-            "User-Agent": user_agent,
-        },
-    )
+    request_headers = {
+        "Accept": accept,
+        "User-Agent": user_agent,
+    }
+    if headers:
+        request_headers.update(headers)
+    request = urllib.request.Request(url, headers=request_headers)
 
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
