@@ -62,7 +62,6 @@ class HIBPPastesProvider(_HIBPEmailProvider):
         if not isinstance(payload, list):
             raise ProviderError("hibp-pastes returned an unexpected response")
 
-        clean = normalize_email(email)
         findings: list[Finding] = []
         clean = normalize_email(email)
         for paste in payload:
