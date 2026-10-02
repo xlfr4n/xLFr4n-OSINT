@@ -330,6 +330,11 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     )
     gui.add_argument("--timeout", type=float, default=10.0)
     gui.add_argument("--user-agent", default="xLFr4n-OSINT-GUI/1.0")
+    gui.add_argument(
+        "--allow-remote",
+        action="store_true",
+        help="Allow a non-loopback bind; only use this with your own access controls.",
+    )
 
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -835,6 +840,7 @@ def main() -> int:
             open_browser=not args.no_browser,
             timeout=args.timeout,
             user_agent=args.user_agent,
+            allow_remote=args.allow_remote,
         )
         return 0
 
