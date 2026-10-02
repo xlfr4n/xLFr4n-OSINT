@@ -150,6 +150,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research public breach-exposure metadata for an email address.",
     )
     email.add_argument("value", help="Email address to research.")
+    email.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     email.add_argument(
         "--source",
         action="append",
@@ -168,6 +169,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Research public breach-exposure metadata for a phone number.",
     )
     phone.add_argument("value", help="Phone number to research.")
+    phone.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     phone.add_argument(
         "--source",
         action="append",
