@@ -19,7 +19,7 @@ from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
-from xlfr4n_osint.providers.external_username import MaigretProvider, SherlockProvider
+from xlfr4n_osint.providers.external_username import HoleheProvider, MaigretProvider, SherlockProvider
 from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
@@ -42,6 +42,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("leakcheck", LeakCheckProvider, capabilities={"username", "email", "phone"}, default_enabled=False)
     registry.register("maigret", MaigretProvider, capabilities={"username"}, default_enabled=False)
     registry.register("sherlock", SherlockProvider, capabilities={"username"}, default_enabled=False)
+    registry.register("holehe", HoleheProvider, capabilities={"email"}, default_enabled=False)
     registry.register("subfinder", SubfinderProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("amass", AmassProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
