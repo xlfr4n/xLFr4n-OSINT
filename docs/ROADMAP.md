@@ -85,8 +85,8 @@ A provider enters the project only after its source, limits, provenance and test
 ## Phase 06 — Automation
 
 - [x] batch jobs
-- [ ] scheduled scans
-- [ ] CI integrations
+- [x] scheduled scans
+- [x] CI integrations
 - [ ] optional notification adapters
 
 ## Project rule
