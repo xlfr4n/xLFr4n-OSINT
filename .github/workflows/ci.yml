@@ -28,6 +28,18 @@ jobs:
       - name: Tests
         run: python -m pytest -q
 
+      - name: Provider doctor contract
+        run: |
+          python -m xlfr4n_osint doctor --json > /tmp/xlfr4n-osint-doctor.json || true
+          python - <<'PY'
+          import json
+          with open("/tmp/xlfr4n-osint-doctor.json", encoding="utf-8") as handle:
+              report = json.load(handle)
+          assert report["provider_count"] >= 1
+          github = next(item for item in report["providers"] if item["name"] == "github")
+          assert github["status"] == "ready"
+          PY
+
       - name: Validate GUI JavaScript
         run: node --check src/xlfr4n_osint/web/app.js
 
