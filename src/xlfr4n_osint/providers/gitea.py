@@ -5,10 +5,10 @@ import urllib.parse
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
-from xlfr4n_osint.providers.base import Provider, ProviderError
+from xlfr4n_osint.providers.base import ProviderError, UsernameProvider
 
 
-class GiteaProvider(Provider):
+class GiteaProvider(UsernameProvider):
     name = "gitea"
     api_base = "https://gitea.com/api/v1"
 
