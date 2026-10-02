@@ -22,8 +22,8 @@
 
 ### Remaining Core work
 
-- [ ] Central logging policy
-- [ ] Structured retry/backoff policy
+- [x] Central logging policy
+- [x] Structured retry/backoff policy
 
 ## Phase 03 — Providers
 
@@ -79,7 +79,7 @@ A provider enters the project only after its source, limits, provenance and test
 - [x] payload fingerprints
 - [x] JSON export
 - [x] Markdown reports
-- [ ] investigation summaries
+- [x] investigation summaries
 - [x] reproducibility metadata
 
 ## Phase 06 — Automation
