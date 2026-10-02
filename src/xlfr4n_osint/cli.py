@@ -5,6 +5,8 @@ import json
 
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.providers.github import GitHubProvider
+from xlfr4n_osint.providers.gitlab import GitLabProvider
+from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.scanner import UsernameScanner
 
@@ -12,6 +14,8 @@ from xlfr4n_osint.scanner import UsernameScanner
 def build_registry() -> ProviderRegistry:
     registry = ProviderRegistry()
     registry.register("github", GitHubProvider)
+    registry.register("gitlab", GitLabProvider)
+    registry.register("gitea", GiteaProvider)
     return registry
 
 
