@@ -1,0 +1,6 @@
+# xLFr4n-OSINT example configuration
+# Copy to ~/.config/xlfr4n-osint/config.toml when needed.
+
+[scan]
+timeout = 10.0
+user_agent = "xLFr4n-OSINT/0.1.0"
