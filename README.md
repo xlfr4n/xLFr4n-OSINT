@@ -142,6 +142,8 @@ python -m xlfr4n_osint username xLFr4n --json
 python -m xlfr4n_osint domain example.com
 python -m xlfr4n_osint domain example.com --source rdap --source dns --source ctlogs --source tls
 python -m xlfr4n_osint domain example.com --json
+python -m xlfr4n_osint ip 192.0.2.10
+python -m xlfr4n_osint asn AS64500 --json
 
 # Save a report
 python -m xlfr4n_osint domain example.com --output reports/example.json --format json
