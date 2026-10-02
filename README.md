@@ -106,7 +106,7 @@ La primera base funcional ya está disponible:
 
 - 🐍 paquete Python sin dependencias externas;
 - 🧩 arquitectura de providers intercambiables;
-- 🔎 búsqueda inicial de username mediante fuente pública de GitHub;
+- 🔎 búsqueda inicial de username mediante GitHub, GitLab y Gitea;
 - 🧾 modelo normalizado de findings con timestamp y provenance;
 - 📦 salida JSON para automatización;
 - 🧪 tests iniciales;
@@ -171,7 +171,7 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-GitHub is only the **first provider**. Future phases will expand sources and investigation types while keeping evidence, provenance and reproducibility explicit.
+The first provider family now covers **GitHub, GitLab and Gitea**. Future phases will expand into domain, DNS, certificate, archive and other public-source families while keeping evidence, provenance and reproducibility explicit.
 
 ---
 
