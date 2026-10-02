@@ -21,10 +21,6 @@ provider interface
 Normalized Finding
  ↓
 Report / JSON
- ↓
-Normalized Finding
- ↓
-Report / JSON
 ```
 
 ### Core rules
@@ -46,10 +42,13 @@ CLI
  ↓
 Scan orchestration
  ↓
-Provider interface
- ├─ GitHub
- ├─ future public providers
- └─ future specialist providers
+provider interface
+ ├─ username providers
+ │   ├─ GitHub
+ │   ├─ GitLab
+ │   └─ Gitea
+ └─ domain providers
+     └─ RDAP
  ↓
 Normalized Finding
  ↓
