@@ -43,3 +43,10 @@ The provider stores normalized record data and resolver response codes, while ke
 The CT provider queries the public ctlogs.dev hosts endpoint to collect certificate-observed hostnames and their first/last seen metadata.
 
 The free public API documents anonymous access with rate limits; the provider does not use an API key.
+
+
+### TLS
+
+The TLS provider opens a verified TLS connection to port 443 using Python's standard `ssl.create_default_context()`.
+
+It records certificate subject/issuer, SANs, validity dates, negotiated TLS version and cipher metadata. It does not disable certificate verification.
