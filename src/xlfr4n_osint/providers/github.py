@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import json
-import urllib.error
 import urllib.parse
-import urllib.request
 
 from xlfr4n_osint.config import ScanConfig
+from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import Provider, ProviderError
 
@@ -14,7 +12,11 @@ class GitHubProvider(Provider):
     name = "github"
     api_base = "https://api.github.com"
 
-    def __init__(self, timeout: float = 10.0, user_agent: str = "xLFr4n-OSINT/0.1.0") -> None:
+    def __init__(
+        self,
+        timeout: float = 10.0,
+        user_agent: str = "xLFr4n-OSINT/0.1.0",
+    ) -> None:
         self.config = ScanConfig(timeout=timeout, user_agent=user_agent)
 
     def search_username(self, username: str) -> list[Finding]:
@@ -23,25 +25,18 @@ class GitHubProvider(Provider):
             return []
 
         encoded = urllib.parse.quote(clean, safe="")
-        request = urllib.request.Request(
-            f"{self.api_base}/users/{encoded}",
-            headers={
-                "Accept": "application/vnd.github+json",
-                "User-Agent": self.config.user_agent,
-            },
-        )
+        source_url = f"{self.api_base}/users/{encoded}"
 
         try:
-            with urllib.request.urlopen(request, timeout=self.config.timeout) as response:
-                payload = json.load(response)
-        except urllib.error.HTTPError as exc:
-            if exc.code == 404:
+            payload = get_json(
+                source_url,
+                timeout=self.config.timeout,
+                user_agent=self.config.user_agent,
+            )
+        except ProviderError as exc:
+            if str(exc) == "HTTP 404":
                 return []
-            raise ProviderError(f"github HTTP {exc.code}") from exc
-        except (urllib.error.URLError, TimeoutError) as exc:
-            raise ProviderError(f"github network error: {exc}") from exc
-        except json.JSONDecodeError as exc:
-            raise ProviderError("github returned invalid JSON") from exc
+            raise ProviderError(f"github {exc}") from exc
 
         html_url = str(payload.get("html_url") or f"https://github.com/{clean}")
 
@@ -54,7 +49,7 @@ class GitHubProvider(Provider):
                 url=html_url,
                 confidence="high",
                 provenance={
-                    "source_url": f"{self.api_base}/users/{encoded}",
+                    "source_url": source_url,
                     "retrieval_method": "GitHub REST API public endpoint",
                     "provider": self.name,
                 },
