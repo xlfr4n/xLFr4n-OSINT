@@ -193,6 +193,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         nargs="?",
         help="Password to check. Omit this argument to enter it without shell history.",
     )
+    password.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
     password.add_argument(
         "--source",
         action="append",
@@ -237,9 +238,12 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         config = ScanConfig.from_file(args.config)
         timeout = args.timeout if args.timeout is not None else config.timeout
         user_agent = args.user_agent or config.user_agent
+        if args.all_sources and args.source:
+            raise ValueError("--all-sources cannot be combined with --source")
         providers = registry.build(
             args.source,
             capability="username",
+            all_sources=args.all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
@@ -270,9 +274,12 @@ def _run_number(
         config = ScanConfig.from_file(args.config)
         timeout = args.timeout if args.timeout is not None else config.timeout
         user_agent = args.user_agent or config.user_agent
+        if args.all_sources and args.source:
+            raise ValueError("--all-sources cannot be combined with --source")
         providers = registry.build(
             args.source,
             capability=capability,
+            all_sources=args.all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
@@ -423,9 +430,12 @@ def _run_password(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         config = ScanConfig.from_file(args.config)
         timeout = args.timeout if args.timeout is not None else config.timeout
         user_agent = args.user_agent or config.user_agent
+        if args.all_sources and args.source:
+            raise ValueError("--all-sources cannot be combined with --source")
         providers = registry.build(
             args.source,
             capability="password",
+            all_sources=args.all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
@@ -472,9 +482,12 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         config = ScanConfig.from_file(args.config)
         timeout = args.timeout if args.timeout is not None else config.timeout
         user_agent = args.user_agent or config.user_agent
+        if args.all_sources and args.source:
+            raise ValueError("--all-sources cannot be combined with --source")
         providers = registry.build(
             args.source,
             capability="domain",
+            all_sources=args.all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
