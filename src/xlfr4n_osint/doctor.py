@@ -39,10 +39,12 @@ def render_doctor(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def run_doctor(registry: Any, *, as_json: bool = False) -> int:
+def run_doctor(registry: Any, *, as_json: bool = False, strict: bool = False) -> int:
     report = build_doctor_report(registry)
     if as_json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
         print(render_doctor(report))
+    if not strict:
+        return 0
     return 0 if report["ready_count"] == report["provider_count"] else 1
