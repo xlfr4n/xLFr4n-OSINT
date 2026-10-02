@@ -140,6 +140,10 @@ python -m xlfr4n_osint username xLFr4n --json
 python -m xlfr4n_osint domain example.com
 python -m xlfr4n_osint domain example.com --source rdap --source dns --source ctlogs --source tls
 python -m xlfr4n_osint domain example.com --json
+
+# Save a report
+python -m xlfr4n_osint domain example.com --output reports/example.json --format json
+python -m xlfr4n_osint domain example.com --output reports/example.md --format markdown
 ```
 
 ### Enabled sources
