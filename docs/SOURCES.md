@@ -36,3 +36,10 @@ Source behavior, limits and provenance should be documented before a provider is
 The DNS provider queries Cloudflare's public DNS-over-HTTPS JSON endpoint for A, AAAA, CNAME, MX, NS, SOA and TXT records.
 
 The provider stores normalized record data and resolver response codes, while keeping the source endpoint in provenance.
+
+
+### Certificate Transparency
+
+The CT provider queries the public ctlogs.dev hosts endpoint to collect certificate-observed hostnames and their first/last seen metadata.
+
+The free public API documents anonymous access with rate limits; the provider does not use an API key.
