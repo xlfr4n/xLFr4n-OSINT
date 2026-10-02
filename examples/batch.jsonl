@@ -1,0 +1,6 @@
+{"type":"username","value":"xLFr4n","sources":["github","gitlab","gitea"]}
+{"type":"domain","value":"example.com","sources":["rdap","dns","ctlogs","tls","http"]}
+{"type":"ip","value":"192.0.2.10","sources":["rdap-number"]}
+{"type":"asn","value":"AS64500","sources":["rdap-number"]}
+{"type":"email","value":"user@example.com","sources":["leakcheck"]}
+{"type":"password","value":"example-only-password"}
