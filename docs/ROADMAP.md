@@ -57,9 +57,10 @@ Planned provider families:
 - [x] passive subdomain tool adapters
   - [x] Subfinder
   - [x] Amass
-- [ ] public social-source adapters
+- [x] public social-source discovery via mature Maigret / Sherlock adapters
 - [x] web archives
-- [ ] public document metadata
+- [x] local document/image metadata via ExifTool
+- [ ] remote public-document collection (kept separate from local metadata for SSRF/data-boundary reasons)
 - [x] hash intelligence
 - [x] local file metadata
 
