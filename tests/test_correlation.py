@@ -24,7 +24,7 @@ def test_correlation_groups_exact_entities_and_shared_selectors() -> None:
     report.findings.extend([
         _finding("dns", "dns-a", "example.com", "https://example.com"),
         _finding("crtsh", "certificate-hosts", "example.com", "https://example.com"),
-        _finding("dns", "dns-a", "example.com", "https://example.com"),
+        _finding("dns-backup", "dns-a", "example.com", "https://example.com"),
     ])
 
     result = CorrelationEngine().build(report)
