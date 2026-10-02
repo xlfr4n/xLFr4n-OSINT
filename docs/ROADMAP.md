@@ -40,6 +40,7 @@ Planned provider families:
 - [x] DNS resolution
 - [x] Certificate Transparency hosts
 - [x] TLS certificate inspection
+- [x] HTTPS metadata
 - [ ] DNS / certificate intelligence
 - [x] public code-platform profiles
   - [x] GitHub
