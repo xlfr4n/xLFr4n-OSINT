@@ -84,3 +84,17 @@ class PasswordProvider(Provider):
     def check_password(self, password: str) -> list[Finding]:
         """Return password exposure risk metadata without retaining the password."""
         raise NotImplementedError
+
+
+class URLProvider(Provider):
+    @abstractmethod
+    def search_url(self, url: str) -> list[Finding]:
+        """Return public intelligence for a URL."""
+        raise NotImplementedError
+
+
+class PersonProvider(Provider):
+    @abstractmethod
+    def search_person(self, name: str) -> list[Finding]:
+        """Return public-source findings for a person/name query."""
+        raise NotImplementedError
