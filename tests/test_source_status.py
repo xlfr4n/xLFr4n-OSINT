@@ -10,9 +10,10 @@ def test_native_provider_is_ready() -> None:
     assert result["mode"] == "default"
 
 
-def test_missing_external_command_is_reported() -> None:
-    result = inspect_provider("__missing__", default_enabled=False)
-    assert result["status"] == "ready"
+def test_missing_external_command_is_reported(monkeypatch) -> None:
+    monkeypatch.setattr("xlfr4n_osint.source_status.shutil.which", lambda _: None)
+    result = inspect_provider("maigret", default_enabled=False)
+    assert result["status"] == "missing-dependency"
 
 
 def test_registry_contains_readiness_fields() -> None:
