@@ -32,6 +32,8 @@ def test_parser_exposes_all_identifier_commands() -> None:
     asn = parser.parse_args(["asn", "AS64500"])
     url = parser.parse_args(["url", "https://example.com/path"])
     person = parser.parse_args(["person", "Jane Doe"])
+    hash = parser.parse_args(["hash", "a" * 64])
+    file_cmd = parser.parse_args(["file", "examples/batch.jsonl"])
 
     assert username.command == "username"
     assert email.command == "email"
@@ -41,6 +43,8 @@ def test_parser_exposes_all_identifier_commands() -> None:
     assert asn.command == "asn"
     assert url.command == "url"
     assert person.command == "person"
+    assert hash.command == "hash"
+    assert file_cmd.command == "file"
 
 
 def test_parser_exposes_opt_in_external_providers() -> None:
