@@ -108,6 +108,22 @@ def test_password_scan_never_keeps_query(
     assert "secret-pass" not in saved
 
 
+def test_markdown_export_rebuilds_report(tmp_path: Path, monkeypatch) -> None:
+    registry = ProviderRegistry()
+    registry.register("fake", FakeUsernameProvider, capabilities={"username"})
+    monkeypatch.setenv("XLFR4N_OSINT_REPORT_DIR", str(tmp_path))
+    service = InvestigationService(registry, timeout=5)
+
+    report = service.scan(
+        {"type": "username", "value": "demo", "sources": ["fake"]}
+    )
+    markdown = service.get_markdown(report["scan_id"])
+
+    assert "# Investigation Report" in markdown
+    assert "fake" in markdown
+    assert "demo" in markdown
+
+
 def test_gui_assets_are_packaged() -> None:
     html, html_type = InvestigationService.asset("index.html")
     css, css_type = InvestigationService.asset("styles.css")
