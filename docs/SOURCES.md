@@ -57,3 +57,10 @@ It records certificate subject/issuer, SANs, validity dates, negotiated TLS vers
 The HTTP provider performs a lightweight HTTPS HEAD request and keeps only response status, final URL and selected security/transport headers.
 
 Response bodies and cookies are intentionally not retained.
+
+
+### IP and ASN registration
+
+The number-resource provider uses IANA RDAP bootstrap registries for IPv4, IPv6 and AS Number space, then queries the discovered authoritative RDAP service.
+
+IANA publishes separate bootstrap registries for IPv4 and AS Number space, with corresponding IPv6 coverage. citeturn934555search0turn934555search1turn934555search5
