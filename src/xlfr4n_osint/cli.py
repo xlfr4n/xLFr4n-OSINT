@@ -19,9 +19,11 @@ from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
+from xlfr4n_osint.providers.crtsh import CRTShProvider
 from xlfr4n_osint.providers.external_username import HoleheProvider, MaigretProvider, SherlockProvider
 from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
 from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
+from xlfr4n_osint.providers.theharvester import TheHarvesterProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
 from xlfr4n_osint.providers.tls import TLSProvider
@@ -38,6 +40,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("rdap", RDAPProvider, capabilities={"domain"})
     registry.register("dns", DNSProvider, capabilities={"domain"})
     registry.register("ctlogs", CTLogsProvider, capabilities={"domain"})
+    registry.register("crtsh", CRTShProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("tls", TLSProvider, capabilities={"domain"})
     registry.register("rdap-number", RDAPNumberProvider, capabilities={"ip", "asn"})
     registry.register("leakcheck", LeakCheckProvider, capabilities={"username", "email", "phone"}, default_enabled=False)
@@ -46,6 +49,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("holehe", HoleheProvider, capabilities={"email"}, default_enabled=False)
     registry.register("subfinder", SubfinderProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("amass", AmassProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("theharvester", TheHarvesterProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     return registry
