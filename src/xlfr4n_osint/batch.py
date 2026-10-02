@@ -81,12 +81,20 @@ def run_item(
     )
     capability = item.type
 
-    providers = registry.build(
-        list(item.sources) if item.sources else None,
-        capability=capability,
-        timeout=timeout,
-        user_agent=user_agent,
-    )
+    try:
+        providers = registry.build(
+            list(item.sources) if item.sources else None,
+            capability=capability,
+            timeout=timeout,
+            user_agent=user_agent,
+        )
+    except (ValueError, TypeError) as exc:
+        report.errors.append({
+            "source": "registry",
+            "error": str(exc),
+            "type": type(exc).__name__,
+        })
+        return report
 
     method_name = _method_for(item.type)
     for provider in providers:
