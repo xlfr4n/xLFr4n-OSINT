@@ -30,6 +30,8 @@ def test_parser_exposes_all_identifier_commands() -> None:
     password = parser.parse_args(["password"])
     ip = parser.parse_args(["ip", "192.0.2.10"])
     asn = parser.parse_args(["asn", "AS64500"])
+    url = parser.parse_args(["url", "https://example.com/path"])
+    person = parser.parse_args(["person", "Jane Doe"])
 
     assert username.command == "username"
     assert email.command == "email"
@@ -37,6 +39,8 @@ def test_parser_exposes_all_identifier_commands() -> None:
     assert password.command == "password"
     assert ip.command == "ip"
     assert asn.command == "asn"
+    assert url.command == "url"
+    assert person.command == "person"
 
 
 def test_parser_exposes_opt_in_external_providers() -> None:
