@@ -7,10 +7,11 @@ from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.domain import normalize_domain
 from xlfr4n_osint.http import get_json
 from xlfr4n_osint.models import Finding
-from xlfr4n_osint.providers.base import DomainProvider, IPProvider, ProviderError
+from xlfr4n_osint.url import normalize_url
+from xlfr4n_osint.providers.base import DomainProvider, IPProvider, ProviderError, URLProvider
 
 
-class URLScanProvider(DomainProvider, IPProvider):
+class URLScanProvider(DomainProvider, IPProvider, URLProvider):
     name = "urlscan"
     endpoint = "https://urlscan.io/api/v1/search"
 
@@ -106,3 +107,8 @@ class URLScanProvider(DomainProvider, IPProvider):
         if not value:
             raise ValueError("IP address cannot be empty")
         return self._search(f"page.ip:{value}", target_kind="ip")
+
+
+    def search_url(self, url: str) -> list[Finding]:
+        clean = normalize_url(url)
+        return self._search(f"page.url:{clean}", target_kind="url")
