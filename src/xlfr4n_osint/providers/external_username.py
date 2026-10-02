@@ -11,6 +11,35 @@ from xlfr4n_osint.providers.base import ProviderError, UsernameProvider
 from xlfr4n_osint.tooling import run_external_command
 
 
+
+def _parse_maigret_ndjson(content: str) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    for line in content.splitlines():
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(item, dict) and str(item.get("status")) == "Claimed":
+            records.append(item)
+    return records
+
+
+def _parse_sherlock_csv(path: Path) -> list[dict[str, str]]:
+    records: list[dict[str, str]] = []
+    with path.open(
+        "r",
+        newline="",
+        encoding="utf-8",
+        errors="replace",
+    ) as handle:
+        for row in csv.DictReader(handle):
+            if str(row.get("exists", "")).casefold() in {"claimed", "true", "found"}:
+                records.append({key: str(value) for key, value in row.items()})
+    return records
+
+
 def _tool_provenance(tool: str, command: list[str]) -> dict[str, str]:
     return {
         "provider": tool,
@@ -67,19 +96,9 @@ class MaigretProvider(UsernameProvider):
 
             findings: list[Finding] = []
             for report_path in reports:
-                for line in report_path.read_text(
-                    encoding="utf-8",
-                    errors="replace",
-                ).splitlines():
-                    if not line.strip():
-                        continue
-                    try:
-                        item = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    if str(item.get("status")) != "Claimed":
-                        continue
-
+                for item in _parse_maigret_ndjson(
+                    report_path.read_text(encoding="utf-8", errors="replace")
+                ):
                     site = str(item.get("site_name") or "unknown-site")
                     url = str(item.get("url") or item.get("url_user") or "")
                     if not url:
@@ -149,38 +168,29 @@ class SherlockProvider(UsernameProvider):
                 raise ProviderError("sherlock produced no CSV report")
 
             findings: list[Finding] = []
-            with reports[0].open(
-                "r",
-                newline="",
-                encoding="utf-8",
-                errors="replace",
-            ) as handle:
-                reader = csv.DictReader(handle)
-                for row in reader:
-                    exists = str(row.get("exists", ""))
-                    if exists.casefold() not in {"claimed", "true", "found"}:
-                        continue
-                    platform = str(row.get("name") or "unknown-site")
-                    url = str(row.get("url_user") or "")
-                    if not url:
-                        continue
-                    findings.append(
-                        Finding.now(
-                            source=self.name,
-                            category="username-account",
-                            identifier=f"{platform}:{clean}".casefold(),
-                            title=platform,
-                            url=url,
-                            confidence="high",
-                            provenance=_tool_provenance(self.name, command),
-                            data={
-                                "username": clean,
-                                "platform": platform,
-                                "status": exists,
-                                "http_status": row.get("http_status"),
-                                "response_time_s": row.get("response_time_s"),
-                            },
-                        )
+            for row in _parse_sherlock_csv(reports[0]):
+                exists = str(row.get("exists", ""))
+                platform = str(row.get("name") or "unknown-site")
+                url = str(row.get("url_user") or "")
+                if not url:
+                    continue
+                findings.append(
+                    Finding.now(
+                        source=self.name,
+                        category="username-account",
+                        identifier=f"{platform}:{clean}".casefold(),
+                        title=platform,
+                        url=url,
+                        confidence="high",
+                        provenance=_tool_provenance(self.name, command),
+                        data={
+                            "username": clean,
+                            "platform": platform,
+                            "status": exists,
+                            "http_status": row.get("http_status"),
+                            "response_time_s": row.get("response_time_s"),
+                        },
                     )
+                )
 
             return findings
