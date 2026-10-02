@@ -64,3 +64,10 @@ Response bodies and cookies are intentionally not retained.
 The number-resource provider uses IANA RDAP bootstrap registries for IPv4, IPv6 and AS Number space, then queries the discovered authoritative RDAP service.
 
 IANA publishes separate bootstrap registries for IPv4 and AS Number space, with corresponding IPv6 coverage. citeturn934555search0turn934555search1turn934555search5
+
+
+### Planned exposure sources
+
+- **LeakCheck Public** — free public API for breach-source/category exposure. It does not return passwords or full records. urlLeakCheck API docshttps://docs.leakcheck.io/overview
+- **HIBP Pwned Passwords** — free password exposure check using k-anonymity; only a five-character SHA-1 prefix is sent. urlHIBP API docshttps://haveibeenpwned.com/API/V3
+- **HIBP breach email search** — authenticated API; will remain an optional connector requiring the user's own API key. urlHIBP API docshttps://haveibeenpwned.com/API/V3
