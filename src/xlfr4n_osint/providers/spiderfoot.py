@@ -10,10 +10,10 @@ from xlfr4n_osint.providers.base import (
     DomainProvider,
     EmailProvider,
     IPProvider,
+    PersonProvider,
     PhoneProvider,
     ProviderError,
     UsernameProvider,
-    PersonProvider,
 )
 from xlfr4n_osint.tooling import run_external_command
 
@@ -157,7 +157,6 @@ class SpiderFootProvider(
 
     def search_asn(self, asn: str) -> list[Finding]:
         return self._search(asn)
-
 
     def search_person(self, name: str) -> list[Finding]:
         return self._search(name)
