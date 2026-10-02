@@ -55,6 +55,6 @@ def test_report_has_stable_schema_version() -> None:
 
     payload = report.to_dict()
 
-    assert payload["schema_version"] == "1.0"
+    assert payload["schema_version"] == "1.1"
     assert payload["scan_id"]
     assert payload["findings"][0]["identifier"] == "demo"
