@@ -4,16 +4,17 @@ from unittest.mock import patch
 
 import pytest
 
+from xlfr4n_osint.domain import normalize_domain
 from xlfr4n_osint.providers.rdap import RDAPProvider
 
 
 def test_normalize_domain_accepts_unicode_and_trailing_dot() -> None:
-    assert RDAPProvider.normalize_domain("ExÄmple.com.") == "xn--exmple-cua.com"
+    assert normalize_domain("ExÄmple.com.") == "xn--exmple-cua.com"
 
 
 def test_normalize_domain_rejects_urls() -> None:
     with pytest.raises(ValueError):
-        RDAPProvider.normalize_domain("https://example.com/path")
+        normalize_domain("https://example.com/path")
 
 
 def test_rdap_provider_resolves_bootstrap_and_domain() -> None:
