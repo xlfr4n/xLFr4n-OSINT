@@ -4,6 +4,7 @@ import urllib.parse
 
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.http import get_json
+from xlfr4n_osint.identifiers import normalize_email, normalize_phone, normalize_username
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import (
     EmailProvider,
@@ -29,7 +30,12 @@ class LeakCheckProvider(
         self.config = ScanConfig(timeout=timeout, user_agent=user_agent)
 
     def _search(self, identifier: str, *, kind: str) -> list[Finding]:
-        value = identifier.strip()
+        if kind == "email":
+            value = normalize_email(identifier)
+        elif kind == "phone":
+            value = normalize_phone(identifier)
+        else:
+            value = normalize_username(identifier)
         if not value:
             return []
 
