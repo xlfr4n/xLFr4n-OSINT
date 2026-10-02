@@ -36,7 +36,7 @@ class ScanReport:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "schema_version": "1.2",
+            "schema_version": "1.1",
             "scan_id": self.scan_id,
             "query": self.query,
             "started_at": self.started_at,
