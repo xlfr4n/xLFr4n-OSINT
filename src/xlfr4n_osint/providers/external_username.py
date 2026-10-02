@@ -40,6 +40,21 @@ def _parse_sherlock_csv(path: Path) -> list[dict[str, str]]:
     return records
 
 
+
+def _parse_holehe_csv(path: Path) -> list[dict[str, str]]:
+    with path.open(
+        "r",
+        newline="",
+        encoding="utf-8",
+        errors="replace",
+    ) as handle:
+        rows = []
+        for row in csv.DictReader(handle):
+            if str(row.get("exists", "")).casefold() in {"true", "yes", "claimed"}:
+                rows.append({key: str(value) for key, value in row.items()})
+        return rows
+
+
 def _tool_provenance(tool: str, command: list[str]) -> dict[str, str]:
     return {
         "provider": tool,
@@ -206,18 +221,6 @@ class HoleheProvider(EmailProvider):
     ) -> None:
         self.config = ScanConfig(timeout=timeout, user_agent=user_agent)
 
-    @staticmethod
-    def _parse_csv(path: Path) -> list[dict[str, str]]:
-        with path.open(
-            "r",
-            newline="",
-            encoding="utf-8",
-            errors="replace",
-        ) as handle:
-            return [
-                {key: str(value) for key, value in row.items()}
-                for row in __import__("csv").DictReader(handle)
-            ]
 
     def search_email(self, email: str) -> list[Finding]:
         clean = email.strip()
@@ -252,7 +255,7 @@ class HoleheProvider(EmailProvider):
                 raise ProviderError("holehe produced no CSV report")
 
             findings: list[Finding] = []
-            for row in self._parse_csv(output):
+            for row in _parse_holehe_csv(output):
                 exists = row.get("exists", "").casefold()
                 if exists not in {"true", "yes", "claimed"}:
                     continue
