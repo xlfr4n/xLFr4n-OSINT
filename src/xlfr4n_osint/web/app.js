@@ -281,7 +281,7 @@
       ["Entities", Number(summary.entity_count || 0)],
       ["Relationships", Number(summary.relationship_count || 0)]
     ];
-    return "<div class=\"metric-grid\">" + metrics.map(function(metric) {
+    const coverage = Number(summary.provider_count || (report.provider_runs || []).length);\n    metrics.push(["Providers", coverage]);\n    return "<div class=\"metric-grid\">" + metrics.map(function(metric) {
       return "<div class=\"metric\"><span>" + metric[0] + "</span><strong>" + metric[1] + "</strong></div>";
     }).join("") + "</div>";
   }
@@ -360,6 +360,38 @@
       "\" role=\"img\" aria-label=\"Correlation graph\">" + lines + nodes + "</svg>";
   }
 
+  function renderProviderRuns(report) {
+    const runs = report.provider_runs || [];
+    if (!runs.length) {
+      return "<div class=\"list-empty\">No provider execution records.</div>";
+    }
+
+    const labels = {
+      findings: "findings",
+      "no-findings": "no findings",
+      error: "error",
+      timeout: "timeout"
+    };
+
+    return runs.map(function(run) {
+      const status = run.status || "unknown";
+      const label = labels[status] || status;
+      const statusClass = status === "findings"
+        ? "good"
+        : (status === "error" || status === "timeout" ? "warn" : "");
+      const detail = status === "findings"
+        ? Number(run.finding_count || 0) + " finding(s)"
+        : label;
+      return "<div class=\"provider-run\">" +
+        "<div><strong>" + escapeHtml(run.provider || "unknown") + "</strong>" +
+        "<div class=\"history-muted\">" + escapeHtml(detail) + "</div></div>" +
+        "<div class=\"provider-run-meta\"><span class=\"badge " + statusClass + "\">" +
+        escapeHtml(label) + "</span><span>" + Number(run.duration_seconds || 0).toFixed(2) + "s</span></div>" +
+        (run.error ? "<div class=\"provider-run-error\">" + escapeHtml(run.error) + "</div>" : "") +
+        "</div>";
+    }).join("");
+  }
+
   function renderErrors(errors) {
     if (!errors || !errors.length) {
       return "<div class=\"list-empty\">No provider errors.</div>";
@@ -393,7 +425,7 @@
       "<div class=\"card-body\">" + renderGraph(report.correlation) + "</div></section>" +
       "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Correlated entities</h3></div></div>" +
       "<div class=\"card-body\">" + renderEntities(report.correlation) + "</div></section>" +
-      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider status</h3></div></div>" +
+      "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION LEDGER</div><h3>Provider execution</h3></div></div>" +\n      "<div class=\"card-body\">" + renderProviderRuns(report) + "</div></section>" +\n      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider errors</h3></div></div>" +
       "<div class=\"card-body\">" + renderErrors(errors) + "</div></section>" +
       "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">EVIDENCE</div><h3>Raw normalized report</h3></div></div>" +
       "<div class=\"card-body\"><pre class=\"raw\">" + escapeHtml(JSON.stringify(report, null, 2)) + "</pre></div></section>" +
