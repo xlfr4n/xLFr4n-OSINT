@@ -19,7 +19,7 @@ def test_normalize_domain_rejects_urls() -> None:
 def test_rdap_provider_resolves_bootstrap_and_domain() -> None:
     bootstrap = {
         "services": [
-            ["com", ["https://rdap.example/rdap/"]],
+            [["com"], ["https://rdap.example/rdap/"]],
         ]
     }
     domain = {
