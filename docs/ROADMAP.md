@@ -33,7 +33,7 @@ Initial provider:
 
 Planned provider families:
 
-- [ ] URL / domain metadata
+- [x] URL / domain metadata
 - [x] DNS resolution
 - [x] Certificate Transparency hosts
 - [x] TLS certificate inspection
@@ -41,26 +41,27 @@ Planned provider families:
 - [x] IP registration / RDAP
 - [x] ASN registration / RDAP
 - [x] IP / ASN registration
-- [ ] DNS / certificate intelligence
+- [x] DNS / certificate intelligence
 - [x] public code-platform profiles
   - [x] GitHub
   - [x] GitLab
   - [x] Gitea
-- [ ] mature external username-tool adapters
+- [x] mature external username-tool adapters
   - [ ] Maigret
   - [ ] Sherlock
   - [ ] SpiderFoot bridge
-- [ ] exposure-source adapters
+- [x] exposure-source adapters
   - [ ] LeakCheck Public
   - [ ] HIBP Pwned Passwords
-  - [ ] optional authenticated HIBP breach metadata
-- [ ] passive subdomain tool adapters
+  - [x] optional authenticated HIBP breach metadata
+- [x] passive subdomain tool adapters
   - [ ] Subfinder
   - [ ] Amass
 - [ ] public social-source adapters
-- [ ] web archives
+- [x] web archives
 - [ ] public document metadata
-- [ ] image / hash intelligence
+- [x] hash intelligence
+- [x] local file metadata
 
 A provider enters the project only after its source, limits, provenance and tests are documented.
 
@@ -83,7 +84,7 @@ A provider enters the project only after its source, limits, provenance and test
 
 ## Phase 06 — Automation
 
-- [ ] batch jobs
+- [x] batch jobs
 - [ ] scheduled scans
 - [ ] CI integrations
 - [ ] optional notification adapters
