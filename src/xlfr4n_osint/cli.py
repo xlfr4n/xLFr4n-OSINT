@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from xlfr4n_osint.batch import load_jsonl, run_batch
 from xlfr4n_osint.config import ScanConfig
 
 from xlfr4n_osint.correlation import CorrelationEngine
@@ -10,7 +11,14 @@ from xlfr4n_osint.correlation import CorrelationEngine
 from getpass import getpass
 
 from xlfr4n_osint.models import ScanReport
-from xlfr4n_osint.reporting import build_json_report, write_json, write_markdown
+from xlfr4n_osint.reporting import (
+    build_batch_json,
+    build_json_report,
+    write_batch_json,
+    write_batch_jsonl,
+    write_json,
+    write_markdown,
+)
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.gitea import GiteaProvider
@@ -197,6 +205,26 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     password.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     password.add_argument("--output", help="Write a report file.")
     password.add_argument("--format", choices=["json", "markdown"], default="json")
+
+    batch = subparsers.add_parser(
+        "batch",
+        help="Run a bounded JSONL batch of public-source investigations.",
+    )
+    batch.add_argument("input", help="JSONL file containing {type,value,sources?} items.")
+    batch.add_argument("--timeout", type=float, default=None)
+    batch.add_argument("--user-agent", default=None)
+    batch.add_argument("--config", help="Path to a TOML config file.")
+    batch.add_argument("--workers", type=int, default=1)
+    batch.add_argument(
+        "--output",
+        help="Write the complete batch report to a JSON or JSONL file.",
+    )
+    batch.add_argument(
+        "--format",
+        choices=["json", "jsonl"],
+        default="json",
+    )
+    batch.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -475,6 +503,41 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
     return 0 if not report.errors else 2
 
 
+def _run_batch(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    try:
+        config = ScanConfig.from_file(args.config)
+        timeout = args.timeout if args.timeout is not None else config.timeout
+        user_agent = args.user_agent or config.user_agent
+        items = load_jsonl(args.input)
+        reports = run_batch(
+            items,
+            registry,
+            timeout=timeout,
+            user_agent=user_agent,
+            max_workers=args.workers,
+        )
+    except (OSError, ValueError, TypeError) as exc:
+        print(f"Batch error: {exc}")
+        return 2
+
+    if args.output:
+        if args.format == "jsonl":
+            write_batch_jsonl(reports, args.output)
+        else:
+            write_batch_json(reports, args.output)
+
+    if args.json:
+        print(json.dumps(build_batch_json(reports), ensure_ascii=False, indent=2))
+    else:
+        print(f"⚡ xLFr4n // OSINT — batch: {len(reports)} reports")
+        for report in reports:
+            status = "ok" if not report.errors else "errors"
+            subject = "<redacted-password>" if report.query == "<redacted-password>" else report.query
+            print(f"  - {status} · {subject} · findings={len(report.findings)}")
+
+    return 0 if all(not report.errors for report in reports) else 2
+
+
 def _print_report(
     report: ScanReport,
     as_json: bool,
@@ -541,6 +604,9 @@ def main() -> int:
 
     if args.command == "asn":
         return _run_asn(args, registry)
+
+    if args.command == "batch":
+        return _run_batch(args, registry)
 
     if args.command == "sources":
         if args.json:
