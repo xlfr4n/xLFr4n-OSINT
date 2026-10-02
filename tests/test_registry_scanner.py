@@ -58,3 +58,24 @@ def test_report_has_stable_schema_version() -> None:
     assert payload["schema_version"] == "1.1"
     assert payload["scan_id"]
     assert payload["findings"][0]["identifier"] == "demo"
+
+
+def test_registry_defaults_exclude_opt_in_providers() -> None:
+    class OptionalProvider(Provider):
+        name = "optional"
+
+        def search_username(self, username: str) -> list[Finding]:
+            return []
+
+    registry = ProviderRegistry()
+    registry.register("default", FakeProvider, capabilities={"username"})
+    registry.register(
+        "optional",
+        OptionalProvider,
+        capabilities={"username"},
+        default_enabled=False,
+    )
+
+    assert registry.names("username", default_only=True) == ("default",)
+    assert registry.names("username") == ("default", "optional")
+    assert registry.is_default_enabled("optional") is False
