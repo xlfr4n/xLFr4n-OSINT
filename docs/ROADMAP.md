@@ -63,7 +63,8 @@ A provider enters the project only after its source, limits, provenance and test
 
 ## Phase 05 — Evidence & Reporting
 
-- [ ] evidence bundles
+- [x] evidence bundles
+- [x] payload fingerprints
 - [ ] JSON export
 - [ ] Markdown reports
 - [ ] investigation summaries
