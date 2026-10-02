@@ -146,13 +146,33 @@
     renderSourceList();
   }
 
+  function providerStatus(item) {
+    const status = item.status || "ready";
+    const labels = {
+      ready: "ready",
+      "missing-dependency": "missing dependency",
+      "missing-credentials": "missing credentials"
+    };
+    return {
+      status: status,
+      label: labels[status] || status
+    };
+  }
+
   function renderSourceList() {
     $("#source-list").innerHTML = state.registry.map(function(item) {
-      return "<label class=\"source-check\">" +
+      const status = providerStatus(item);
+      const unavailable = status.status !== "ready";
+      const title = item.requirement ? " · " + item.requirement : "";
+      return "<label class=\"source-check " + (unavailable ? "source-unavailable" : "") + "\" title=\"" +
+        escapeHtml(title) + "\">" +
         "<input type=\"checkbox\" value=\"" + escapeHtml(item.name) + "\"" +
-        (state.sources.includes(item.name) ? " checked" : "") + ">" +
+        (state.sources.includes(item.name) ? " checked" : "") +
+        (unavailable ? " disabled" : "") + ">" +
         "<span>" + escapeHtml(item.name) + "</span>" +
-        "<small>" + (item.default_enabled ? "default" : "opt-in") + "</small>" +
+        "<small class=\"source-status " + escapeHtml(status.status) + "\">" +
+        escapeHtml(item.default_enabled ? "default · " : "opt-in · ") +
+        escapeHtml(status.label) + "</small>" +
         "</label>";
     }).join("");
 
@@ -387,16 +407,20 @@
     const items = data.sources || [];
     $("#registry-grid").innerHTML = items.map(function(item) {
       const capabilities = item.capabilities || [];
+      const status = providerStatus(item);
       return "<div class=\"registry-card\"><div class=\"registry-card-top\">" +
         "<strong>" + escapeHtml(item.name) + "</strong>" +
-        "<span class=\"source-status " + (item.default_enabled ? "default" : "optin") + "\">" +
-        (item.default_enabled ? "default" : "opt-in") + "</span></div>" +
+        "<span class=\"source-status " + escapeHtml(status.status) + "\">" +
+        escapeHtml(item.default_enabled ? "default · " : "opt-in · ") +
+        escapeHtml(status.label) + "</span></div>" +
         "<p>" + escapeHtml(capabilities.map(function(cap) {
           return CAPABILITY_TEXT[cap] || cap;
         }).join(" · ")) + "</p>" +
         "<div class=\"cap-badges\">" + capabilities.map(function(cap) {
           return "<span>" + escapeHtml(cap) + "</span>";
-        }).join("") + "</div></div>";
+        }).join("") + "</div>" +
+        (item.requirement ? "<div class=\"registry-requirement\">" + escapeHtml(item.requirement) + "</div>" : "") +
+        "</div>";
     }).join("");
   }
 
