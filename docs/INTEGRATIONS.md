@@ -20,7 +20,7 @@ El proyecto no necesita copiar las bases de datos ni el código de otros proyect
 | Amass | passive subdomains | local CLI | opt-in | use installed upstream; review subcomponent licenses |
 | SpiderFoot | multi-source OSINT | local service/CLI, passive use case | opt-in | bridge only; keep upstream installation independent |
 | theHarvester | multi-source domain discovery | local CLI, P0 sources | opt-in | bridge only; preserve source attribution |
-| Holehe | email/account enumeration | local CLI | planned / high-interaction | bridge only; review exact upstream terms before distribution |
+| Holehe | email/account enumeration | local CLI | opt-in | recovery fields discarded; bridge only |
 
 ## Optional authenticated connectors
 
@@ -29,10 +29,20 @@ El proyecto no necesita copiar las bases de datos ni el código de otros proyect
 | HIBP Breach API | email breach metadata | user's own HIBP API key / subscription | opt-in |
 | Intelligence X | indexed exposure/document search | user's own API access | opt-in |
 | Hudson Rock | infostealer intelligence | user's own API access | opt-in |
-| Snusbase | breach/combolist search | authenticated service access | opt-in / metadata only |
-| DeHashed | breach search | authenticated service access | opt-in / metadata only |
+| Censys | host/certificate infrastructure intelligence | user's own API access | opt-in |
+| Shodan | host/service intelligence | user's own API key | opt-in |
+| SecurityTrails | DNS/infrastructure history | user's own API key | opt-in |
+| VirusTotal | domain/IP/hash intelligence | user's own API key | opt-in |
+| Hunter | email verification/discovery | user's own API key | opt-in |
+| URLScan | historical web scans | user's own API key | opt-in |
+| Snusbase | breach/combolist search | authenticated service access | not bridged |
+| DeHashed | breach search | authenticated service access | not bridged |
 
 Authenticated connectors are intentionally separate from the free core. Credentials, API keys and private datasets are never committed.
+
+| Wayback | historical web archive | public CDX API | opt-in |
+| Common Crawl | historical web archive | public CDXJ index | opt-in |
+| ExifTool | local document/image metadata | local CLI | opt-in |
 
 ## External-tool contract
 
