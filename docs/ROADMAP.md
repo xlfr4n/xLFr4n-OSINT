@@ -37,6 +37,7 @@ Initial provider:
 Planned provider families:
 
 - [ ] URL / domain metadata
+- [x] DNS resolution
 - [ ] DNS / certificate intelligence
 - [x] public code-platform profiles
   - [x] GitHub
