@@ -24,6 +24,7 @@ from xlfr4n_osint.providers.external_username import HoleheProvider, MaigretProv
 from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
 from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
 from xlfr4n_osint.providers.theharvester import TheHarvesterProvider
+from xlfr4n_osint.providers.urlscan import URLScanProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
 from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
@@ -52,6 +53,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("amass", AmassProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("theharvester", TheHarvesterProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn"}, default_enabled=False)
+    registry.register("urlscan", URLScanProvider, capabilities={"domain", "ip"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
     return registry
