@@ -105,8 +105,20 @@ class SpiderFootProvider(
             if not data:
                 continue
 
-            module = str(event.get("module") or "")
             source_data = str(event.get("source") or "")
+            # SpiderFoot emits the initial target as an event in some passive
+            # runs. That is not independent intelligence and should not become
+            # a finding by itself.
+            if (
+                data.casefold() == clean.casefold()
+                and (
+                    not source_data
+                    or source_data.casefold() == clean.casefold()
+                )
+            ):
+                continue
+
+            module = str(event.get("module") or "")
             source_url = (
                 source_data
                 if source_data.startswith(("http://", "https://"))
