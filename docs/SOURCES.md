@@ -29,3 +29,10 @@ The project normalizes public-source metadata and deliberately omits contact det
 Source behavior, limits and provenance should be documented before a provider is enabled.
 
 > **🔎 Public source ≠ automatically complete or verified.**
+
+
+### DNS resolution
+
+The DNS provider queries Cloudflare's public DNS-over-HTTPS JSON endpoint for A, AAAA, CNAME, MX, NS, SOA and TXT records.
+
+The provider stores normalized record data and resolver response codes, while keeping the source endpoint in provenance.
