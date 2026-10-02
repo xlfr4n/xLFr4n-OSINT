@@ -64,38 +64,48 @@ El proyecto prioriza:
     06  documentación junto al código
     07  datos mínimos necesarios
 
-### 🗺️ Roadmap
+### 🗺️ Estado / Roadmap
 
 ```text
 FOUNDATION ✅
    ↓
 CORE ✅
-   ├─ CLI / config
+   ├─ CLI / config / doctor
    ├─ normalized findings
    ├─ evidence / fingerprints
-   └─ reporting
+   └─ JSON + Markdown reporting
    ↓
 PUBLIC PROVIDERS ✅
    ├─ username: GitHub / GitLab / Gitea
    ├─ domain: RDAP / DNS / CT / TLS / HTTPS
    └─ infrastructure: IP / ASN RDAP
    ↓
-EXTERNAL TOOL LAYER 🟢
+EXTERNAL TOOL LAYER ✅
    ├─ Maigret / Sherlock
-   └─ Subfinder / Amass
+   ├─ Holehe / SpiderFoot
+   ├─ Subfinder / Amass
+   └─ theHarvester
    ↓
-EXPOSURE LAYER 🟢
+EXPOSURE + INTELLIGENCE ✅
    ├─ LeakCheck Public
-   └─ HIBP Pwned Passwords
+   ├─ HIBP Pwned Passwords / Breach API
+   ├─ archives
+   ├─ hash intelligence
+   └─ authenticated intelligence connectors
    ↓
-CORRELATION / EVIDENCE 🟢
-   └─ deterministic entity grouping
+CORRELATION / EVIDENCE ✅
+   └─ deterministic entity grouping + provenance
+   ↓
+OPERATIONS ✅
+   ├─ bounded batch execution
+   ├─ scheduled public-source workflow
+   ├─ local GUI
+   ├─ provider readiness / doctor
+   └─ Kali external-tool bootstrap
    ↓
 NEXT
-   ├─ SpiderFoot / Holehe bridges
-   ├─ authenticated breach connectors
-   ├─ archives / documents / image intelligence
-   └─ batch / scheduled automation
+   └─ additional source adapters only when their
+      provenance, limits and maintenance contract justify them
 ```
 
 ### 🚧 Estado actual
