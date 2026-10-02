@@ -48,8 +48,8 @@ def _parse_holehe_output(content: str) -> list[dict[str, str]]:
         stripped = line.strip()
         if not stripped.startswith("[+] "):
             continue
-        domain = stripped[4:].strip()
-        if not domain:
+        domain = stripped[4:].strip().split(maxsplit=1)[0].rstrip(",")
+        if not domain or "." not in domain:
             continue
         rows.append(
             {
