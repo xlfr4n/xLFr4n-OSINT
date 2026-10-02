@@ -30,24 +30,61 @@ class WebhookNotifier:
             raise ValueError("XLFR4N_OSINT_WEBHOOK_URL is not configured")
 
         summary = report.get("summary", {})
+        if not isinstance(summary, dict):
+            summary = {}
+
+        query = report.get("query")
+        if query in (None, "", "<redacted-password>"):
+            display_query = "<redacted-password>" if query == "<redacted-password>" else "batch"
+        else:
+            display_query = str(query)
+
+        description = f"Target: `{display_query[:1000]}`"
+
+        finding_count = int(summary.get("finding_count") or 0)
+        source_count = int(summary.get("source_count") or 0)
+        entity_count = int(summary.get("entity_count") or 0)
+        relationship_count = int(summary.get("relationship_count") or 0)
+        error_count = int(summary.get("error_count") or 0)
+        skipped_count = int(summary.get("provider_skipped") or 0)
+        provider_count = int(summary.get("provider_count") or 0)
+
+        status = "COMPLETED"
+        if error_count:
+            status = f"COMPLETED · {error_count} ERROR(S)"
+        elif skipped_count:
+            status = f"COMPLETED · {skipped_count} SKIPPED"
+
+        fields = [
+            {"name": "Findings", "value": str(finding_count), "inline": True},
+            {"name": "Sources", "value": str(source_count), "inline": True},
+            {"name": "Providers", "value": str(provider_count), "inline": True},
+            {"name": "Entities", "value": str(entity_count), "inline": True},
+            {"name": "Relationships", "value": str(relationship_count), "inline": True},
+            {"name": "Errors", "value": str(error_count), "inline": True},
+        ]
+        if skipped_count:
+            fields.append({
+                "name": "Skipped providers",
+                "value": str(skipped_count),
+                "inline": True,
+            })
+
         payload = {
-            "event": "xlfr4n_osint_scan_completed",
-            "schema_version": str(report.get("schema_version", "1.1")),
-            "scan_id": report.get("scan_id"),
-            "query": (
-                "<redacted-password>"
-                if report.get("query") == "<redacted-password>"
-                else report.get("query")
-            ),
-            "summary": {
-                "finding_count": summary.get("finding_count"),
-                "source_count": summary.get("source_count"),
-                "category_count": summary.get("category_count"),
-                "error_count": summary.get("error_count"),
-                "entity_count": summary.get("entity_count"),
-                "relationship_count": summary.get("relationship_count"),
-                "duplicate_group_count": summary.get("duplicate_group_count"),
-            },
+            "content": "⚡ **xLFr4n // OSINT**",
+            "embeds": [
+                {
+                    "title": f"Investigation {status}",
+                    "description": description,
+                    "color": 0xF23A3A,
+                    "fields": fields,
+                    "footer": {
+                        "text": f"scan {str(report.get('scan_id') or 'batch')[:96]} · JSON schema {report.get('schema_version', '1.1')}"
+                    },
+                    "timestamp": report.get("started_at"),
+                }
+            ],
+            "allowed_mentions": {"parse": []},
         }
 
         post_json(
@@ -79,6 +116,8 @@ def notify_report_file(
             "entity_count": 0,
             "relationship_count": 0,
             "duplicate_group_count": 0,
+            "provider_count": 0,
+            "provider_skipped": 0,
         }
         for item in reports:
             if not isinstance(item, dict):
