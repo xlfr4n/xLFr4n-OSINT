@@ -67,37 +67,35 @@ El proyecto prioriza:
 ### 🗺️ Roadmap
 
 ```text
-PHASE 01  Foundation
-          ├─ project standards
-          ├─ source model
-          ├─ evidence model
-          └─ documentation
-
-PHASE 02  Core
-          ├─ CLI
-          ├─ configuration
-          ├─ logging
-          └─ normalized output
-
-PHASE 03  Providers
-          ├─ source adapters
-          ├─ retries / rate limits
-          └─ provenance
-
-PHASE 04  Correlation
-          ├─ entity resolution
-          ├─ relationships
-          └─ evidence graph
-
-PHASE 05  Reporting
-          ├─ JSON
-          ├─ Markdown
-          └─ investigation reports
-
-PHASE 06  Automation
-          ├─ scheduled jobs
-          ├─ integrations
-          └─ CI validation
+FOUNDATION ✅
+   ↓
+CORE ✅
+   ├─ CLI / config
+   ├─ normalized findings
+   ├─ evidence / fingerprints
+   └─ reporting
+   ↓
+PUBLIC PROVIDERS ✅
+   ├─ username: GitHub / GitLab / Gitea
+   ├─ domain: RDAP / DNS / CT / TLS / HTTPS
+   └─ infrastructure: IP / ASN RDAP
+   ↓
+EXTERNAL TOOL LAYER 🟢
+   ├─ Maigret / Sherlock
+   └─ Subfinder / Amass
+   ↓
+EXPOSURE LAYER 🟢
+   ├─ LeakCheck Public
+   └─ HIBP Pwned Passwords
+   ↓
+CORRELATION / EVIDENCE 🟢
+   └─ deterministic entity grouping
+   ↓
+NEXT
+   ├─ SpiderFoot / Holehe bridges
+   ├─ authenticated breach connectors
+   ├─ archives / documents / image intelligence
+   └─ batch / scheduled automation
 ```
 
 ### 🚧 Estado actual
@@ -228,7 +226,11 @@ The first functional foundation is now available:
 
 - 🐍 dependency-free Python package;
 - 🧩 interchangeable provider architecture;
-- 🔎 initial public GitHub username lookup;
+- 👤 public GitHub, GitLab and Gitea username lookup;
+- 🌐 RDAP, DNS, Certificate Transparency, TLS and HTTPS metadata;
+- 🌍 RDAP IP and ASN registration data;
+- 📜 LeakCheck public exposure metadata;
+- 🔐 HIBP Pwned Passwords k-anonymity check;
 - 🧾 normalized findings with timestamps and provenance;
 - 📦 JSON output for automation;
 - 🧪 initial tests;
@@ -241,7 +243,7 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-The first provider family now covers **GitHub, GitLab and Gitea**. Future phases will expand into domain, DNS, certificate, archive and other public-source families while keeping evidence, provenance and reproducibility explicit.
+The direct provider layer now covers **GitHub, GitLab, Gitea, RDAP, DNS, Certificate Transparency, TLS, HTTPS, IP and ASN registration**, with external-tool and exposure integrations layered on top.
 
 ---
 
@@ -265,6 +267,7 @@ See [`SECURITY.md`](./SECURITY.md) for reporting guidance and data boundaries.
 - [`docs/SOURCES.md`](./docs/SOURCES.md) — public source inventory and data boundaries.
 - [`docs/PROVENANCE.md`](./docs/PROVENANCE.md) — provenance contract for findings.
 - [`docs/CLI.md`](./docs/CLI.md) — command, output and exit-code contract.
+- [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md) — upstream tools, APIs and distribution boundaries.
 
 ---
 
