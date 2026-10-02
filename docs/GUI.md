@@ -23,6 +23,9 @@ Opciones:
 xlfr4n-osint gui --port 9000
 xlfr4n-osint gui --no-browser
 xlfr4n-osint gui --host 127.0.0.1 --timeout 30
+
+# Remote binding requires explicit opt-in:
+xlfr4n-osint gui --host 0.0.0.0 --allow-remote
 ```
 
 ### Qué incluye
@@ -112,9 +115,9 @@ También funciona en Windows porque la ruta se resuelve con `Path.home()`.
 
 ### Seguridad
 
-El servidor escucha en `127.0.0.1` por defecto.
+El servidor escucha en `127.0.0.1` por defecto. CORS está desactivado y la interfaz envía cabeceras de endurecimiento (CSP, anti-clickjacking, `nosniff` y `no-referrer`).
 
-No expongas la interfaz a una red pública sin añadir autenticación, autorización, controles de acceso y una política de transporte adecuada.
+Los bindings no locales están bloqueados por defecto. `--allow-remote` solo habilita el bind; no añade autenticación. Úsalo únicamente detrás de tus propios controles de acceso y transporte seguro.
 
 Las comprobaciones de contraseña mantienen el contrato de privacidad del CLI: el informe utiliza `<redacted-password>` y la GUI sustituye cualquier aparición del secreto antes de persistir el reporte.
 
@@ -154,7 +157,9 @@ The GUI reuses the same provider registry, batch execution path, normalized find
 
 ### Security
 
-The service binds to `127.0.0.1` by default.
+The service binds to `127.0.0.1` by default. Cross-origin browser access is not enabled, and the local HTTP responses include CSP, anti-clickjacking, MIME-hardening and referrer-policy headers.
+
+Non-loopback bindings are rejected unless `--allow-remote` is explicitly supplied; that flag does not add authentication.
 
 Password checks remain privacy-preserving and saved reports use `<redacted-password>` rather than the submitted password.
 
