@@ -409,9 +409,12 @@
   function renderResults(report) {
     const summary = report.summary || {};
     const errors = report.errors || [];
+    const skipped = Number(summary.provider_skipped || 0);
     const status = errors.length
       ? "<span class=\"badge warn\">" + errors.length + " provider error(s)</span>"
-      : "<span class=\"badge good\">clean execution</span>";
+      : (skipped
+        ? "<span class=\"badge warn\">" + skipped + " provider(s) skipped</span>"
+        : "<span class=\"badge good\">clean execution</span>");
 
     $("#results-root").innerHTML =
       "<div class=\"result-header\"><div>" +
