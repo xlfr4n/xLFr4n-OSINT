@@ -122,6 +122,8 @@
       password: "Enter a password"
     };
     $("#target-value").placeholder = placeholders[state.type] || "Target";
+    $("#target-value").type = state.type === "password" ? "password" : "text";
+    $("#target-value").autocomplete = state.type === "password" ? "new-password" : "off";
     $("#input-suffix").textContent = state.type === "password" ? "privacy" : state.type;
     $("#password-note").classList.toggle("hidden", state.type !== "password");
   }
@@ -483,6 +485,12 @@
   $("#quick-scan-btn").addEventListener("click", function() { go("investigation"); });
   $("#back-to-investigation").addEventListener("click", function() { go("investigation"); });
   $("#run-scan-btn").addEventListener("click", runScan);
+  $("#target-value").addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      runScan();
+    }
+  });
   $("#select-defaults").addEventListener("click", selectDefaults);
   $("#download-json").addEventListener("click", downloadReport);
   $("#copy-scan-id").addEventListener("click", copyScanId);
