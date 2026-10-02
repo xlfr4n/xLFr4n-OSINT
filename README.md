@@ -153,6 +153,16 @@ Provider failures are kept inside the report rather than silently discarded.
 
 ---
 
+## 🧠 Correlation
+
+The scanner can correlate returned findings using exact, normalized matches only.
+
+It does **not** claim that two public accounts belong to the same person. A shared username is represented as a deterministic correlation between source findings, while different categories remain separate.
+
+JSON reports include a `correlation` object with the grouped entities.
+
+---
+
 ## 🇬🇧 English
 
 ### 🎯 What it is
