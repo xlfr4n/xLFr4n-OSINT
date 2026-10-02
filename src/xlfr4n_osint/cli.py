@@ -30,6 +30,7 @@ from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
+from xlfr4n_osint.providers.intelligence_x import IntelligenceXProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.hudsonrock import HudsonRockProvider
 from xlfr4n_osint.providers.http import HTTPProvider
@@ -71,6 +72,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("virustotal", VirusTotalProvider, capabilities={"domain", "ip"}, default_enabled=False)
     registry.register("hunter", HunterProvider, capabilities={"domain", "email"}, default_enabled=False)
     registry.register("hudsonrock", HudsonRockProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("intelligence-x", IntelligenceXProvider, capabilities={"domain", "email", "phone", "ip", "url"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
     return registry
