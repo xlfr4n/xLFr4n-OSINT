@@ -1,60 +1,42 @@
 from __future__ import annotations
 
-from xlfr4n_osint.correlation import CorrelationEngine
+from xlfr4n_osint.correlation import CorrelationEngine, semantic_finding_key
 from xlfr4n_osint.models import Finding, ScanReport
 
 
-def test_correlation_groups_exact_case_insensitive_identifiers() -> None:
-    report = ScanReport(
-        query="xLFr4n",
-        findings=[
-            Finding.now(
-                source="github",
-                category="public-profile",
-                identifier="xLFr4n",
-                title="xLFr4n",
-                url="https://github.com/xLFr4n",
-            ),
-            Finding.now(
-                source="gitlab",
-                category="public-profile",
-                identifier="XLFR4N",
-                title="xLFr4n",
-                url="https://gitlab.com/XLFR4N",
-            ),
-        ],
+def _finding(
+    source: str,
+    category: str,
+    identifier: str,
+    url: str,
+) -> Finding:
+    return Finding.now(
+        source=source,
+        category=category,
+        identifier=identifier,
+        title=identifier,
+        url=url,
     )
 
-    correlated = CorrelationEngine().build(report)
 
-    assert len(correlated.entities) == 1
-    entity = correlated.entities[0]
-    assert entity.kind == "public-profile"
-    assert entity.value == "xLFr4n"
-    assert entity.sources == ["github", "gitlab"]
+def test_correlation_groups_exact_entities_and_shared_selectors() -> None:
+    report = ScanReport(query="example.com")
+    report.findings.extend([
+        _finding("dns", "dns-a", "example.com", "https://example.com"),
+        _finding("crtsh", "certificate-hosts", "example.com", "https://example.com"),
+        _finding("dns", "dns-a", "example.com", "https://example.com"),
+    ])
+
+    result = CorrelationEngine().build(report)
+
+    assert len(result.entities) == 2
+    assert result.relationships
+    assert result.relationships[0].relation == "exact-shared-selector"
+    assert any(result.duplicates.values())
 
 
-def test_correlation_does_not_merge_different_categories() -> None:
-    report = ScanReport(
-        query="example.com",
-        findings=[
-            Finding.now(
-                source="rdap",
-                category="domain-registration",
-                identifier="example.com",
-                title="example.com",
-                url="https://example.com",
-            ),
-            Finding.now(
-                source="dns",
-                category="dns-records",
-                identifier="example.com",
-                title="DNS records — example.com",
-                url="https://example.com",
-            ),
-        ],
-    )
+def test_semantic_finding_key_ignores_source() -> None:
+    left = _finding("source-a", "category", "selector", "https://example.com")
+    right = _finding("source-b", "category", "selector", "https://example.com")
 
-    correlated = CorrelationEngine().build(report)
-
-    assert len(correlated.entities) == 2
+    assert semantic_finding_key(left) == semantic_finding_key(right)
