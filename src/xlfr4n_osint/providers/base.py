@@ -12,7 +12,16 @@ class ProviderError(RuntimeError):
 class Provider(ABC):
     name: str
 
+
+class UsernameProvider(Provider):
     @abstractmethod
     def search_username(self, username: str) -> list[Finding]:
         """Return public-source findings for a username."""
+        raise NotImplementedError
+
+
+class DomainProvider(Provider):
+    @abstractmethod
+    def search_domain(self, domain: str) -> list[Finding]:
+        """Return public-source findings for a domain."""
         raise NotImplementedError
