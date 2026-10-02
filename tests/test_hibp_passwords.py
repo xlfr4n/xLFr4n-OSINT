@@ -21,7 +21,7 @@ def test_hibp_password_provider_uses_k_anonymity_and_returns_count_only() -> Non
 
     assert len(findings) == 1
     finding = findings[0]
-    requested_url = str(urlopen.call_args.args[0])
+    requested_url = urlopen.call_args.args[0].full_url
     assert requested_url.endswith("/5BAA6")
     assert finding.data["pwned"] is True
     assert finding.data["prevalence_count"] == 42
