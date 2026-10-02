@@ -1,0 +1,4 @@
+{"type":"username","value":"octocat","sources":["github"]}
+{"type":"domain","value":"example.com","sources":["rdap","dns","ctlogs","tls","http"]}
+{"type":"ip","value":"192.0.2.10","sources":["rdap-number"]}
+{"type":"url","value":"https://example.com/","sources":[]}
