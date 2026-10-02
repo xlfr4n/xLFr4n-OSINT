@@ -10,6 +10,8 @@ from xlfr4n_osint.gui import run_gui
 from xlfr4n_osint.logging_utils import configure_logging
 from xlfr4n_osint.notifications import notify_report_file
 from xlfr4n_osint.config import ScanConfig
+from xlfr4n_osint.doctor import run_doctor
+from xlfr4n_osint.source_status import inspect_registry
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.reporting import (
@@ -340,7 +342,10 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         help="Allow a non-loopback bind; only use this with your own access controls.",
     )
 
-    sources = subparsers.add_parser("sources", help="List enabled providers.")
+    doctor = subparsers.add_parser("doctor", help="Inspect provider readiness and local dependencies.")
+    doctor.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+
+    sources = subparsers.add_parser("sources", help="List registered providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
     return parser
@@ -848,24 +853,21 @@ def main() -> int:
         )
         return 0
 
+    if args.command == "doctor":
+        return run_doctor(registry, as_json=args.json)
+
     if args.command == "sources":
+        providers = inspect_registry(registry)
         if args.json:
-            print(json.dumps({
-                "sources": [
-                    {
-                        "name": name,
-                        "capabilities": list(registry.capabilities(name)),
-                        "default_enabled": registry.is_default_enabled(name),
-                    }
-                    for name in registry.names()
-                ]
-            }, indent=2))
+            print(json.dumps({"sources": providers}, ensure_ascii=False, indent=2))
         else:
             print("⚡ xLFr4n // OSINT — registered sources")
-            for name in registry.names():
-                status = "default" if registry.is_default_enabled(name) else "opt-in"
-                capabilities = ", ".join(registry.capabilities(name))
-                print(f"  - {name} [{status}] — {capabilities}")
+            for item in providers:
+                capabilities = ", ".join(item["capabilities"])
+                print(
+                    f"  - {item['name']} [{item['mode']}] "
+                    f"[{item['status']}] — {capabilities}"
+                )
         return 0
 
     parser.error("unknown command")
