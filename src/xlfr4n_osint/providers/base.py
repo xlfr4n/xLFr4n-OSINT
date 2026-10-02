@@ -49,3 +49,17 @@ class DomainProvider(Provider):
     def search_domain(self, domain: str) -> list[Finding]:
         """Return public-source findings for a domain."""
         raise NotImplementedError
+
+
+class IPProvider(Provider):
+    @abstractmethod
+    def search_ip(self, address: str) -> list[Finding]:
+        """Return public registration data for an IP address."""
+        raise NotImplementedError
+
+
+class ASNProvider(Provider):
+    @abstractmethod
+    def search_asn(self, asn: str) -> list[Finding]:
+        """Return public registration data for an AS number."""
+        raise NotImplementedError
