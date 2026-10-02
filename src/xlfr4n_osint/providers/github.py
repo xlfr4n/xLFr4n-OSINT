@@ -53,6 +53,11 @@ class GitHubProvider(Provider):
                 title=str(payload.get("name") or payload.get("login") or clean),
                 url=html_url,
                 confidence="high",
+                provenance={
+                    "source_url": f"{self.api_base}/users/{encoded}",
+                    "retrieval_method": "GitHub REST API public endpoint",
+                    "provider": self.name,
+                },
                 data={
                     "login": payload.get("login"),
                     "name": payload.get("name"),
