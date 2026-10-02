@@ -187,8 +187,13 @@ class SherlockProvider(UsernameProvider):
             for row in _parse_sherlock_csv(reports[0]):
                 exists = str(row.get("exists", ""))
                 platform = str(row.get("name") or "unknown-site")
-                url = str(row.get("url_user") or "")
+                url = str(row.get("url_user") or "").strip()
+                url_main = str(row.get("url_main") or "").strip()
                 if not url:
+                    continue
+                # A site homepage is not an account/profile finding. Sherlock
+                # can legitimately return a claimed status for generic URLs.
+                if url_main and url.rstrip("/") == url_main.rstrip("/"):
                     continue
                 findings.append(
                     Finding.now(
@@ -197,7 +202,7 @@ class SherlockProvider(UsernameProvider):
                         identifier=f"{platform}:{clean}".casefold(),
                         title=platform,
                         url=url,
-                        confidence="high",
+                        confidence="medium",
                         provenance=_tool_provenance(self.name, command),
                         data={
                             "username": clean,
@@ -205,6 +210,8 @@ class SherlockProvider(UsernameProvider):
                             "status": exists,
                             "http_status": row.get("http_status"),
                             "response_time_s": row.get("response_time_s"),
+                            "url_main": url_main or None,
+                            "verification": "tool-asserted",
                         },
                     )
                 )
