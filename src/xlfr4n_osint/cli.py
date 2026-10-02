@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 
+from xlfr4n_osint.config import ScanConfig
+
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.evidence import EvidenceBundle
 
@@ -53,7 +55,9 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         choices=registry.names("username"),
         help="Limit the scan to one or more enabled username providers.",
     )
-    username.add_argument("--timeout", type=float, default=10.0)
+    username.add_argument("--timeout", type=float, default=None)
+    username.add_argument("--user-agent", default=None)
+    username.add_argument("--config", help="Path to a TOML config file.")
     username.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     username.add_argument("--output", help="Write a report file.")
     username.add_argument("--format", choices=["json", "markdown"], default="json")
@@ -69,7 +73,9 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
         choices=registry.names("domain"),
         help="Limit the scan to one or more enabled domain providers.",
     )
-    domain.add_argument("--timeout", type=float, default=10.0)
+    domain.add_argument("--timeout", type=float, default=None)
+    domain.add_argument("--user-agent", default=None)
+    domain.add_argument("--config", help="Path to a TOML config file.")
     domain.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     domain.add_argument("--output", help="Write a report file.")
     domain.add_argument("--format", choices=["json", "markdown"], default="json")
@@ -82,10 +88,14 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
 
 def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
     try:
+        config = ScanConfig.from_file(args.config)
+        timeout = args.timeout if args.timeout is not None else config.timeout
+        user_agent = args.user_agent or config.user_agent
         providers = registry.build(
             args.source,
             capability="username",
-            timeout=args.timeout,
+            timeout=timeout,
+            user_agent=user_agent,
         )
     except (ValueError, TypeError) as exc:
         report = ScanReport(query=args.value.strip())
@@ -104,10 +114,14 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
 
 def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
     try:
+        config = ScanConfig.from_file(args.config)
+        timeout = args.timeout if args.timeout is not None else config.timeout
+        user_agent = args.user_agent or config.user_agent
         providers = registry.build(
             args.source,
             capability="domain",
-            timeout=args.timeout,
+            timeout=timeout,
+            user_agent=user_agent,
         )
     except (ValueError, TypeError) as exc:
         report = ScanReport(query=args.value.strip())
