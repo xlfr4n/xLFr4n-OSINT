@@ -46,3 +46,8 @@ A future provider may define a more precise confidence model, but it must docume
 Collect only the public information required for the research operation. Do not turn provenance into a reason to retain unnecessary personal data.
 
 > **🔎 Observe. 🧾 Attribute. 🔁 Reproduce.**
+
+
+## Evidence ledger
+
+The evidence bundle records provenance and a SHA-256 fingerprint of each finding payload. It is an audit aid: it can show which normalized payload was observed without duplicating the complete payload in a separate evidence record.
