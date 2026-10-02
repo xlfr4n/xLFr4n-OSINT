@@ -302,7 +302,8 @@
         "<div class=\"finding-foot\">" +
         "<span class=\"confidence\">" + escapeHtml(item.category) + "</span>" +
         "<span class=\"confidence\">" + escapeHtml(item.confidence) + "</span>" +
-        "<span class=\"confidence\">" + escapeHtml(fmtDate(item.observed_at)) + "</span>" +\n        (item.data && item.data.verification ? "<span class=\"confidence\">" + escapeHtml(item.data.verification) + "</span>" : "") +
+        "<span class=\"confidence\">" + escapeHtml(fmtDate(item.observed_at)) + "</span>" +
+        (item.data && item.data.verification ? "<span class=\"confidence\">" + escapeHtml(item.data.verification) + "</span>" : "") +
         "</div></div>";
     }).join("");
   }
