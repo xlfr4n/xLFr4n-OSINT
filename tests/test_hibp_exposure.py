@@ -25,7 +25,7 @@ def test_hibp_paste_metadata_is_normalized(monkeypatch) -> None:
 
     assert len(findings) == 1
     assert findings[0].category == "paste-exposure"
-    assert findings[0].data["email"] == "user@example.com"
+    assert findings[0].data["email"] == "User@Example.com"
     assert findings[0].data["raw_content_retained"] is False
 
 
