@@ -108,6 +108,32 @@ def test_password_scan_never_keeps_query(
     assert "secret-pass" not in saved
 
 
+def test_async_job_reaches_completed(tmp_path: Path, monkeypatch) -> None:
+    import time
+
+    registry = ProviderRegistry()
+    registry.register("fake", FakeUsernameProvider, capabilities={"username"})
+    monkeypatch.setenv("XLFR4N_OSINT_REPORT_DIR", str(tmp_path))
+    service = InvestigationService(registry, timeout=5)
+
+    job = service.submit_scan(
+        {"type": "username", "value": "demo", "sources": ["fake"]}
+    )
+    assert job["job_id"]
+    assert job["status"] in {"queued", "running"}
+
+    for _ in range(100):
+        current = service.get_job(job["job_id"])
+        if current["status"] == "completed":
+            break
+        time.sleep(0.01)
+    else:
+        raise AssertionError("job did not complete")
+
+    assert current["report"]["summary"]["finding_count"] == 1
+    service.close()
+
+
 def test_markdown_export_rebuilds_report(tmp_path: Path, monkeypatch) -> None:
     registry = ProviderRegistry()
     registry.register("fake", FakeUsernameProvider, capabilities={"username"})
