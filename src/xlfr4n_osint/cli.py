@@ -6,6 +6,7 @@ from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
 from xlfr4n_osint.filemeta import ExifToolProvider
+from xlfr4n_osint.logging_utils import configure_logging
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.models import ScanReport
@@ -741,6 +742,7 @@ def _print_report(
 
 
 def main() -> int:
+    configure_logging()
     registry = build_registry()
     parser = build_parser(registry)
     args = parser.parse_args()
