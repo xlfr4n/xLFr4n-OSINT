@@ -13,6 +13,7 @@ from xlfr4n_osint.providers.base import (
     PhoneProvider,
     ProviderError,
     UsernameProvider,
+    PersonProvider,
 )
 from xlfr4n_osint.tooling import run_external_command
 
@@ -48,6 +49,7 @@ def _parse_spiderfoot_json(content: str) -> list[dict[str, object]]:
 
 class SpiderFootProvider(
     UsernameProvider,
+    PersonProvider,
     EmailProvider,
     PhoneProvider,
     DomainProvider,
@@ -155,3 +157,7 @@ class SpiderFootProvider(
 
     def search_asn(self, asn: str) -> list[Finding]:
         return self._search(asn)
+
+
+    def search_person(self, name: str) -> list[Finding]:
+        return self._search(name)
