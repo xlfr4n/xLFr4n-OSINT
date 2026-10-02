@@ -176,7 +176,7 @@ class InvestigationService:
     @staticmethod
     def asset(name: str) -> tuple[bytes, str]:
         safe_name = Path(name).name
-        if safe_name not in {"index.html", "app.js", "styles.css"}:
+        if safe_name not in {"index.html", "app.js", "styles.css", "favicon.svg"}:
             raise FileNotFoundError(name)
         body = resource_files("xlfr4n_osint").joinpath("web", safe_name).read_bytes()
         content_type, _ = mimetypes.guess_type(safe_name)
