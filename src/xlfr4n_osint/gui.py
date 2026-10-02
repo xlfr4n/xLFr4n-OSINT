@@ -13,8 +13,9 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from xlfr4n_osint.batch import BatchItem, run_item
+from xlfr4n_osint.models import Finding, ScanReport
 from xlfr4n_osint.logging_utils import get_logger
-from xlfr4n_osint.reporting import build_json_report
+from xlfr4n_osint.reporting import build_json_report, render_markdown_report
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.source_status import inspect_registry
 
@@ -177,6 +178,31 @@ class InvestigationService:
             raise FileNotFoundError(scan_id)
         return json.loads(path.read_text(encoding="utf-8"))
 
+    def get_markdown(self, scan_id: str) -> str:
+        payload = self.get_report(scan_id)
+        report = ScanReport(
+            query=str(payload.get("query", "")),
+            findings=[
+                Finding(
+                    source=str(item.get("source", "")),
+                    category=str(item.get("category", "")),
+                    identifier=str(item.get("identifier", "")),
+                    title=str(item.get("title", "")),
+                    url=str(item.get("url", "")),
+                    observed_at=str(item.get("observed_at", "")),
+                    confidence=str(item.get("confidence", "unknown")),
+                    data=dict(item.get("data") or {}),
+                    provenance=dict(item.get("provenance") or {}),
+                )
+                for item in payload.get("findings", [])
+                if isinstance(item, dict)
+            ],
+            errors=list(payload.get("errors") or []),
+            scan_id=str(payload.get("scan_id", scan_id)),
+            started_at=str(payload.get("started_at", "")),
+        )
+        return render_markdown_report(report)
+
     @staticmethod
     def asset(name: str) -> tuple[bytes, str]:
         safe_name = Path(name).name
@@ -244,6 +270,12 @@ class _Handler(BaseHTTPRequestHandler):
 
             if path == "/api/reports":
                 self._send_json(HTTPStatus.OK, {"reports": self.service.history()})
+                return
+
+            if path.startswith("/api/reports/") and path.endswith("/markdown"):
+                scan_id = path.removeprefix("/api/reports/").removesuffix("/markdown").strip("/")
+                body = self.service.get_markdown(scan_id).encode("utf-8")
+                self._send(HTTPStatus.OK, body, "text/markdown")
                 return
 
             if path.startswith("/api/reports/"):
