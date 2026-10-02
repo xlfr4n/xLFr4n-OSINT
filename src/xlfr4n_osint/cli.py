@@ -42,6 +42,7 @@ from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
 from xlfr4n_osint.providers.theharvester import TheHarvesterProvider
 from xlfr4n_osint.providers.tls import TLSProvider
 from xlfr4n_osint.providers.urlscan import URLScanProvider
+from xlfr4n_osint.providers.archives import CommonCrawlProvider, WaybackProvider
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.scanner import UsernameScanner
 
@@ -67,6 +68,8 @@ def build_registry() -> ProviderRegistry:
     registry.register("theharvester", TheHarvesterProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("spiderfoot", SpiderFootProvider, capabilities={"username", "email", "phone", "domain", "ip", "asn", "person"}, default_enabled=False)
     registry.register("urlscan", URLScanProvider, capabilities={"domain", "ip", "url"}, default_enabled=False)
+    registry.register("wayback", WaybackProvider, capabilities={"domain", "url"}, default_enabled=False)
+    registry.register("commoncrawl", CommonCrawlProvider, capabilities={"domain", "url"}, default_enabled=False)
     registry.register("censys", CensysProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("shodan", ShodanProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("securitytrails", SecurityTrailsProvider, capabilities={"domain"}, default_enabled=False)
