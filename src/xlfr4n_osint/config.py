@@ -6,10 +6,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+DEFAULT_TIMEOUT = 10.0
+DEFAULT_USER_AGENT = "xLFr4n-OSINT/0.1.0"
+
+
 @dataclass(frozen=True, slots=True)
 class ScanConfig:
-    timeout: float = 10.0
-    user_agent: str = "xLFr4n-OSINT/0.1.0"
+    timeout: float = DEFAULT_TIMEOUT
+    user_agent: str = DEFAULT_USER_AGENT
 
     def __post_init__(self) -> None:
         if self.timeout <= 0:
@@ -52,6 +56,6 @@ class ScanConfig:
             values["user_agent"] = os.environ["XLFR4N_OSINT_USER_AGENT"]
 
         return cls(
-            timeout=float(values.get("timeout", cls.timeout)),
-            user_agent=str(values.get("user_agent", cls.user_agent)),
+            timeout=float(values.get("timeout", DEFAULT_TIMEOUT)),
+            user_agent=str(values.get("user_agent", DEFAULT_USER_AGENT)),
         )
