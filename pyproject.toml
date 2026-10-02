@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xlfr4n-osint"
+version = "0.1.0"
+description = "Public-source OSINT research toolkit by xLFr4n."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "xLFr4n" }]
+dependencies = []
+
+[project.scripts]
+xlfr4n-osint = "xlfr4n_osint.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
