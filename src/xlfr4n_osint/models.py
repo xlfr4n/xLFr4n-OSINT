@@ -16,6 +16,7 @@ class Finding:
     observed_at: str
     confidence: str = "unknown"
     data: dict[str, Any] = field(default_factory=dict)
+    provenance: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def now(cls, **kwargs: Any) -> "Finding":
@@ -34,7 +35,7 @@ class ScanReport:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "schema_version": "1.0",
+            "schema_version": "1.1",
             "scan_id": self.scan_id,
             "query": self.query,
             "started_at": self.started_at,
@@ -48,6 +49,7 @@ class ScanReport:
                     "observed_at": item.observed_at,
                     "confidence": item.confidence,
                     "data": item.data,
+                    "provenance": item.provenance,
                 }
                 for item in self.findings
             ],
