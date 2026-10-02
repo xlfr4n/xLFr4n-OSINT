@@ -4,11 +4,13 @@ import json
 import mimetypes
 import os
 import threading
+import time
 import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files as resource_files
 from pathlib import Path
+from uuid import uuid4
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
@@ -76,6 +78,75 @@ class InvestigationService:
         self.timeout = timeout
         self.user_agent = user_agent
         self._lock = threading.Lock()
+        self._jobs: dict[str, dict[str, Any]] = {}
+        from concurrent.futures import ThreadPoolExecutor
+        self._executor = ThreadPoolExecutor(
+            max_workers=2,
+            thread_name_prefix="xlfr4n-osint-job",
+        )
+
+    def close(self) -> None:
+        self._executor.shutdown(wait=True, cancel_futures=True)
+
+    def submit_scan(self, payload: dict[str, Any]) -> dict[str, Any]:
+        job_id = uuid4().hex
+        now = time.time()
+        with self._lock:
+            self._jobs[job_id] = {
+                "job_id": job_id,
+                "status": "queued",
+                "stage": "queued",
+                "created_at": now,
+                "started_at": None,
+                "finished_at": None,
+                "report": None,
+                "error": None,
+            }
+        self._executor.submit(self._run_job, job_id, payload)
+        return self.get_job(job_id)
+
+    def _run_job(self, job_id: str, payload: dict[str, Any]) -> None:
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if job is None:
+                return
+            job["status"] = "running"
+            job["stage"] = "collecting"
+            job["started_at"] = time.time()
+        try:
+            report = self.scan(payload)
+        except Exception as exc:
+            with self._lock:
+                job = self._jobs.get(job_id)
+                if job is not None:
+                    job["status"] = "failed"
+                    job["stage"] = "failed"
+                    job["error"] = str(exc)
+                    job["finished_at"] = time.time()
+            return
+
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if job is not None:
+                job["status"] = "completed"
+                job["stage"] = "completed"
+                job["report"] = report
+                job["finished_at"] = time.time()
+
+    def get_job(self, job_id: str) -> dict[str, Any]:
+        key = _safe_scan_id(job_id)
+        with self._lock:
+            job = self._jobs.get(key)
+            if job is None:
+                raise FileNotFoundError(job_id)
+            result = dict(job)
+        if result["status"] == "completed" and result.get("report"):
+            result["summary"] = result["report"].get("summary", {})
+        result["elapsed_seconds"] = (
+            (result["finished_at"] or time.time()) - result["created_at"]
+        )
+        return result
+
 
     def source_snapshot(self, capability: str | None = None) -> list[dict[str, Any]]:
         if capability:
@@ -272,6 +343,11 @@ class _Handler(BaseHTTPRequestHandler):
                 self._send_json(HTTPStatus.OK, {"reports": self.service.history()})
                 return
 
+            if path.startswith("/api/jobs/"):
+                job_id = path.removeprefix("/api/jobs/").strip("/")
+                self._send_json(HTTPStatus.OK, self.service.get_job(job_id))
+                return
+
             if path.startswith("/api/reports/") and path.endswith("/markdown"):
                 scan_id = path.removeprefix("/api/reports/").removesuffix("/markdown").strip("/")
                 body = self.service.get_markdown(scan_id).encode("utf-8")
@@ -293,6 +369,17 @@ class _Handler(BaseHTTPRequestHandler):
             self._send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
 
     def do_POST(self) -> None:
+        if self.path == "/api/jobs":
+            try:
+                job = self.service.submit_scan(self._read_json())
+                self._send_json(HTTPStatus.ACCEPTED, job)
+            except (ValueError, FileNotFoundError) as exc:
+                self._send_json(HTTPStatus.BAD_REQUEST, {"error": str(exc)})
+            except Exception as exc:
+                logger.exception("GUI job submission failed")
+                self._send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": str(exc)})
+            return
+
         if self.path != "/api/scan":
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "not found"})
             return
@@ -351,3 +438,4 @@ def run_gui(
         print("\\nStopping GUI...")
     finally:
         server.server_close()
+        service.close()
