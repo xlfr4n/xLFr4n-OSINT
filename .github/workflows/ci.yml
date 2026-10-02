@@ -27,3 +27,6 @@ jobs:
 
       - name: Tests
         run: python -m pytest -q
+
+      - name: Validate GUI JavaScript
+        run: node --check src/xlfr4n_osint/web/app.js
