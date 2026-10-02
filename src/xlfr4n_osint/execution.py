@@ -9,6 +9,7 @@ from typing import Any, Callable
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import Provider
 from xlfr4n_osint.source_status import inspect_provider
+from xlfr4n_osint.tooling import ExternalToolTimeoutError
 
 
 def _now() -> str:
@@ -16,8 +17,9 @@ def _now() -> str:
 
 
 def _status_for_error(exc: BaseException) -> str:
-    marker = f"{type(exc).__name__} {exc}".casefold()
-    return "timeout" if isinstance(exc, TimeoutError) or "timeout" in marker or "timed out" in marker else "error"
+    if isinstance(exc, (TimeoutError, ExternalToolTimeoutError)):
+        return "timeout"
+    return "error"
 
 
 @dataclass(slots=True)
