@@ -22,6 +22,7 @@ class InvestigationSummary:
     providers_without_findings: int
     provider_errors: int
     provider_timeouts: int
+    provider_skipped: int
     total_provider_seconds: float
     sources: tuple[tuple[str, int], ...]
     categories: tuple[tuple[str, int], ...]
@@ -40,6 +41,7 @@ class InvestigationSummary:
             "providers_without_findings": self.providers_without_findings,
             "provider_errors": self.provider_errors,
             "provider_timeouts": self.provider_timeouts,
+            "provider_skipped": self.provider_skipped,
             "total_provider_seconds": round(self.total_provider_seconds, 3),
             "sources": dict(self.sources),
             "categories": dict(self.categories),
@@ -72,6 +74,9 @@ def build_summary(report: ScanReport) -> InvestigationSummary:
         ),
         provider_timeouts=sum(
             execution.get("status") == "timeout" for execution in executions
+        ),
+        provider_skipped=sum(
+            execution.get("status") == "skipped" for execution in executions
         ),
         total_provider_seconds=sum(
             float(execution.get("duration_seconds", 0) or 0)
