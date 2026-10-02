@@ -192,9 +192,6 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", f"{content_type}; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.end_headers()
         self.wfile.write(body)
 
@@ -212,13 +209,6 @@ class _Handler(BaseHTTPRequestHandler):
         if not isinstance(payload, dict):
             raise ValueError("request body must be a JSON object")
         return payload
-
-    def do_OPTIONS(self) -> None:
-        self.send_response(HTTPStatus.NO_CONTENT)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.end_headers()
 
     def do_GET(self) -> None:
         request = urlparse(self.path)
@@ -280,7 +270,14 @@ def run_gui(
     open_browser: bool = True,
     timeout: float = 10.0,
     user_agent: str = "xLFr4n-OSINT-GUI/1.0",
+    allow_remote: bool = False,
 ) -> None:
+    loopback_hosts = {"127.0.0.1", "::1", "localhost"}
+    if host not in loopback_hosts and not allow_remote:
+        raise ValueError(
+            "refusing non-loopback GUI binding; pass allow_remote=True only when remote access is intentionally secured"
+        )
+
     service = InvestigationService(timeout=timeout, user_agent=user_agent)
 
     class Handler(_Handler):
@@ -292,6 +289,8 @@ def run_gui(
 
     print("⚡ xLFr4n // OSINT GUI")
     print(f"   Local interface: {address}")
+    if host not in loopback_hosts:
+        print("   WARNING: remote binding enabled; the GUI has no built-in authentication.")
     print("   API: /api/health · /api/sources · /api/scan · /api/reports")
     print("   Press Ctrl+C to stop.")
 
