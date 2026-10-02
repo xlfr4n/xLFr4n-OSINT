@@ -23,10 +23,7 @@
 ### Remaining Core work
 
 - [ ] Central logging policy
-- [ ] Config file support
-- [ ] Exit-code contract
-- [ ] Report writers
-- [ ] Better provider error taxonomy
+- [ ] Structured retry/backoff policy
 
 ## Phase 03 — Providers
 
@@ -43,11 +40,23 @@ Planned provider families:
 - [x] HTTPS metadata
 - [x] IP registration / RDAP
 - [x] ASN registration / RDAP
+- [x] IP / ASN registration
 - [ ] DNS / certificate intelligence
 - [x] public code-platform profiles
   - [x] GitHub
   - [x] GitLab
   - [x] Gitea
+- [ ] mature external username-tool adapters
+  - [ ] Maigret
+  - [ ] Sherlock
+  - [ ] SpiderFoot bridge
+- [ ] exposure-source adapters
+  - [ ] LeakCheck Public
+  - [ ] HIBP Pwned Passwords
+  - [ ] optional authenticated HIBP breach metadata
+- [ ] passive subdomain tool adapters
+  - [ ] Subfinder
+  - [ ] Amass
 - [ ] public social-source adapters
 - [ ] web archives
 - [ ] public document metadata
