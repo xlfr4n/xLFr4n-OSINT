@@ -344,6 +344,7 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
 
     doctor = subparsers.add_parser("doctor", help="Inspect provider readiness and local dependencies.")
     doctor.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    doctor.add_argument("--strict", action="store_true", help="Return exit code 1 when any registered provider is not ready.")
 
     sources = subparsers.add_parser("sources", help="List registered providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -854,7 +855,7 @@ def main() -> int:
         return 0
 
     if args.command == "doctor":
-        return run_doctor(registry, as_json=args.json)
+        return run_doctor(registry, as_json=args.json, strict=args.strict)
 
     if args.command == "sources":
         providers = inspect_registry(registry)
