@@ -38,7 +38,10 @@ Planned provider families:
 
 - [ ] URL / domain metadata
 - [ ] DNS / certificate intelligence
-- [ ] public code-platform profiles
+- [x] public code-platform profiles
+  - [x] GitHub
+  - [x] GitLab
+  - [x] Gitea
 - [ ] public social-source adapters
 - [ ] web archives
 - [ ] public document metadata
