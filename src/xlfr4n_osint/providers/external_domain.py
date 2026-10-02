@@ -19,7 +19,7 @@ def _normalize_subdomain(value: str, root: str) -> str | None:
         candidate = normalize_domain(candidate)
     except ValueError:
         return None
-    if candidate != root and not candidate.endswith(f".{root}"):
+    if candidate == root or not candidate.endswith(f".{root}"):
         return None
     return candidate
 
