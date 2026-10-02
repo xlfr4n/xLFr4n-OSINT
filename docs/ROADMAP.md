@@ -47,16 +47,16 @@ Planned provider families:
   - [x] GitLab
   - [x] Gitea
 - [x] mature external username-tool adapters
-  - [ ] Maigret
-  - [ ] Sherlock
-  - [ ] SpiderFoot bridge
+  - [x] Maigret
+  - [x] Sherlock
+  - [x] SpiderFoot bridge
 - [x] exposure-source adapters
-  - [ ] LeakCheck Public
-  - [ ] HIBP Pwned Passwords
+  - [x] LeakCheck Public
+  - [x] HIBP Pwned Passwords
   - [x] optional authenticated HIBP breach metadata
 - [x] passive subdomain tool adapters
-  - [ ] Subfinder
-  - [ ] Amass
+  - [x] Subfinder
+  - [x] Amass
 - [ ] public social-source adapters
 - [x] web archives
 - [ ] public document metadata
@@ -88,6 +88,23 @@ A provider enters the project only after its source, limits, provenance and test
 - [x] scheduled scans
 - [x] CI integrations
 - [x] optional notification adapters
+
+## Phase 07 — Graphical Interface ✅
+
+- [x] Local graphical investigation console
+- [x] Reuse the native provider registry and batch engine
+- [x] Target-type selector
+- [x] Default / custom / all-source modes
+- [x] Findings and deterministic correlation view
+- [x] Local report history
+- [x] JSON export
+- [x] Provider registry view
+- [x] Password-redaction safeguards
+- [x] GUI service tests
+- [x] GUI package assets included in distributions
+- [x] CI syntax check for frontend JavaScript
+
+The GUI is deliberately a local presentation layer over the existing investigation engine rather than a second implementation.
 
 ## Project rule
 
