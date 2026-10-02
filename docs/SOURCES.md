@@ -50,3 +50,10 @@ The free public API documents anonymous access with rate limits; the provider do
 The TLS provider opens a verified TLS connection to port 443 using Python's standard `ssl.create_default_context()`.
 
 It records certificate subject/issuer, SANs, validity dates, negotiated TLS version and cipher metadata. It does not disable certificate verification.
+
+
+### HTTPS metadata
+
+The HTTP provider performs a lightweight HTTPS HEAD request and keeps only response status, final URL and selected security/transport headers.
+
+Response bodies and cookies are intentionally not retained.
