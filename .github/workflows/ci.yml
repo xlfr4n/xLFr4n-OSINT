@@ -30,3 +30,46 @@ jobs:
 
       - name: Validate GUI JavaScript
         run: node --check src/xlfr4n_osint/web/app.js
+
+      - name: GUI service smoke test
+        run: |
+          python -m xlfr4n_osint gui --no-browser --port 8877 > /tmp/xlfr4n-osint-gui.log 2>&1 &
+          GUI_PID=$!
+          trap 'kill $GUI_PID 2>/dev/null || true' EXIT
+          python - <<'PY'
+          import json
+          import time
+          from urllib.request import urlopen
+
+          base = "http://127.0.0.1:8877"
+          for _ in range(40):
+              try:
+                  with urlopen(base + "/api/health", timeout=1) as response:
+                      assert response.status == 200
+                      break
+              except Exception:
+                  time.sleep(0.25)
+          else:
+              raise SystemExit("GUI service did not start")
+          
+          with urlopen(base + "/", timeout=3) as response:
+              html = response.read().decode()
+          assert "xLFr4n // OSINT Console" in html
+          assert "/favicon.svg" in html
+          
+          with urlopen(base + "/favicon.svg", timeout=3) as response:
+              assert response.status == 200
+              assert response.read(64).lstrip().startswith(b"<svg")
+          
+          with urlopen(base + "/styles.css", timeout=3) as response:
+              assert response.status == 200
+              assert b"--accent:#f23a3a" in response.read()
+          
+          with urlopen(base + "/app.js", timeout=3) as response:
+              assert response.status == 200
+              assert b"runScan" in response.read()
+          
+          with urlopen(base + "/api/sources?type=username", timeout=3) as response:
+              payload = json.load(response)
+          assert any(item["name"] == "github" for item in payload["sources"])
+          PY
