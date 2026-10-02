@@ -26,7 +26,7 @@ class FakeProvider(Provider):
 
 def test_registry_builds_registered_provider() -> None:
     registry = ProviderRegistry()
-    registry.register("fake", FakeProvider)
+    registry.register("fake", FakeProvider, capabilities={"username"})
 
     providers = registry.build(["fake"])
 
