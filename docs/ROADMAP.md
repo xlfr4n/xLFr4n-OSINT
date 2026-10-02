@@ -87,7 +87,7 @@ A provider enters the project only after its source, limits, provenance and test
 - [x] batch jobs
 - [x] scheduled scans
 - [x] CI integrations
-- [ ] optional notification adapters
+- [x] optional notification adapters
 
 ## Project rule
 
