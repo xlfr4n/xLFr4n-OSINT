@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 
+from xlfr4n_osint.correlation import CorrelationEngine
+
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
@@ -133,7 +135,9 @@ def _print_report(
     subject: str,
 ) -> None:
     if as_json:
-        print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        payload = report.to_dict()
+        payload["correlation"] = CorrelationEngine().build(report).to_dict()
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
         return
 
     print(f"⚡ xLFr4n // OSINT — {subject}: {report.query}")
@@ -146,6 +150,11 @@ def _print_report(
             print(f"  confidence={finding.confidence}")
     else:
         print("No public findings returned by the selected providers.")
+
+    if report.findings:
+        entities = CorrelationEngine().build(report).entities
+        print()
+        print(f"Correlated entities: {len(entities)}")
 
     if report.errors:
         print()
