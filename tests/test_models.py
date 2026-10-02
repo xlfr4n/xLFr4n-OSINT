@@ -27,4 +27,6 @@ def test_scan_report_serializes_findings() -> None:
     payload = report.to_dict()
 
     assert payload["query"] == "demo"
+    assert payload["schema_version"] == "1.1"
     assert payload["findings"][0]["source"] == "test"
+    assert "provenance" in payload["findings"][0]
