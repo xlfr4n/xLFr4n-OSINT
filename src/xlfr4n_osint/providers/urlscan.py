@@ -108,7 +108,6 @@ class URLScanProvider(DomainProvider, IPProvider, URLProvider):
             raise ValueError("IP address cannot be empty")
         return self._search(f"page.ip:{value}", target_kind="ip")
 
-
     def search_url(self, url: str) -> list[Finding]:
         clean = normalize_url(url)
         return self._search(f"page.url:{clean}", target_kind="url")
