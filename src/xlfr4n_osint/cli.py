@@ -5,6 +5,7 @@ import json
 from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
+from xlfr4n_osint.filemeta import ExifToolProvider
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.models import ScanReport
