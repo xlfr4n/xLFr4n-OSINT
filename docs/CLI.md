@@ -17,6 +17,7 @@
 | `password` | privacy-preserving password exposure check |
 | `batch <JSONL>` | bounded multi-target scans |
 | `notify <JSON>` | send report summary to optional webhook |
+| `gui` | launch the local graphical investigation console |
 | `sources` | list all registered providers and capabilities |
 
 ## Provider selection
@@ -133,3 +134,14 @@ built-in defaults
 ```
 
 > **⚡ xLFr4n · Stable inputs → Stable outputs**
+
+
+## GUI
+
+Launch the local graphical console:
+
+```bash
+xlfr4n-osint gui
+```
+
+The default bind address is `127.0.0.1:8787`. Use `--no-browser` to keep the command headless.
