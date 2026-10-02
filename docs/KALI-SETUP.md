@@ -16,6 +16,7 @@ Para automatización:
 
 ```bash
 xlfr4n-osint doctor --json
+xlfr4n-osint doctor --json --strict
 ```
 
 El diagnóstico distingue:
