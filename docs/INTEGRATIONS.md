@@ -7,6 +7,7 @@ El proyecto no necesita copiar las bases de datos ni el código de otros proyect
 | Integration | Capability | Cost / access | Default | Data boundary |
 |---|---|---|---|---|
 | LeakCheck Public | email / username / phone | public free endpoint | opt-in | exposure metadata only |
+| crt.sh | certificate hosts | public CT JSON endpoint | opt-in | normalized certificate hostnames |
 | HIBP Pwned Passwords | password | free, no API key | default | k-anonymity prevalence only |
 
 ## External local tools
@@ -17,7 +18,8 @@ El proyecto no necesita copiar las bases de datos ni el código de otros proyect
 | Sherlock | username | local CLI | opt-in | use installed upstream; do not copy its site database |
 | Subfinder | passive subdomains | local CLI | opt-in | use installed upstream; respect source restrictions |
 | Amass | passive subdomains | local CLI | opt-in | use installed upstream; review subcomponent licenses |
-| SpiderFoot | multi-source OSINT | local service/CLI | planned | bridge only; keep upstream installation independent |
+| SpiderFoot | multi-source OSINT | local service/CLI, passive use case | opt-in | bridge only; keep upstream installation independent |
+| theHarvester | multi-source domain discovery | local CLI, P0 sources | opt-in | bridge only; preserve source attribution |
 | Holehe | email/account enumeration | local CLI | planned / high-interaction | bridge only; review exact upstream terms before distribution |
 
 ## Optional authenticated connectors
