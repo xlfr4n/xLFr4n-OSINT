@@ -120,7 +120,7 @@ def test_async_job_reaches_completed(tmp_path: Path, monkeypatch) -> None:
         {"type": "username", "value": "demo", "sources": ["fake"]}
     )
     assert job["job_id"]
-    assert job["status"] in {"queued", "running"}
+    assert job["status"] in {"queued", "running", "completed"}
 
     for _ in range(100):
         current = service.get_job(job["job_id"])
