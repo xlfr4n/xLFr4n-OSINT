@@ -35,4 +35,15 @@ __all__ = [
     "SpiderFootProvider",
     "MaigretProvider",
     "SherlockProvider",
+    "CensysProvider",
+    "ShodanProvider",
+    "SecurityTrailsProvider",
+    "VirusTotalProvider",
+    "HunterProvider",
 ]
+
+from xlfr4n_osint.providers.censys import CensysProvider
+from xlfr4n_osint.providers.shodan import ShodanProvider
+from xlfr4n_osint.providers.securitytrails import SecurityTrailsProvider
+from xlfr4n_osint.providers.virustotal import VirusTotalProvider
+from xlfr4n_osint.providers.hunter import HunterProvider
