@@ -20,7 +20,7 @@ class BatchItem:
     def from_dict(cls, payload: dict[str, Any]) -> "BatchItem":
         item_type = str(payload.get("type", "")).strip().lower()
         value = str(payload.get("value", "")).strip()
-        if item_type not in {"username", "domain", "email", "phone", "password", "ip", "asn"}:
+        if item_type not in {"username", "domain", "email", "phone", "password", "ip", "asn", "url", "person"}:
             raise ValueError(f"unsupported batch item type: {item_type}")
         if not value:
             raise ValueError("batch item value cannot be empty")
@@ -66,6 +66,8 @@ def _method_for(item_type: str) -> str:
         "password": "check_password",
         "ip": "search_ip",
         "asn": "search_asn",
+        "url": "search_url",
+        "person": "search_person",
     }[item_type]
 
 
