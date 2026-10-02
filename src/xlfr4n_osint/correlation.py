@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from itertools import combinations
 from hashlib import sha256
 from typing import Any
 
@@ -154,31 +153,35 @@ class CorrelationEngine:
             if len(unique_ids) > 1:
                 duplicates[semantic_key] = unique_ids
 
-        relationships: list[Relationship] = []
-        seen_relationships: set[tuple[str, str, str]] = set()
+        relationships_by_pair: dict[tuple[str, str, str], Relationship] = {}
         for selector, entity_keys in selector_groups.items():
             unique_entities = list(dict.fromkeys(entity_keys))
             if len(unique_entities) < 2:
                 continue
-            for index, left in enumerate(unique_entities):
-                for right in unique_entities[index + 1 :]:
-                    if left == right:
-                        continue
-                    pair = tuple(sorted((left, right)))
-                    marker = (pair[0], pair[1], "exact-shared-selector")
-                    if marker in seen_relationships:
-                        continue
-                    seen_relationships.add(marker)
-                    relationships.append(
-                        Relationship(
-                            left_entity=pair[0],
-                            right_entity=pair[1],
-                            relation="exact-shared-public-selector",
-                            evidence=[
-                                f"selector:{selector}",
-                            ],
-                        )
+
+            # Represent a shared-selector group as a deterministic spanning star
+            # instead of a quadratic clique. The full selector remains in the
+            # evidence so consumers can reconstruct the exact correlation group.
+            anchor = unique_entities[0]
+            evidence = f"selector:{selector}"
+            for right in unique_entities[1:]:
+                if anchor == right:
+                    continue
+                pair = tuple(sorted((anchor, right)))
+                marker = (pair[0], pair[1], "exact-shared-selector")
+                relationship = relationships_by_pair.get(marker)
+                if relationship is None:
+                    relationship = Relationship(
+                        left_entity=pair[0],
+                        right_entity=pair[1],
+                        relation="exact-shared-public-selector",
+                        evidence=[evidence],
                     )
+                    relationships_by_pair[marker] = relationship
+                elif evidence not in relationship.evidence:
+                    relationship.evidence.append(evidence)
+
+        relationships = list(relationships_by_pair.values())
 
         return CorrelationReport(
             entities=list(groups.values()),
