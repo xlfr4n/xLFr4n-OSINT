@@ -20,6 +20,7 @@ from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
 from xlfr4n_osint.providers.external_username import MaigretProvider, SherlockProvider
+from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
 from xlfr4n_osint.providers.tls import TLSProvider
@@ -41,6 +42,8 @@ def build_registry() -> ProviderRegistry:
     registry.register("leakcheck", LeakCheckProvider, capabilities={"username", "email", "phone"}, default_enabled=False)
     registry.register("maigret", MaigretProvider, capabilities={"username"}, default_enabled=False)
     registry.register("sherlock", SherlockProvider, capabilities={"username"}, default_enabled=False)
+    registry.register("subfinder", SubfinderProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("amass", AmassProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     return registry
 
@@ -530,11 +533,22 @@ def main() -> int:
 
     if args.command == "sources":
         if args.json:
-            print(json.dumps({"sources": list(registry.names())}, indent=2))
+            print(json.dumps({
+                "sources": [
+                    {
+                        "name": name,
+                        "capabilities": list(registry.capabilities(name)),
+                        "default_enabled": registry.is_default_enabled(name),
+                    }
+                    for name in registry.names()
+                ]
+            }, indent=2))
         else:
-            print("⚡ xLFr4n // OSINT — enabled sources")
+            print("⚡ xLFr4n // OSINT — registered sources")
             for name in registry.names():
-                print(f"  - {name}")
+                status = "default" if registry.is_default_enabled(name) else "opt-in"
+                capabilities = ", ".join(registry.capabilities(name))
+                print(f"  - {name} [{status}] — {capabilities}")
         return 0
 
     parser.error("unknown command")
