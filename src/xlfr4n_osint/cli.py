@@ -93,7 +93,7 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             capability="domain",
             timeout=args.timeout,
         )
-    except (ValueError, TypeError, ValueError) as exc:
+    except (ValueError, TypeError) as exc:
         report = ScanReport(query=args.value.strip())
         report.errors.append({
             "source": "registry",
