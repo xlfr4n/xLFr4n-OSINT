@@ -42,6 +42,22 @@ def _parse_sherlock_csv(path: Path) -> list[dict[str, str]]:
 
 
 
+def _parse_holehe_csv(path: Path) -> list[dict[str, str]]:
+    """Parse legacy Holehe CSV exports for backward compatibility."""
+    with path.open(
+        "r",
+        newline="",
+        encoding="utf-8",
+        errors="replace",
+    ) as handle:
+        rows: list[dict[str, str]] = []
+        for row in csv.DictReader(handle):
+            if str(row.get("exists", "")).casefold() in {"true", "yes", "claimed"}:
+                rows.append({key: str(value) for key, value in row.items()})
+        return rows
+
+
+
 def _parse_holehe_output(content: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for line in content.splitlines():
