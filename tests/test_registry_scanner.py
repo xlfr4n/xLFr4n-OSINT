@@ -99,4 +99,4 @@ def test_registry_can_build_all_registered_providers() -> None:
 
     providers = registry.build(capability="username", all_sources=True)
 
-    assert [provider.name for provider in providers] == ["default", "optional"]
+    assert [provider.name for provider in providers] == ["fake", "optional"]
