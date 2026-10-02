@@ -5,6 +5,7 @@ import json
 from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
+from xlfr4n_osint.execution import execute_providers
 from xlfr4n_osint.filemeta import ExifToolProvider
 from xlfr4n_osint.gui import run_gui
 from xlfr4n_osint.logging_utils import configure_logging
@@ -379,7 +380,7 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
         return 2
 
-    report = UsernameScanner(providers).run(args.value)
+    report = UsernameScanner(providers, max_workers=config.provider_workers).run(args.value)
     _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
 
@@ -421,17 +422,16 @@ def _run_number(
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name=method_name,
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value.strip())
-    for provider in providers:
-        try:
-            method = getattr(provider, method_name)
-            report.findings.extend(method(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(
         report,
@@ -554,16 +554,16 @@ def _run_file(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="inspect_file",
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value)
-    for provider in providers:
-        try:
-            report.findings.extend(provider.inspect_file(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
@@ -663,16 +663,16 @@ def _run_password(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="check_password",
+        value=secret,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query="<redacted-password>")
-    for provider in providers:
-        try:
-            report.findings.extend(provider.check_password(secret))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     del secret
     _print_report(
@@ -737,6 +737,7 @@ def _run_batch(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             user_agent=user_agent,
             max_workers=args.workers,
             all_sources=args.all_sources,
+            provider_workers=config.provider_workers,
         )
     except (OSError, ValueError, TypeError) as exc:
         print(f"Batch error: {exc}")
