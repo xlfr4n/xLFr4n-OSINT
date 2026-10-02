@@ -21,6 +21,55 @@ def test_parser_exposes_report_output_options() -> None:
     assert args.format == "markdown"
 
 
+def test_parser_exposes_all_identifier_commands() -> None:
+    parser = build_parser(build_registry())
+
+    username = parser.parse_args(["username", "xLFr4n"])
+    email = parser.parse_args(["email", "user@example.com"])
+    phone = parser.parse_args(["phone", "+34123456789"])
+    password = parser.parse_args(["password"])
+    ip = parser.parse_args(["ip", "192.0.2.10"])
+    asn = parser.parse_args(["asn", "AS64500"])
+
+    assert username.command == "username"
+    assert email.command == "email"
+    assert phone.command == "phone"
+    assert password.command == "password"
+    assert ip.command == "ip"
+    assert asn.command == "asn"
+
+
+def test_parser_exposes_opt_in_external_providers() -> None:
+    parser = build_parser(build_registry())
+
+    args = parser.parse_args([
+        "username",
+        "xLFr4n",
+        "--source",
+        "maigret",
+        "--source",
+        "sherlock",
+    ])
+    domain = parser.parse_args([
+        "domain",
+        "example.com",
+        "--source",
+        "subfinder",
+        "--source",
+        "amass",
+    ])
+    email = parser.parse_args([
+        "email",
+        "user@example.com",
+        "--source",
+        "leakcheck",
+    ])
+
+    assert args.source == ["maigret", "sherlock"]
+    assert domain.source == ["subfinder", "amass"]
+    assert email.source == ["leakcheck"]
+
+
 def test_print_report_writes_requested_markdown(
     tmp_path: Path,
     capsys,
