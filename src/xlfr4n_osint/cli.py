@@ -38,6 +38,7 @@ from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
 from xlfr4n_osint.providers.hibp_exposure import HIBPPastesProvider, HIBPStealerLogsProvider
+from xlfr4n_osint.providers.hibp_domain import HIBPDomainBreachesProvider, HIBPStealerLogDomainProvider
 from xlfr4n_osint.providers.intelligence_x import IntelligenceXProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.hudsonrock import HudsonRockProvider
@@ -89,6 +90,8 @@ def build_registry() -> ProviderRegistry:
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
     registry.register("hibp-pastes", HIBPPastesProvider, capabilities={"email"}, default_enabled=False)
     registry.register("hibp-stealerlogs", HIBPStealerLogsProvider, capabilities={"email"}, default_enabled=False)
+    registry.register("hibp-domain-breaches", HIBPDomainBreachesProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("hibp-stealerlogs-domain", HIBPStealerLogDomainProvider, capabilities={"domain"}, default_enabled=False)
     return registry
 
 
