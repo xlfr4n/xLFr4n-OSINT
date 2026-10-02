@@ -69,11 +69,12 @@ def build_registry() -> ProviderRegistry:
     registry.register("censys", CensysProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("shodan", ShodanProvider, capabilities={"ip"}, default_enabled=False)
     registry.register("securitytrails", SecurityTrailsProvider, capabilities={"domain"}, default_enabled=False)
-    registry.register("virustotal", VirusTotalProvider, capabilities={"domain", "ip"}, default_enabled=False)
+    registry.register("virustotal", VirusTotalProvider, capabilities={"domain", "ip", "hash"}, default_enabled=False)
     registry.register("hunter", HunterProvider, capabilities={"domain", "email"}, default_enabled=False)
     registry.register("hudsonrock", HudsonRockProvider, capabilities={"domain"}, default_enabled=False)
     registry.register("intelligence-x", IntelligenceXProvider, capabilities={"domain", "email", "phone", "ip", "url"}, default_enabled=False)
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
+    registry.register("exiftool", ExifToolProvider, capabilities={"file"}, default_enabled=False)
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
     return registry
 
@@ -219,6 +220,33 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     password.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
     password.add_argument("--output", help="Write a report file.")
     password.add_argument("--format", choices=["json", "markdown"], default="json")
+
+    hash_cmd = subparsers.add_parser(
+        "hash",
+        help="Research a file hash using enabled hash providers.",
+    )
+    hash_cmd.add_argument("value", help="MD5, SHA-1 or SHA-256 hash.")
+    hash_cmd.add_argument("--all-sources", action="store_true", help="Run every registered provider for this capability.")
+    hash_cmd.add_argument("--source", action="append", choices=registry.names("hash"))
+    hash_cmd.add_argument("--timeout", type=float, default=None)
+    hash_cmd.add_argument("--user-agent", default=None)
+    hash_cmd.add_argument("--config")
+    hash_cmd.add_argument("--json", action="store_true")
+    hash_cmd.add_argument("--output")
+    hash_cmd.add_argument("--format", choices=["json", "markdown"], default="json")
+
+    file_cmd = subparsers.add_parser(
+        "file",
+        help="Inspect a local file with enabled metadata providers.",
+    )
+    file_cmd.add_argument("value", help="Local file path.")
+    file_cmd.add_argument("--source", action="append", choices=registry.names("file"))
+    file_cmd.add_argument("--timeout", type=float, default=None)
+    file_cmd.add_argument("--user-agent", default=None)
+    file_cmd.add_argument("--config")
+    file_cmd.add_argument("--json", action="store_true")
+    file_cmd.add_argument("--output")
+    file_cmd.add_argument("--format", choices=["json", "markdown"], default="json")
 
     batch = subparsers.add_parser(
         "batch",
@@ -444,6 +472,52 @@ def _run_identifier(
         output=args.output,
         output_format=args.format,
     )
+    return 0 if not report.errors else 2
+
+
+def _run_hash(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    return _run_identifier(
+        args,
+        registry,
+        capability="hash",
+        subject="hash",
+        method_name="search_hash",
+    )
+
+
+def _run_file(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    try:
+        config = ScanConfig.from_file(args.config)
+        timeout = args.timeout if args.timeout is not None else config.timeout
+        user_agent = args.user_agent or config.user_agent
+        providers = registry.build(
+            args.source,
+            capability="file",
+            timeout=timeout,
+            user_agent=user_agent,
+        )
+    except (ValueError, TypeError) as exc:
+        report = ScanReport(query=args.value)
+        report.errors.append({
+            "source": "registry",
+            "error": str(exc),
+            "type": type(exc).__name__,
+        })
+        _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
+        return 2
+
+    report = ScanReport(query=args.value)
+    for provider in providers:
+        try:
+            report.findings.extend(provider.inspect_file(args.value))
+        except Exception as exc:
+            report.errors.append({
+                "source": provider.name,
+                "error": str(exc),
+                "type": type(exc).__name__,
+            })
+
+    _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
 
 
@@ -678,6 +752,12 @@ def main() -> int:
 
     if args.command == "url":
         return _run_url(args, registry)
+
+    if args.command == "hash":
+        return _run_hash(args, registry)
+
+    if args.command == "file":
+        return _run_file(args, registry)
 
     if args.command == "person":
         return _run_person(args, registry)
