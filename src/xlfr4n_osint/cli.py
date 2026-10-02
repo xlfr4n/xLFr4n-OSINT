@@ -7,6 +7,7 @@ from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.evidence import EvidenceBundle
 
 from xlfr4n_osint.models import ScanReport
+from xlfr4n_osint.reporting import build_json_report, write_json, write_markdown
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.gitea import GiteaProvider
@@ -54,6 +55,8 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     )
     username.add_argument("--timeout", type=float, default=10.0)
     username.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    username.add_argument("--output", help="Write a report file.")
+    username.add_argument("--format", choices=["json", "markdown"], default="json")
 
     domain = subparsers.add_parser(
         "domain",
@@ -68,6 +71,8 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     )
     domain.add_argument("--timeout", type=float, default=10.0)
     domain.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+    domain.add_argument("--output", help="Write a report file.")
+    domain.add_argument("--format", choices=["json", "markdown"], default="json")
 
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -89,7 +94,7 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             "error": str(exc),
             "type": type(exc).__name__,
         })
-        _print_report(report, args.json, subject="username")
+        _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
         return 2
 
     report = UsernameScanner(providers).run(args.value)
@@ -111,7 +116,7 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             "error": str(exc),
             "type": type(exc).__name__,
         })
-        _print_report(report, args.json, subject="domain")
+        _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
         return 2
 
     report = ScanReport(query=args.value.strip())
@@ -134,12 +139,17 @@ def _print_report(
     as_json: bool,
     *,
     subject: str,
+    output: str | None = None,
+    output_format: str = "json",
 ) -> None:
+    if output:
+        if output_format == "markdown":
+            write_markdown(report, output)
+        else:
+            write_json(report, output)
+
     if as_json:
-        payload = report.to_dict()
-        payload["correlation"] = CorrelationEngine().build(report).to_dict()
-        payload["evidence"] = EvidenceBundle.from_report(report).to_dict()
-        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        print(json.dumps(build_json_report(report), ensure_ascii=False, indent=2))
         return
 
     print(f"⚡ xLFr4n // OSINT — {subject}: {report.query}")
