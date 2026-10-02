@@ -14,6 +14,7 @@ from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.http import HTTPProvider
 from xlfr4n_osint.providers.rdap import RDAPProvider
+from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.dns import DNSProvider
 from xlfr4n_osint.providers.ctlogs import CTLogsProvider
 from xlfr4n_osint.providers.tls import TLSProvider
@@ -31,6 +32,7 @@ def build_registry() -> ProviderRegistry:
     registry.register("dns", DNSProvider, capabilities={"domain"})
     registry.register("ctlogs", CTLogsProvider, capabilities={"domain"})
     registry.register("tls", TLSProvider, capabilities={"domain"})
+    registry.register("rdap-number", RDAPNumberProvider, capabilities={"ip", "asn"})
     return registry
 
 
