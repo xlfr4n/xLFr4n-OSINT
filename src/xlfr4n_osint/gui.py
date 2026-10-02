@@ -153,6 +153,7 @@ class InvestigationService:
                 raise FileNotFoundError(job_id)
             result = dict(job)
         if result["status"] == "completed" and result.get("report"):
+            result["scan_id"] = result["report"].get("scan_id")
             result["summary"] = result["report"].get("summary", {})
         result["elapsed_seconds"] = (
             (result["finished_at"] or time.time()) - result["created_at"]
