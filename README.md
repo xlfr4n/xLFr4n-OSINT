@@ -152,6 +152,17 @@ python -m xlfr4n_osint domain example.com --output reports/example.json --format
 python -m xlfr4n_osint domain example.com --output reports/example.md --format markdown
 ```
 
+
+### Batch
+
+Create a JSONL input from the safe example at `examples/batch.jsonl`.
+
+```bash
+python -m xlfr4n_osint batch examples/batch.jsonl --output reports/batch.jsonl --format jsonl
+python -m xlfr4n_osint batch examples/batch.jsonl --all-sources --json
+```
+
+`--all-sources` is explicit and may execute opt-in external tools. Use it only when that broader source set is intended.
 ### Configuration
 
 The CLI can load an optional TOML file from:
