@@ -256,6 +256,7 @@ See [`SECURITY.md`](./SECURITY.md) for reporting guidance and data boundaries.
 - [`CHANGELOG.md`](./CHANGELOG.md) — documented project evolution.
 - [`docs/SOURCES.md`](./docs/SOURCES.md) — public source inventory and data boundaries.
 - [`docs/PROVENANCE.md`](./docs/PROVENANCE.md) — provenance contract for findings.
+- [`docs/CLI.md`](./docs/CLI.md) — command, output and exit-code contract.
 
 ---
 
