@@ -78,7 +78,10 @@
       { "Content-Type": "application/json" },
       request.headers || {}
     );
-    const response = await fetch(path, Object.assign({}, request, {\n      headers: headers,\n      cache: request.cache || "no-store"\n    }));
+    const response = await fetch(path, Object.assign({}, request, {
+      headers: headers,
+      cache: request.cache || "no-store"
+    }));
     const body = await response.json().catch(function() { return {}; });
     if (!response.ok) {
       throw new Error(body.error || ("HTTP " + response.status));
