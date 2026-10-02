@@ -16,6 +16,7 @@ from xlfr4n_osint.batch import BatchItem, run_item
 from xlfr4n_osint.logging_utils import get_logger
 from xlfr4n_osint.reporting import build_json_report
 from xlfr4n_osint.registry import ProviderRegistry
+from xlfr4n_osint.source_status import inspect_registry
 
 logger = get_logger(__name__)
 
@@ -78,11 +79,14 @@ class InvestigationService:
     def source_snapshot(self, capability: str | None = None) -> list[dict[str, Any]]:
         if capability:
             capability = capability.strip().lower()
+        providers = {
+            item["name"]: item
+            for item in inspect_registry(self.registry)
+        }
         return [
             {
-                "name": name,
+                **providers[name],
                 "capabilities": list(self.registry.capabilities(name)),
-                "default_enabled": self.registry.is_default_enabled(name),
             }
             for name in self.registry.names(capability)
         ]
