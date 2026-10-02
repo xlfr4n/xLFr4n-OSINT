@@ -370,7 +370,8 @@
       findings: "findings",
       "no-findings": "no findings",
       error: "error",
-      timeout: "timeout"
+      timeout: "timeout",
+      skipped: "skipped"
     };
 
     return runs.map(function(run) {
@@ -387,6 +388,7 @@
         "<div class=\"history-muted\">" + escapeHtml(detail) + "</div></div>" +
         "<div class=\"provider-run-meta\"><span class=\"badge " + statusClass + "\">" +
         escapeHtml(label) + "</span><span>" + Number(run.duration_seconds || 0).toFixed(2) + "s</span></div>" +
+        (run.skip_reason ? "<div class=\"provider-run-error\">" + escapeHtml(run.skip_reason) + "</div>" : "") +
         (run.error ? "<div class=\"provider-run-error\">" + escapeHtml(run.error) + "</div>" : "") +
         "</div>";
     }).join("");
