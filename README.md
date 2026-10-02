@@ -100,7 +100,7 @@ NEXT
 
 ### 🚧 Estado actual
 
-🟢 **Core + public-source infrastructure / Núcleo + infraestructura de fuentes**
+🟢 **Active toolkit + local investigation console / Toolkit activo + consola local**
 
 La base funcional actual incluye:
 
@@ -235,21 +235,24 @@ Evidence, provenance, public sources, reproducibility, rate-limit awareness, dat
 
 ### 🚧 Current status
 
-🟢 **Core v0.1**
+🟢 **Functional toolkit + local GUI**
 
-The first functional foundation is now available:
+The current release line includes:
 
-- 🐍 dependency-free Python package;
-- 🧩 interchangeable provider architecture;
-- 👤 public GitHub, GitLab and Gitea username lookup;
-- 🌐 RDAP, DNS, Certificate Transparency, TLS and HTTPS metadata;
-- 🌍 RDAP IP and ASN registration data;
-- 📜 LeakCheck public exposure metadata;
-- 🔐 HIBP Pwned Passwords k-anonymity check;
-- 🧾 normalized findings with timestamps and provenance;
-- 📦 JSON output for automation;
-- 🧪 initial tests;
-- ⚙️ reproducible CLI.
+- 🐍 Python package and reproducible CLI;
+- 🧩 capability-based provider registry;
+- 👤 username research across GitHub, GitLab, Gitea and opt-in external tools;
+- 🌐 domain/DNS/CT/TLS/HTTPS/RDAP infrastructure research;
+- 📜 public exposure metadata and privacy-preserving password checks;
+- 🌍 IP / ASN research;
+- 🗂️ URL, archive, hash and local-file intelligence;
+- 🔐 opt-in authenticated providers;
+- 🧠 deterministic correlation and duplicate handling;
+- 🧾 evidence ledger and provenance;
+- 📊 JSON + Markdown reporting;
+- 📦 bounded batch execution and scheduled automation;
+- 🖥️ local graphical investigation console;
+- 🧪 deterministic test suite plus frontend syntax validation.
 
 Example:
 
@@ -258,7 +261,7 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-The direct provider layer now covers **GitHub, GitLab, Gitea, RDAP, DNS, Certificate Transparency, TLS, HTTPS, IP and ASN registration**, with external-tool and exposure integrations layered on top.
+The direct and adapter layers now cover **GitHub, GitLab, Gitea, RDAP, DNS, Certificate Transparency, TLS, HTTPS, IP/ASN registration, archives, exposure metadata, hashes, local files, external tools and opt-in authenticated providers**. The local GUI is a presentation layer over this same engine.
 
 ---
 
