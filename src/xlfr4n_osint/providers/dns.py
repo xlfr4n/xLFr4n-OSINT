@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from xlfr4n_osint.config import ScanConfig
 from xlfr4n_osint.domain import normalize_domain
@@ -60,8 +61,24 @@ class DNSProvider(DomainProvider):
         records: dict[str, list[dict[str, str | int]]] = {}
         statuses: dict[str, int] = {}
 
+        # Each record type is independent. Query them in parallel so a domain
+        # scan is bounded by the slowest request/retry budget rather than the
+        # sum of seven sequential DNS request budgets.
+        with ThreadPoolExecutor(
+            max_workers=len(self.record_types),
+            thread_name_prefix="xlfr4n-dns",
+        ) as executor:
+            futures = {
+                executor.submit(self._query, clean, record_type): record_type
+                for record_type in self.record_types
+            }
+            ordered_payloads: dict[str, dict] = {}
+            for future in as_completed(futures):
+                record_type = futures[future]
+                ordered_payloads[record_type] = future.result()
+
         for record_type in self.record_types:
-            payload = self._query(clean, record_type)
+            payload = ordered_payloads[record_type]
             statuses[record_type] = int(payload.get("Status", -1))
             records[record_type] = self._answers(payload)
 
@@ -92,6 +109,8 @@ class DNSProvider(DomainProvider):
                     "status_codes": statuses,
                     "record_count": sum(len(values) for values in records.values()),
                     "nameservers": nameserver_data,
+                    "record_types_queried": list(self.record_types),
+                    "parallel": True,
                 },
             )
         ]
