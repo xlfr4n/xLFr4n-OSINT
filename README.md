@@ -268,6 +268,7 @@ See [`SECURITY.md`](./SECURITY.md) for reporting guidance and data boundaries.
 - [`docs/PROVENANCE.md`](./docs/PROVENANCE.md) — provenance contract for findings.
 - [`docs/CLI.md`](./docs/CLI.md) — command, output and exit-code contract.
 - [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md) — upstream tools, APIs and distribution boundaries.
+- [`docs/TOOLS_CATALOG.md`](./docs/TOOLS_CATALOG.md) — master catalog of existing OSINT tools and coverage.
 
 ---
 
