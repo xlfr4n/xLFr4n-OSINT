@@ -7,15 +7,17 @@ from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.gitea import GiteaProvider
+from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.scanner import UsernameScanner
 
 
 def build_registry() -> ProviderRegistry:
     registry = ProviderRegistry()
-    registry.register("github", GitHubProvider)
-    registry.register("gitlab", GitLabProvider)
-    registry.register("gitea", GiteaProvider)
+    registry.register("github", GitHubProvider, capabilities={"username"})
+    registry.register("gitlab", GitLabProvider, capabilities={"username"})
+    registry.register("gitea", GiteaProvider, capabilities={"username"})
+    registry.register("rdap", RDAPProvider, capabilities={"domain"})
     return registry
 
 
@@ -36,11 +38,25 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     username.add_argument(
         "--source",
         action="append",
-        choices=registry.names(),
-        help="Limit the scan to one or more enabled providers.",
+        choices=registry.names("username"),
+        help="Limit the scan to one or more enabled username providers.",
     )
     username.add_argument("--timeout", type=float, default=10.0)
     username.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
+
+    domain = subparsers.add_parser(
+        "domain",
+        help="Research public registration data for a domain.",
+    )
+    domain.add_argument("value", help="Domain name to research.")
+    domain.add_argument(
+        "--source",
+        action="append",
+        choices=registry.names("domain"),
+        help="Limit the scan to one or more enabled domain providers.",
+    )
+    domain.add_argument("--timeout", type=float, default=10.0)
+    domain.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
@@ -50,7 +66,11 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
 
 def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
     try:
-        providers = registry.build(args.source, timeout=args.timeout)
+        providers = registry.build(
+            args.source,
+            capability="username",
+            timeout=args.timeout,
+        )
     except (ValueError, TypeError) as exc:
         report = ScanReport(query=args.value.strip())
         report.errors.append({
@@ -58,21 +78,57 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             "error": str(exc),
             "type": type(exc).__name__,
         })
-        _print_report(report, args.json)
+        _print_report(report, args.json, subject="username")
         return 2
 
     report = UsernameScanner(providers).run(args.value)
-
-    _print_report(report, args.json)
+    _print_report(report, args.json, subject="username")
     return 0 if not report.errors else 2
 
 
-def _print_report(report: ScanReport, as_json: bool) -> None:
+def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
+    try:
+        providers = registry.build(
+            args.source,
+            capability="domain",
+            timeout=args.timeout,
+        )
+    except (ValueError, TypeError, ValueError) as exc:
+        report = ScanReport(query=args.value.strip())
+        report.errors.append({
+            "source": "registry",
+            "error": str(exc),
+            "type": type(exc).__name__,
+        })
+        _print_report(report, args.json, subject="domain")
+        return 2
+
+    report = ScanReport(query=args.value.strip())
+    for provider in providers:
+        try:
+            report.findings.extend(provider.search_domain(args.value))
+        except Exception as exc:
+            report.errors.append({
+                "source": provider.name,
+                "error": str(exc),
+                "type": type(exc).__name__,
+            })
+
+    _print_report(report, args.json, subject="domain")
+    return 0 if not report.errors else 2
+
+
+def _print_report(
+    report: ScanReport,
+    as_json: bool,
+    *,
+    subject: str,
+) -> None:
     if as_json:
         print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
         return
 
-    print(f"⚡ xLFr4n // OSINT — username: {report.query}")
+    print(f"⚡ xLFr4n // OSINT — {subject}: {report.query}")
     print()
 
     if report.findings:
@@ -97,6 +153,9 @@ def main() -> int:
 
     if args.command == "username":
         return _run_username(args, registry)
+
+    if args.command == "domain":
+        return _run_domain(args, registry)
 
     if args.command == "sources":
         if args.json:
