@@ -46,16 +46,8 @@ SpiderFoot provides a separate broad module ecosystem and correlation layer. xLF
 
 | Tool / service | Role | xLFr4n position |
 |---|---|---|
-| Intelligence X | indexed exposure / document intelligence | optional authenticated connector |
-| Hudson Rock | infostealer intelligence | optional authenticated connector |
-| Snusbase | breach / combolist intelligence | optional authenticated connector; metadata boundary |
-| DeHashed | breach search | optional authenticated connector; metadata boundary |
-| urlscan.io | historical web scans / URLs / hosts | optional authenticated connector |
-| VirusTotal | threat / domain / IP intelligence | optional authenticated connector |
-| Censys | internet-facing infrastructure intelligence | optional authenticated connector |
-| SecurityTrails | DNS / infrastructure history | optional authenticated connector |
-| Shodan | host/service intelligence | optional authenticated connector |
-| Hunter | email discovery | optional authenticated connector |
+| Snusbase | breach / combolist intelligence | not bridged; authenticated service with a separate data-access boundary |
+| DeHashed | breach search | not bridged; authenticated service with a separate data-access boundary |
 
 ## Other established open-source families to evaluate
 
