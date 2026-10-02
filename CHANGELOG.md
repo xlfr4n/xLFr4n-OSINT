@@ -43,3 +43,17 @@ All notable changes to **xLFr4n-OSINT** are documented here.
 - ⚡ xLFr4n repository standards.
 
 > The project intentionally exposes only capabilities backed by implementation and tests.
+
+
+## 2026-10-02 — Local GUI
+
+### Added — Local GUI
+
+- 🖥️ Local graphical investigation console backed by the existing Python engine.
+- 🎛️ Target-type, provider-mode and timeout controls.
+- 📊 Dashboard, findings, metrics and deterministic correlation graph.
+- 🧾 Local report history and JSON export.
+- ◈ Live provider registry and capability view.
+- 🔐 Password redaction preserved through GUI scans and saved reports.
+- 🧪 Dedicated GUI service tests.
+- 📦 GUI static assets packaged with the Python distribution.
