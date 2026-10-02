@@ -136,6 +136,10 @@ Los providers públicos forman el núcleo; encima ya existen adapters de exposic
 python -m xlfr4n_osint username xLFr4n
 python -m xlfr4n_osint username xLFr4n --source github --source gitlab --source gitea
 python -m xlfr4n_osint username xLFr4n --json
+python -m xlfr4n_osint email user@example.com --all-sources
+python -m xlfr4n_osint url https://example.com/ --source urlscan
+python -m xlfr4n_osint domain example.com --source wayback --source commoncrawl
+python -m xlfr4n_osint ip 192.0.2.10 --source rdap-number --source shodan --source censys
 ```
 
 ### Domain research
