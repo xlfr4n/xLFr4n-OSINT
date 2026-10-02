@@ -28,9 +28,10 @@
 ```bash
 xlfr4n-osint doctor
 xlfr4n-osint doctor --json
+xlfr4n-osint doctor --json --strict
 ```
 
-`ready` means the provider can be constructed with the current environment. `missing-dependency` means its external executable is not installed. `missing-credentials` means an authenticated provider has no configured credential.
+`ready` means the provider can be constructed with the current environment. `missing-dependency` means its external executable is not installed. `missing-credentials` means an authenticated provider has no configured credential. The command is informational by default; `--strict` returns exit code 1 when any registered provider is not ready.
 
 On Kali, optional external tools can be provisioned with:
 
