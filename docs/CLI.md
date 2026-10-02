@@ -105,7 +105,7 @@ file
 password
 ```
 
-Batch execution is sequential by default (`--workers 1`). Higher worker counts are bounded by `--workers` and preserve input order in the resulting reports.
+Batch execution is sequential by default (`--workers 1`). Higher worker counts are bounded by `--workers` and preserve input order. Within each investigation, providers also run concurrently up to `scan.provider_workers` (default 6). Set `XLFR4N_OSINT_PROVIDER_WORKERS` or `[scan].provider_workers` to tune the bound.
 
 Password values are never used as report query identifiers; reports store `<redacted-password>`.
 
