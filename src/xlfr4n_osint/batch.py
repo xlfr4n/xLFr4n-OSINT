@@ -75,6 +75,7 @@ def run_item(
     *,
     timeout: float,
     user_agent: str,
+    all_sources: bool = False,
 ) -> ScanReport:
     report = ScanReport(
         query="<redacted-password>" if item.type == "password" else item.value
@@ -85,6 +86,7 @@ def run_item(
         providers = registry.build(
             list(item.sources) if item.sources else None,
             capability=capability,
+            all_sources=all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
@@ -120,13 +122,20 @@ def run_batch(
     timeout: float,
     user_agent: str,
     max_workers: int = 1,
+    all_sources: bool = False,
 ) -> list[ScanReport]:
     if max_workers < 1:
         raise ValueError("max_workers must be at least 1")
 
     if max_workers == 1:
         return [
-            run_item(item, registry, timeout=timeout, user_agent=user_agent)
+            run_item(
+                item,
+                registry,
+                timeout=timeout,
+                user_agent=user_agent,
+                all_sources=all_sources,
+            )
             for item in items
         ]
 
@@ -139,6 +148,7 @@ def run_batch(
                 registry,
                 timeout=timeout,
                 user_agent=user_agent,
+                all_sources=all_sources,
             ): index
             for index, item in enumerate(items)
         }
