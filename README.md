@@ -123,6 +123,36 @@ La búsqueda de GitHub es solo el **primer provider**. Las siguientes fases ampl
 
 ---
 
+
+## 🧪 Usage
+
+### Username research
+
+```bash
+python -m xlfr4n_osint username xLFr4n
+python -m xlfr4n_osint username xLFr4n --source github --source gitlab --source gitea
+python -m xlfr4n_osint username xLFr4n --json
+```
+
+### Domain research
+
+```bash
+python -m xlfr4n_osint domain example.com
+python -m xlfr4n_osint domain example.com --source rdap --source dns --source ctlogs --source tls
+python -m xlfr4n_osint domain example.com --json
+```
+
+### Enabled sources
+
+```bash
+python -m xlfr4n_osint sources
+python -m xlfr4n_osint sources --json
+```
+
+Provider failures are kept inside the report rather than silently discarded.
+
+---
+
 ## 🇬🇧 English
 
 ### 🎯 What it is
