@@ -195,6 +195,24 @@ export XLFR4N_OSINT_USER_AGENT="xLFr4n-Lab/1.0"
 ```
 
 Explicit CLI values take precedence over file and environment configuration.
+### Provider readiness / Kali
+
+Inspect the real availability of every registered provider:
+
+```bash
+xlfr4n-osint doctor
+xlfr4n-osint doctor --json
+```
+
+On Kali, provision the optional external tools through the repository helper:
+
+```bash
+bash scripts/install-kali-tools.sh
+xlfr4n-osint doctor
+```
+
+The doctor is informational by default. Use `--strict` when a fully ready provider set is required by automation.
+
 ### Enabled sources
 
 ```bash
