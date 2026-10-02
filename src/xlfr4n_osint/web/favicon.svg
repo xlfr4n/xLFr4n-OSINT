@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>xLFr4n OSINT</title>
+  <rect width="128" height="128" rx="28" fill="#07080c"/>
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#f23a3a" stroke-width="4" opacity=".45"/>
+  <path d="M69 18 38 67h25l-7 43 34-55H65z" fill="#fff"/>
+  <path d="M69 18 38 67h25l-7 43 34-55H65z" fill="none" stroke="#ff5e5e" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="52" fill="none" stroke="#fff" stroke-opacity=".06"/>
+</svg>
