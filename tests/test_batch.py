@@ -62,3 +62,17 @@ def test_batch_redacts_password_report_query() -> None:
 
     assert reports[0].query == "<redacted-password>"
     assert reports[0].errors
+
+
+def test_batch_accepts_hash_and_file_target_types() -> None:
+    hash_item = BatchItem.from_dict({
+        "type": "hash",
+        "value": "a" * 64,
+    })
+    file_item = BatchItem.from_dict({
+        "type": "file",
+        "value": "examples/batch.jsonl",
+    })
+
+    assert hash_item.type == "hash"
+    assert file_item.type == "file"
