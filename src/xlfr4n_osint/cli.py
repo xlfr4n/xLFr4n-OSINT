@@ -2,14 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
 from xlfr4n_osint.config import ScanConfig
-
 from xlfr4n_osint.correlation import CorrelationEngine
-
-from getpass import getpass
-
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.reporting import (
     build_batch_json,
@@ -19,24 +16,24 @@ from xlfr4n_osint.reporting import (
     write_json,
     write_markdown,
 )
+from xlfr4n_osint.providers.crtsh import CRTShProvider
+from xlfr4n_osint.providers.ctlogs import CTLogsProvider
+from xlfr4n_osint.providers.dns import DNSProvider
+from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
+from xlfr4n_osint.providers.external_username import HoleheProvider, MaigretProvider, SherlockProvider
+from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
-from xlfr4n_osint.providers.gitea import GiteaProvider
+from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
+from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.http import HTTPProvider
+from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
 from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
-from xlfr4n_osint.providers.dns import DNSProvider
-from xlfr4n_osint.providers.ctlogs import CTLogsProvider
-from xlfr4n_osint.providers.crtsh import CRTShProvider
-from xlfr4n_osint.providers.external_username import HoleheProvider, MaigretProvider, SherlockProvider
-from xlfr4n_osint.providers.external_domain import AmassProvider, SubfinderProvider
 from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
 from xlfr4n_osint.providers.theharvester import TheHarvesterProvider
-from xlfr4n_osint.providers.urlscan import URLScanProvider
-from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
-from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
-from xlfr4n_osint.providers.leakcheck import LeakCheckProvider
 from xlfr4n_osint.providers.tls import TLSProvider
+from xlfr4n_osint.providers.urlscan import URLScanProvider
 from xlfr4n_osint.registry import ProviderRegistry
 from xlfr4n_osint.scanner import UsernameScanner
 
@@ -217,6 +214,11 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     batch.add_argument("--config", help="Path to a TOML config file.")
     batch.add_argument("--workers", type=int, default=1)
     batch.add_argument(
+        "--all-sources",
+        action="store_true",
+        help="Use every registered provider for each batch item's capability.",
+    )
+    batch.add_argument(
         "--output",
         help="Write the complete batch report to a JSON or JSONL file.",
     )
@@ -354,9 +356,12 @@ def _run_identifier(
         config = ScanConfig.from_file(args.config)
         timeout = args.timeout if args.timeout is not None else config.timeout
         user_agent = args.user_agent or config.user_agent
+        if args.all_sources and args.source:
+            raise ValueError("--all-sources cannot be combined with --source")
         providers = registry.build(
             args.source,
             capability=capability,
+            all_sources=args.all_sources,
             timeout=timeout,
             user_agent=user_agent,
         )
@@ -528,6 +533,7 @@ def _run_batch(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             timeout=timeout,
             user_agent=user_agent,
             max_workers=args.workers,
+            all_sources=args.all_sources,
         )
     except (OSError, ValueError, TypeError) as exc:
         print(f"Batch error: {exc}")
