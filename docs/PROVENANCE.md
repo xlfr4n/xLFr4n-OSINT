@@ -37,7 +37,7 @@ The same fields and rules apply in English.
 
 ## Confidence
 
-Confidence is a documented property of the provider result, not a guarantee of truth.
+Confidence is a documented property of the provider result, not a guarantee of truth. For external account-checking tools, values such as `tool-asserted` describe the verification boundary; they do not mean the account was independently confirmed.
 
 A future provider may define a more precise confidence model, but it must document its semantics before using new levels.
 
