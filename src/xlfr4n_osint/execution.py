@@ -15,7 +15,8 @@ def _now() -> str:
 
 
 def _status_for_error(exc: BaseException) -> str:
-    return "timeout" if isinstance(exc, TimeoutError) or "timeout" in type(exc).__name__.casefold() else "error"
+    marker = f"{type(exc).__name__} {exc}".casefold()
+    return "timeout" if isinstance(exc, TimeoutError) or "timeout" in marker or "timed out" in marker else "error"
 
 
 @dataclass(slots=True)
