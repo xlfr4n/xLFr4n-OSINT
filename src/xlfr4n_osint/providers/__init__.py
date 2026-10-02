@@ -13,6 +13,7 @@ from xlfr4n_osint.providers.rdap import RDAPProvider
 from xlfr4n_osint.providers.rdap_number import RDAPNumberProvider
 from xlfr4n_osint.providers.tls import TLSProvider
 from xlfr4n_osint.providers.theharvester import TheHarvesterProvider
+from xlfr4n_osint.providers.urlscan import URLScanProvider
 from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
 
 __all__ = [
@@ -30,6 +31,7 @@ __all__ = [
     "RDAPNumberProvider",
     "TLSProvider",
     "TheHarvesterProvider",
+    "URLScanProvider",
     "SpiderFootProvider",
     "MaigretProvider",
     "SherlockProvider",
