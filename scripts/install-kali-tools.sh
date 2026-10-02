@@ -27,6 +27,7 @@ done
 
 if command -v pipx >/dev/null 2>&1; then
   pipx ensurepath || true
+  export PATH="$HOME/.local/bin:$PATH"
   for package in maigret sherlock-project holehe; do
     echo "[PIPX] installing/updating $package"
     pipx install --force "$package" || echo "[WARN] could not install $package"
