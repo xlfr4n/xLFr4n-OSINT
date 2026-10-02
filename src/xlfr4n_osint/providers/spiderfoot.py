@@ -119,6 +119,7 @@ class SpiderFootProvider(
                 continue
 
             module = str(event.get("module") or "")
+            source_data = str(event.get("source") or "")
             source_url = (
                 source_data
                 if source_data.startswith(("http://", "https://"))
