@@ -30,6 +30,8 @@ All notable changes to **xLFr4n-OSINT** are documented here.
 
 ### Core
 
+- 🌍 Added public IP and ASN RDAP research through IANA bootstrap registries.
+
 - 🔐 Verified TLS certificate inspection on TCP/443.
 - 🌐 Domain CLI routing through explicit provider capabilities.
 
