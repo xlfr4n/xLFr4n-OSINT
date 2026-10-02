@@ -262,6 +262,34 @@ The direct provider layer now covers **GitHub, GitLab, Gitea, RDAP, DNS, Certifi
 
 ---
 
+
+## 🖥️ Local GUI
+
+The repository now includes a real local investigation console backed by the same Python engine as the CLI.
+
+```bash
+xlfr4n-osint gui
+```
+
+Default:
+
+`http://127.0.0.1:8787/`
+
+The console provides:
+- dashboard metrics and recent cases;
+- target-type selection across supported engine capabilities;
+- default/custom/all-source selection;
+- provider registry visibility;
+- findings + deterministic correlation graph;
+- entity/relationship inspection;
+- provider error ledger;
+- raw normalized report view;
+- persistent local report history;
+- JSON download;
+- privacy-preserving password handling.
+
+See [`docs/GUI.md`](./docs/GUI.md).
+
 ## 🔐 Security & responsible use
 
 This project is intended for lawful research, defensive security, investigation of public information and authorized environments.
