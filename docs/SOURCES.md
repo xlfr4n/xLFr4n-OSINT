@@ -75,7 +75,7 @@ IANA publishes separate bootstrap registries for IPv4 and AS Number space, with 
 
 ### Exposure / breach intelligence
 
-The exposure layer intentionally separates breach metadata from credential material. `LeakCheck Public` can report exposure-source metadata without returning full records; `HIBP BreachedAccount` returns breach metadata for an email when an authenticated key is available; HIBP also exposes paste and stealer-log lookups subject to subscription and domain requirements. xLFr4n stores metadata and provenance, not recovered passwords, cookies, session tokens or raw credential values. citeturn400940search0turn709078search2
+The exposure layer intentionally separates breach metadata from credential material. `LeakCheck Public` can report exposure-source metadata without returning full records; `HIBP BreachedAccount` returns breach metadata for an email when an authenticated key is available; HIBP also exposes paste and stealer-log lookups subject to subscription and domain requirements. xLFr4n stores metadata and provenance, not recovered passwords, cookies, session tokens or raw credential values. [HIBP API documentation](https://haveibeenpwned.com/API/V3)
 
 A complete global breach corpus does not exist behind one public endpoint. `ALL SOURCES` therefore means every registered provider applicable to the target type and currently available in the local configuration, with every skipped, empty, errored or credential-gated provider shown in the execution ledger.
 
