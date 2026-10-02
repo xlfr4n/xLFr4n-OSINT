@@ -484,6 +484,29 @@
     URL.revokeObjectURL(url);
   }
 
+  async function downloadMarkdown() {
+    if (!state.report || !state.report.scan_id) return;
+    try {
+      const response = await fetch("/api/reports/" + encodeURIComponent(state.report.scan_id) + "/markdown");
+      if (!response.ok) {
+        const body = await response.json().catch(function() { return {}; });
+        throw new Error(body.error || ("HTTP " + response.status));
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = (state.report.scan_id || "report") + ".md";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Markdown export failed.");
+    }
+  }
+
   async function copyScanId() {
     if (!state.report || !state.report.scan_id) return;
     try {
@@ -517,6 +540,7 @@
   });
   $("#select-defaults").addEventListener("click", selectDefaults);
   $("#download-json").addEventListener("click", downloadReport);
+  $("#download-markdown").addEventListener("click", downloadMarkdown);
   $("#copy-scan-id").addEventListener("click", copyScanId);
   $("#refresh-history").addEventListener("click", function() { refreshHistory().catch(console.error); });
   $("#source-capability-filter").addEventListener("change", function() { renderRegistry().catch(console.error); });
