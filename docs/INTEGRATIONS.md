@@ -44,6 +44,12 @@ Authenticated connectors are intentionally separate from the free core. Credenti
 | Common Crawl | historical web archive | public CDXJ index | opt-in |
 | ExifTool | local document/image metadata | local CLI | opt-in |
 
+## Exposure transparency
+
+For email investigations, the exposure layer can combine `hibp-breaches`, `hibp-pastes`, `hibp-stealerlogs`, `leakcheck`, `intelligence-x`, and other applicable registered providers. Authenticated sources use the operator's own credentials and remain opt-in. HIBP's account, paste and stealer-log searches require authorization/subscription according to the endpoint, while its breach catalogue and Pwned Passwords APIs have separate public/free access characteristics. citeturn400940search1turn709078search2
+
+Results are never presented as a single undifferentiated truth set. Each finding keeps provider provenance, observation time, source URL, and an evidence fingerprint; each provider also records whether it returned findings, returned no findings, timed out, or errored.
+
 ## External-tool contract
 
 External integrations run through `run_external_command()` with `shell=False`, explicit timeouts, captured stdout/stderr and typed execution errors.
