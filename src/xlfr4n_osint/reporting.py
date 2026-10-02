@@ -40,9 +40,26 @@ def render_markdown_report(report: ScanReport) -> str:
         f"- **Sources:** {summary['source_count']}",
         f"- **Categories:** {summary['category_count']}",
         "",
-        "## Findings",
+        "## Provider execution",
         "",
-    ]
+            ]
+
+    if report.provider_runs:
+        for execution in report.provider_runs:
+            status = execution.get("status", "unknown")
+            detail = str(execution.get("finding_count", 0)) + " findings"
+            if status == "no-findings":
+                detail = "no findings"
+            elif execution.get("error"):
+                detail = str(execution.get("error"))
+            lines.append(
+                "- **" + str(execution.get("provider", "unknown")) + "** — `" +
+                str(status) + "` — " + detail + " — `" +
+                str(execution.get("duration_seconds", 0)) + "s`"
+            )
+        lines.append("")
+    else:
+        lines.extend(["No provider execution records.", ""])
 
     if report.findings:
         for finding in report.findings:
