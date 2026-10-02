@@ -70,3 +70,31 @@ def test_username_selector_links_distinct_categories_without_identity_assertion(
         and "selector:username:xlfr4n" in relationship.evidence
         for relationship in result.relationships
     )
+
+
+def test_shared_selector_uses_spanning_graph_not_quadratic_clique() -> None:
+    report = ScanReport(query="xLFr4n")
+    for platform in ("github", "gitlab", "gitea", "sherlock"):
+        report.findings.append(
+            Finding.now(
+                source=platform,
+                category="username-account",
+                identifier=f"{platform}:xLFr4n",
+                title=platform,
+                url=f"https://{platform}.example/xLFr4n",
+                data={"username": "xLFr4n"},
+            )
+        )
+
+    result = CorrelationEngine().build(report)
+
+    assert len(result.entities) == 4
+    assert len(result.relationships) == 3
+    assert all(
+        relationship.relation == "exact-shared-public-selector"
+        for relationship in result.relationships
+    )
+    assert all(
+        "selector:username:xlfr4n" in relationship.evidence
+        for relationship in result.relationships
+    )
