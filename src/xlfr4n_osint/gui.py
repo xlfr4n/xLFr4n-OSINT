@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, urlparse
 
 from xlfr4n_osint.batch import BatchItem, run_item
 from xlfr4n_osint.models import Finding, ScanReport
+from xlfr4n_osint.notifications import WebhookNotifier
 from xlfr4n_osint.logging_utils import get_logger
 from xlfr4n_osint.reporting import build_json_report, render_markdown_report
 from xlfr4n_osint.registry import ProviderRegistry
@@ -132,6 +133,17 @@ class InvestigationService:
                 job["stage"] = "completed"
                 job["report"] = report
                 job["finished_at"] = time.time()
+
+        # Discord notification is intentionally best-effort: a webhook outage
+        # must never turn a completed OSINT investigation into a failed job.
+        if os.getenv("XLFR4N_OSINT_WEBHOOK_URL"):
+            try:
+                WebhookNotifier(
+                    timeout=min(self.timeout, 10.0),
+                    user_agent=self.user_agent,
+                ).notify(report)
+            except Exception as exc:
+                logger.warning("Discord notification failed: %s", exc)
 
     def get_job(self, job_id: str) -> dict[str, Any]:
         key = _safe_scan_id(job_id)
