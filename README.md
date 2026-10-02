@@ -5,9 +5,11 @@
 
 <p align="center">
 
-![Status](https://img.shields.io/badge/status-foundation-ff3344?style=for-the-badge)
+[![CI](https://img.shields.io/github/actions/workflow/status/xlfr4n/xLFr4n-OSINT/ci.yml?branch=main&label=CI&logo=githubactions&style=for-the-badge)](https://github.com/xlfr4n/xLFr4n-OSINT/actions)
+![Status](https://img.shields.io/badge/status-active-2ea043?style=for-the-badge)
 ![Scope](https://img.shields.io/badge/scope-public%20sources-111827?style=for-the-badge)
 ![Docs](https://img.shields.io/badge/docs-ES%20%2B%20EN-4b5563?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
 </p>
 
