@@ -325,6 +325,7 @@ See [`SECURITY.md`](./SECURITY.md) for reporting guidance and data boundaries.
 - [`docs/SOURCES.md`](./docs/SOURCES.md) — public source inventory and data boundaries.
 - [`docs/PROVENANCE.md`](./docs/PROVENANCE.md) — provenance contract for findings.
 - [`docs/CLI.md`](./docs/CLI.md) — command, output and exit-code contract.
+- [`docs/KALI-SETUP.md`](./docs/KALI-SETUP.md) — Kali setup, provider doctor and external-tool bootstrap.
 - [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md) — upstream tools, APIs and distribution boundaries.
 - [`docs/TOOLS_CATALOG.md`](./docs/TOOLS_CATALOG.md) — master catalog of existing OSINT tools and coverage.
 
