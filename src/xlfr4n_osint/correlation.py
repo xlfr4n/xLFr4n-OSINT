@@ -30,6 +30,36 @@ def semantic_finding_key(finding: Finding) -> str:
     return sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
+def exact_selectors(finding: Finding) -> tuple[str, ...]:
+    selectors: set[str] = set()
+
+    identifier = finding.identifier.strip().casefold()
+    if identifier:
+        selectors.add(f"identifier:{identifier}")
+
+    data = finding.data or {}
+    for key, prefix in (
+        ("username", "username"),
+        ("login", "username"),
+        ("email", "email"),
+        ("phone", "phone"),
+        ("domain", "domain"),
+        ("website_domain", "domain"),
+    ):
+        value = data.get(key)
+        if isinstance(value, str) and value.strip():
+            selectors.add(f"{prefix}:{value.strip().casefold()}")
+
+    url = finding.url.strip()
+    if url:
+        selectors.add(f"url:{url}")
+
+    if identifier.startswith(("username:", "email:", "phone:", "domain:")):
+        selectors.add(identifier)
+
+    return tuple(sorted(selectors))
+
+
 @dataclass(slots=True)
 class Entity:
     key: str
@@ -115,8 +145,8 @@ class CorrelationEngine:
             semantic_key = semantic_finding_key(finding)
             semantic_groups.setdefault(semantic_key, []).append(full_key)
 
-            selector = finding.identifier.strip().casefold()
-            selector_groups.setdefault(selector, []).append(entity.key)
+            for selector in exact_selectors(finding):
+                selector_groups.setdefault(selector, []).append(entity.key)
 
         for semantic_key, finding_ids in semantic_groups.items():
             unique_ids = list(dict.fromkeys(finding_ids))
@@ -142,7 +172,7 @@ class CorrelationEngine:
                         Relationship(
                             left_entity=pair[0],
                             right_entity=pair[1],
-                            relation="exact-shared-selector",
+                            relation="exact-shared-public-selector",
                             evidence=[
                                 f"selector:{selector}",
                             ],
