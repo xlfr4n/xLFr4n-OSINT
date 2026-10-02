@@ -32,3 +32,37 @@ def test_parse_spiderfoot_json_ignores_log_prefix() -> None:
 
     assert len(events) == 1
     assert events[0]["data"] == "user@example.com"
+
+
+def test_spiderfoot_filters_seed_target_echo(monkeypatch) -> None:
+    from types import SimpleNamespace
+
+    from xlfr4n_osint.providers.spiderfoot import SpiderFootProvider
+
+    payload = json.dumps([
+        {
+            "type": "USERNAME",
+            "data": "xLFr4n",
+            "module": "SpiderFoot UI",
+            "source": "xLFr4n",
+        },
+        {
+            "type": "USERNAME",
+            "data": "xLFr4n",
+            "module": "sfp_example",
+            "source": "https://example.com/xLFr4n",
+        },
+    ])
+
+    def fake_run(command, *, timeout):
+        return SimpleNamespace(returncode=0, stdout=payload, stderr="")
+
+    monkeypatch.setattr(
+        "xlfr4n_osint.providers.spiderfoot.run_external_command",
+        fake_run,
+    )
+
+    findings = SpiderFootProvider().search_username("xLFr4n")
+
+    assert len(findings) == 1
+    assert findings[0].url == "https://example.com/xLFr4n"
