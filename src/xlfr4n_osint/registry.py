@@ -72,10 +72,16 @@ class ProviderRegistry:
         names: list[str] | None = None,
         *,
         capability: str | None = None,
+        all_sources: bool = False,
         **kwargs: object,
     ) -> list[Provider]:
         if names is None:
-            selected = list(self.names(capability, default_only=True))
+            selected = list(
+                self.names(
+                    capability,
+                    default_only=not all_sources,
+                )
+            )
         else:
             selected = [item.strip().lower() for item in names]
 
