@@ -19,6 +19,8 @@ def build_json_report(report: ScanReport) -> dict[str, Any]:
 def render_markdown_report(report: ScanReport) -> str:
     payload = build_json_report(report)
     correlation = payload["correlation"]["entities"]
+    relationships = payload["correlation"]["relationships"]
+    duplicates = payload["correlation"]["duplicates"]
     evidence = payload["evidence"]["records"]
 
     lines = [
@@ -29,6 +31,8 @@ def render_markdown_report(report: ScanReport) -> str:
         f"- **Started:** `{report.started_at}`",
         f"- **Findings:** {len(report.findings)}",
         f"- **Correlated entities:** {len(correlation)}",
+        f"- **Exact relationships:** {len(relationships)}",
+        f"- **Duplicate groups:** {len(duplicates)}",
         f"- **Evidence records:** {len(evidence)}",
         "",
         "## Findings",
@@ -68,7 +72,16 @@ def render_markdown_report(report: ScanReport) -> str:
         "Correlation is deterministic and based on normalized exact matches. It is not an identity assertion.",
         "",
         "```json",
-        json.dumps(correlation, ensure_ascii=False, indent=2, sort_keys=True),
+        json.dumps(
+            {
+                "entities": correlation,
+                "relationships": relationships,
+                "duplicates": duplicates,
+            },
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ),
         "```",
         "",
         "## Evidence ledger",
