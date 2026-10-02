@@ -22,7 +22,7 @@ xlfr4n-osint = "xlfr4n_osint.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-xlfr4n_osint = ["web/*.html", "web/*.js", "web/*.css"]
+xlfr4n_osint = ["web/*.html", "web/*.js", "web/*.css", "web/*.svg"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
