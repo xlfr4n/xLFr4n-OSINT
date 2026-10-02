@@ -9,6 +9,7 @@ from typing import Any
 from xlfr4n_osint.logging_utils import get_logger
 from xlfr4n_osint.providers.base import (
     ProviderAccessError,
+    ProviderError,
     ProviderHTTPError,
     ProviderNotFoundError,
     ProviderRateLimitError,
@@ -99,6 +100,8 @@ def post_json(
         policy=retry_policy,
         logger=_LOGGER,
     )
+    if not raw.strip():
+        return None
     try:
         return json.loads(raw.decode("utf-8", errors="replace"))
     except json.JSONDecodeError as exc:

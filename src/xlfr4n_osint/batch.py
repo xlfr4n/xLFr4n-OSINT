@@ -4,8 +4,9 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
+from xlfr4n_osint.execution import execute_providers
 from xlfr4n_osint.models import ScanReport
 from xlfr4n_osint.registry import ProviderRegistry
 
@@ -80,6 +81,7 @@ def run_item(
     timeout: float,
     user_agent: str,
     all_sources: bool = False,
+    provider_workers: int = 6,
 ) -> ScanReport:
     report = ScanReport(
         query="<redacted-password>" if item.type == "password" else item.value
@@ -102,20 +104,17 @@ def run_item(
         })
         return report
 
-    method_name = _method_for(item.type)
-    for provider in providers:
-        try:
-            method: Callable[[str], list] = getattr(provider, method_name)
-            method_value = item.value
-            findings = method(method_value)
-            report.findings.extend(findings)
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
-
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name=_method_for(item.type),
+        value=item.value,
+        max_workers=provider_workers,
+    )
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(
+        execution.to_dict() for execution in executions
+    )
     return report
 
 
@@ -127,9 +126,12 @@ def run_batch(
     user_agent: str,
     max_workers: int = 1,
     all_sources: bool = False,
+    provider_workers: int = 6,
 ) -> list[ScanReport]:
     if max_workers < 1:
         raise ValueError("max_workers must be at least 1")
+    if provider_workers < 1:
+        raise ValueError("provider_workers must be at least 1")
 
     if max_workers == 1:
         return [
@@ -139,6 +141,7 @@ def run_batch(
                 timeout=timeout,
                 user_agent=user_agent,
                 all_sources=all_sources,
+                provider_workers=provider_workers,
             )
             for item in items
         ]
@@ -153,6 +156,7 @@ def run_batch(
                 timeout=timeout,
                 user_agent=user_agent,
                 all_sources=all_sources,
+                provider_workers=provider_workers,
             ): index
             for index, item in enumerate(items)
         }

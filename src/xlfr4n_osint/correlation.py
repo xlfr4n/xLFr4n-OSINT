@@ -30,6 +30,36 @@ def semantic_finding_key(finding: Finding) -> str:
     return sha256(canonical.encode("utf-8")).hexdigest()[:16]
 
 
+def exact_selectors(finding: Finding) -> tuple[str, ...]:
+    selectors: set[str] = set()
+
+    identifier = finding.identifier.strip().casefold()
+    if identifier:
+        selectors.add(f"identifier:{identifier}")
+
+    data = finding.data or {}
+    for key, prefix in (
+        ("username", "username"),
+        ("login", "username"),
+        ("email", "email"),
+        ("phone", "phone"),
+        ("domain", "domain"),
+        ("website_domain", "domain"),
+    ):
+        value = data.get(key)
+        if isinstance(value, str) and value.strip():
+            selectors.add(f"{prefix}:{value.strip().casefold()}")
+
+    url = finding.url.strip()
+    if url:
+        selectors.add(f"url:{url}")
+
+    if identifier.startswith(("username:", "email:", "phone:", "domain:")):
+        selectors.add(identifier)
+
+    return tuple(sorted(selectors))
+
+
 @dataclass(slots=True)
 class Entity:
     key: str
@@ -115,39 +145,43 @@ class CorrelationEngine:
             semantic_key = semantic_finding_key(finding)
             semantic_groups.setdefault(semantic_key, []).append(full_key)
 
-            selector = finding.identifier.strip().casefold()
-            selector_groups.setdefault(selector, []).append(entity.key)
+            for selector in exact_selectors(finding):
+                selector_groups.setdefault(selector, []).append(entity.key)
 
         for semantic_key, finding_ids in semantic_groups.items():
             unique_ids = list(dict.fromkeys(finding_ids))
             if len(unique_ids) > 1:
                 duplicates[semantic_key] = unique_ids
 
-        relationships: list[Relationship] = []
-        seen_relationships: set[tuple[str, str, str]] = set()
+        relationships_by_pair: dict[tuple[str, str, str], Relationship] = {}
         for selector, entity_keys in selector_groups.items():
             unique_entities = list(dict.fromkeys(entity_keys))
             if len(unique_entities) < 2:
                 continue
-            for index, left in enumerate(unique_entities):
-                for right in unique_entities[index + 1 :]:
-                    if left == right:
-                        continue
-                    pair = tuple(sorted((left, right)))
-                    marker = (pair[0], pair[1], "exact-shared-selector")
-                    if marker in seen_relationships:
-                        continue
-                    seen_relationships.add(marker)
-                    relationships.append(
-                        Relationship(
-                            left_entity=pair[0],
-                            right_entity=pair[1],
-                            relation="exact-shared-selector",
-                            evidence=[
-                                f"selector:{selector}",
-                            ],
-                        )
+
+            # Represent a shared-selector group as a deterministic spanning star
+            # instead of a quadratic clique. The full selector remains in the
+            # evidence so consumers can reconstruct the exact correlation group.
+            anchor = unique_entities[0]
+            evidence = f"selector:{selector}"
+            for right in unique_entities[1:]:
+                if anchor == right:
+                    continue
+                pair = tuple(sorted((anchor, right)))
+                marker = (pair[0], pair[1], "exact-shared-selector")
+                relationship = relationships_by_pair.get(marker)
+                if relationship is None:
+                    relationship = Relationship(
+                        left_entity=pair[0],
+                        right_entity=pair[1],
+                        relation="exact-shared-public-selector",
+                        evidence=[evidence],
                     )
+                    relationships_by_pair[marker] = relationship
+                elif evidence not in relationship.evidence:
+                    relationship.evidence.append(evidence)
+
+        relationships = list(relationships_by_pair.values())
 
         return CorrelationReport(
             entities=list(groups.values()),

@@ -78,7 +78,10 @@
       { "Content-Type": "application/json" },
       request.headers || {}
     );
-    const response = await fetch(path, Object.assign({}, request, { headers: headers }));
+    const response = await fetch(path, Object.assign({}, request, {
+      headers: headers,
+      cache: request.cache || "no-store"
+    }));
     const body = await response.json().catch(function() { return {}; });
     if (!response.ok) {
       throw new Error(body.error || ("HTTP " + response.status));
@@ -281,6 +284,8 @@
       ["Entities", Number(summary.entity_count || 0)],
       ["Relationships", Number(summary.relationship_count || 0)]
     ];
+    const coverage = Number(summary.provider_count || (report.provider_runs || []).length);
+    metrics.push(["Providers", coverage]);
     return "<div class=\"metric-grid\">" + metrics.map(function(metric) {
       return "<div class=\"metric\"><span>" + metric[0] + "</span><strong>" + metric[1] + "</strong></div>";
     }).join("") + "</div>";
@@ -301,6 +306,7 @@
         "<span class=\"confidence\">" + escapeHtml(item.category) + "</span>" +
         "<span class=\"confidence\">" + escapeHtml(item.confidence) + "</span>" +
         "<span class=\"confidence\">" + escapeHtml(fmtDate(item.observed_at)) + "</span>" +
+        (item.data && item.data.verification ? "<span class=\"confidence\">" + escapeHtml(item.data.verification) + "</span>" : "") +
         "</div></div>";
     }).join("");
   }
@@ -360,6 +366,40 @@
       "\" role=\"img\" aria-label=\"Correlation graph\">" + lines + nodes + "</svg>";
   }
 
+  function renderProviderRuns(report) {
+    const runs = report.provider_runs || [];
+    if (!runs.length) {
+      return "<div class=\"list-empty\">No provider execution records.</div>";
+    }
+
+    const labels = {
+      findings: "findings",
+      "no-findings": "no findings",
+      error: "error",
+      timeout: "timeout",
+      skipped: "skipped"
+    };
+
+    return runs.map(function(run) {
+      const status = run.status || "unknown";
+      const label = labels[status] || status;
+      const statusClass = status === "findings"
+        ? "good"
+        : (status === "error" || status === "timeout" ? "warn" : "");
+      const detail = status === "findings"
+        ? Number(run.finding_count || 0) + " finding(s)"
+        : label;
+      return "<div class=\"provider-run\">" +
+        "<div><strong>" + escapeHtml(run.provider || "unknown") + "</strong>" +
+        "<div class=\"history-muted\">" + escapeHtml(detail) + "</div></div>" +
+        "<div class=\"provider-run-meta\"><span class=\"badge " + statusClass + "\">" +
+        escapeHtml(label) + "</span><span>" + Number(run.duration_seconds || 0).toFixed(2) + "s</span></div>" +
+        (run.skip_reason ? "<div class=\"provider-run-error\">" + escapeHtml(run.skip_reason) + "</div>" : "") +
+        (run.error ? "<div class=\"provider-run-error\">" + escapeHtml(run.error) + "</div>" : "") +
+        "</div>";
+    }).join("");
+  }
+
   function renderErrors(errors) {
     if (!errors || !errors.length) {
       return "<div class=\"list-empty\">No provider errors.</div>";
@@ -373,9 +413,12 @@
   function renderResults(report) {
     const summary = report.summary || {};
     const errors = report.errors || [];
+    const skipped = Number(summary.provider_skipped || 0);
     const status = errors.length
       ? "<span class=\"badge warn\">" + errors.length + " provider error(s)</span>"
-      : "<span class=\"badge good\">clean execution</span>";
+      : (skipped
+        ? "<span class=\"badge warn\">" + skipped + " provider(s) skipped</span>"
+        : "<span class=\"badge good\">clean execution</span>");
 
     $("#results-root").innerHTML =
       "<div class=\"result-header\"><div>" +
@@ -389,11 +432,13 @@
       "<div class=\"results-grid\">" +
       "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION</div><h3>Findings</h3></div></div>" +
       "<div class=\"card-body\">" + renderFindings(report) + "</div></section>" +
-      "<section class=\"panel results-card graph-wrap\"><div class=\"panel-head\"><div><div class=\"eyebrow\">CORRELATION</div><h3>Exact-match graph</h3></div></div>" +
+      "<section class=\"panel results-card graph-wrap\"><div class=\"panel-head\"><div><div class=\"eyebrow\">EXACT MATCHES</div><h3>Shared-selector graph</h3></div></div>" +
       "<div class=\"card-body\">" + renderGraph(report.correlation) + "</div></section>" +
-      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Correlated entities</h3></div></div>" +
+      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ENTITIES</div><h3>Exact-selector entities</h3></div></div>" +
       "<div class=\"card-body\">" + renderEntities(report.correlation) + "</div></section>" +
-      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider status</h3></div></div>" +
+      "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">COLLECTION LEDGER</div><h3>Provider execution</h3></div></div>" +
+      "<div class=\"card-body\">" + renderProviderRuns(report) + "</div></section>" +
+      "<section class=\"panel results-card\"><div class=\"panel-head\"><div><div class=\"eyebrow\">ERROR LEDGER</div><h3>Provider errors</h3></div></div>" +
       "<div class=\"card-body\">" + renderErrors(errors) + "</div></section>" +
       "<section class=\"panel results-card\" style=\"grid-column:1/-1\"><div class=\"panel-head\"><div><div class=\"eyebrow\">EVIDENCE</div><h3>Raw normalized report</h3></div></div>" +
       "<div class=\"card-body\"><pre class=\"raw\">" + escapeHtml(JSON.stringify(report, null, 2)) + "</pre></div></section>" +
@@ -434,18 +479,43 @@
   }
 
   async function waitForJob(jobId) {
+    let transientErrors = 0;
+    const startedAt = Date.now();
+
     while (true) {
-      const job = await api("/api/jobs/" + encodeURIComponent(jobId));
-      if (job.status === "completed" && job.report) {
-        return job.report;
+      let job;
+      try {
+        job = await api("/api/jobs/" + encodeURIComponent(jobId));
+        transientErrors = 0;
+      } catch (error) {
+        transientErrors += 1;
+        if (transientErrors >= 8) {
+          throw new Error("Unable to read investigation status after several retries: " + error.message);
+        }
+        $("#scan-btn-text").textContent = "Reconnecting…";
+        await sleep(Math.min(1000 * transientErrors, 4000));
+        continue;
       }
+
+      if (job.status === "completed") {
+        if (job.report) {
+          return job.report;
+        }
+        if (job.scan_id) {
+          return await api("/api/reports/" + encodeURIComponent(job.scan_id));
+        }
+        throw new Error("Investigation completed but no report was returned.");
+      }
+
       if (job.status === "failed") {
         throw new Error(job.error || "Investigation job failed.");
       }
+
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
       if (job.stage === "queued") {
-        $("#scan-btn-text").textContent = "Queued…";
+        $("#scan-btn-text").textContent = "Queued… " + elapsed + "s";
       } else {
-        $("#scan-btn-text").textContent = "Collecting intelligence…";
+        $("#scan-btn-text").textContent = "Collecting intelligence… " + elapsed + "s";
       }
       await sleep(700);
     }

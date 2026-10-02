@@ -11,16 +11,17 @@ COMMAND_REQUIREMENTS: dict[str, str] = {
     "subfinder": "subfinder",
     "amass": "amass",
     "theharvester": "theHarvester",
-    "spiderfoot": os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "sf.py"),
+    "spiderfoot": os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "spiderfoot"),
     "exiftool": "exiftool",
 }
 
 CREDENTIAL_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "hibp-breaches": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
-    "censys": (
-        "XLFR4N_OSINT_CENSYS_PAT",
-        "XLFR4N_OSINT_CENSYS_ORGANIZATION_ID",
-    ),
+    "hibp-pastes": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "hibp-stealerlogs": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "hibp-domain-breaches": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "hibp-stealerlogs-domain": ("HIBP_API_KEY", "XLFR4N_OSINT_HIBP_API_KEY"),
+    "censys": ("XLFR4N_OSINT_CENSYS_PAT",),
     "shodan": ("XLFR4N_OSINT_SHODAN_API_KEY",),
     "securitytrails": ("XLFR4N_OSINT_SECURITYTRAILS_API_KEY",),
     "virustotal": ("XLFR4N_OSINT_VIRUSTOTAL_API_KEY",),
@@ -61,15 +62,15 @@ def inspect_provider(name: str, *, default_enabled: bool = False) -> dict[str, A
     env_names = CREDENTIAL_REQUIREMENTS.get(key)
     if env_names:
         result["requirement"] = "credential: " + " or ".join(env_names)
-        if key == "censys":
-            token_name = env_names[0]
-            if not os.getenv(token_name):
-                result["status"] = "missing-credentials"
-            else:
-                selected = [token_name]
-                if os.getenv(env_names[1]):
-                    selected.append(env_names[1])
-                result["configured_by"] = ", ".join(selected)
+        configured = _first_set(env_names)
+        if configured is None:
+            result["status"] = "missing-credentials"
+        else:
+            selected = [configured]
+            for env_name in env_names:
+                if env_name != configured and os.getenv(env_name):
+                    selected.append(env_name)
+            result["configured_by"] = ", ".join(selected)
         return result
 
     if key in PUBLIC_OPT_IN:

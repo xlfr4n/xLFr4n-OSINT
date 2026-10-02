@@ -108,6 +108,10 @@ NEXT
       provenance, limits and maintenance contract justify them
 ```
 
+### ⚙️ Orquestación transparente
+
+Las investigaciones pueden ejecutar todos los providers aplicables en paralelo con un límite configurable. Cada ejecución conserva estado, duración, número de findings y motivo de omisión/error. Así, `ALL SOURCES` no oculta fuentes sin resultados ni providers que requieren credenciales.
+
 ### 🚧 Estado actual
 
 🟢 **Active toolkit + local investigation console / Toolkit activo + consola local**
@@ -289,7 +293,9 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-The direct and adapter layers now cover **GitHub, GitLab, Gitea, RDAP, DNS, Certificate Transparency, TLS, HTTPS, IP/ASN registration, archives, exposure metadata, hashes, local files, external tools and opt-in authenticated providers**. The local GUI is a presentation layer over this same engine.
+The direct and adapter layers now cover **GitHub, GitLab, Gitea, RDAP, DNS, Certificate Transparency, TLS, HTTPS, IP/ASN registration, archives, exposure metadata, hashes, local files, external tools and opt-in authenticated providers**. The engine can execute all applicable providers concurrently with a bounded worker pool and preserves a per-provider execution ledger. Providers with no findings, missing credentials, missing dependencies, timeouts or errors remain visible rather than disappearing from the report.
+
+The local GUI is a presentation layer over this same engine.
 
 ---
 

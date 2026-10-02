@@ -64,7 +64,7 @@ class SpiderFootProvider(
         user_agent: str = "xLFr4n-OSINT/0.1.0",
     ) -> None:
         self.config = ScanConfig(timeout=timeout, user_agent=user_agent)
-        self.command = os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "sf.py")
+        self.command = os.getenv("XLFR4N_OSINT_SPIDERFOOT_COMMAND", "spiderfoot")
 
     def _search(self, target: str) -> list[Finding]:
         clean = target.strip()
@@ -103,6 +103,19 @@ class SpiderFootProvider(
             )
             data = str(event.get("data") or "").strip()
             if not data:
+                continue
+
+            source_data = str(event.get("source") or "")
+            # SpiderFoot emits the initial target as an event in some passive
+            # runs. That is not independent intelligence and should not become
+            # a finding by itself.
+            if (
+                data.casefold() == clean.casefold()
+                and (
+                    not source_data
+                    or source_data.casefold() == clean.casefold()
+                )
+            ):
                 continue
 
             module = str(event.get("module") or "")

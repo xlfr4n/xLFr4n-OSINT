@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from xlfr4n_osint.http import get_text
+from xlfr4n_osint.http import get_text, post_json
 from xlfr4n_osint.providers.base import (
     ProviderAccessError,
     ProviderRateLimitError,
@@ -93,3 +93,19 @@ def test_http_retries_server_failure_until_budget_exhausted() -> None:
             )
 
     assert urlopen.call_count == 3
+
+def test_post_json_accepts_empty_204_response() -> None:
+    response = _Response(b"")
+
+    with patch(
+        "xlfr4n_osint.http.urllib.request.urlopen",
+        return_value=response,
+    ):
+        assert post_json(
+            "https://example.test/webhook",
+            {"content": "hello"},
+            timeout=1,
+            user_agent="test",
+            retry_policy=RetryPolicy(max_attempts=1, base_delay=0),
+        ) is None
+

@@ -43,17 +43,38 @@ def _parse_sherlock_csv(path: Path) -> list[dict[str, str]]:
 
 
 def _parse_holehe_csv(path: Path) -> list[dict[str, str]]:
+    """Parse legacy Holehe CSV exports for backward compatibility."""
     with path.open(
         "r",
         newline="",
         encoding="utf-8",
         errors="replace",
     ) as handle:
-        rows = []
+        rows: list[dict[str, str]] = []
         for row in csv.DictReader(handle):
             if str(row.get("exists", "")).casefold() in {"true", "yes", "claimed"}:
                 rows.append({key: str(value) for key, value in row.items()})
         return rows
+
+
+
+def _parse_holehe_output(content: str) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for line in content.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("[+] "):
+            continue
+        domain = stripped[4:].strip().split(maxsplit=1)[0].rstrip(",")
+        if not domain or "." not in domain:
+            continue
+        rows.append(
+            {
+                "domain": domain,
+                "exists": "true",
+                "rateLimit": "false",
+            }
+        )
+    return rows
 
 
 def _tool_provenance(tool: str, command: list[str]) -> dict[str, str]:
@@ -187,8 +208,13 @@ class SherlockProvider(UsernameProvider):
             for row in _parse_sherlock_csv(reports[0]):
                 exists = str(row.get("exists", ""))
                 platform = str(row.get("name") or "unknown-site")
-                url = str(row.get("url_user") or "")
+                url = str(row.get("url_user") or "").strip()
+                url_main = str(row.get("url_main") or "").strip()
                 if not url:
+                    continue
+                # A site homepage is not an account/profile finding. Sherlock
+                # can legitimately return a claimed status for generic URLs.
+                if url_main and url.rstrip("/") == url_main.rstrip("/"):
                     continue
                 findings.append(
                     Finding.now(
@@ -197,7 +223,7 @@ class SherlockProvider(UsernameProvider):
                         identifier=f"{platform}:{clean}".casefold(),
                         title=platform,
                         url=url,
-                        confidence="high",
+                        confidence="medium",
                         provenance=_tool_provenance(self.name, command),
                         data={
                             "username": clean,
@@ -205,6 +231,8 @@ class SherlockProvider(UsernameProvider):
                             "status": exists,
                             "http_status": row.get("http_status"),
                             "response_time_s": row.get("response_time_s"),
+                            "url_main": url_main or None,
+                            "verification": "tool-asserted",
                         },
                     )
                 )
@@ -228,57 +256,48 @@ class HoleheProvider(EmailProvider):
         if not clean:
             return []
 
-        with tempfile.TemporaryDirectory(prefix="xlfr4n-holehe-") as tmp:
-            output = Path(tmp) / "holehe.csv"
-            command = [
-                "holehe",
-                clean,
-                "--no-color",
-                "--no-clear",
-                "--only-used",
-                "--csv",
-                "-o",
-                str(output),
-                "-t",
-                str(max(1, int(self.config.timeout))),
-            ]
-            result = run_external_command(
-                command,
-                timeout=max(60.0, self.config.timeout * 10.0),
-                cwd=tmp,
+        command = [
+            "holehe",
+            clean,
+            "--no-color",
+            "--no-clear",
+            "--only-used",
+            "-T",
+            str(max(1, int(self.config.timeout))),
+        ]
+        result = run_external_command(
+            command,
+            timeout=max(60.0, self.config.timeout * 10.0),
+        )
+        if result.returncode != 0:
+            raise ProviderError(
+                f"holehe exited with code {result.returncode}: "
+                f"{result.stderr.strip()[:500]}"
             )
-            if result.returncode != 0:
-                raise ProviderError(
-                    f"holehe exited with code {result.returncode}: "
-                    f"{result.stderr.strip()[:500]}"
-                )
-            if not output.exists():
-                raise ProviderError("holehe produced no CSV report")
 
-            findings: list[Finding] = []
-            for row in _parse_holehe_csv(output):
-                exists = row.get("exists", "").casefold()
-                if exists not in {"true", "yes", "claimed"}:
-                    continue
-                service = row.get("name") or row.get("domain") or "unknown-service"
-                findings.append(
-                    Finding.now(
-                        source=self.name,
-                        category="email-account-presence",
-                        identifier=f"{service}:{clean}".casefold(),
-                        title=str(service),
-                        url=str(row.get("domain") or ""),
-                        confidence="medium",
-                        provenance=_tool_provenance(self.name, command),
-                        data={
-                            "email": clean,
-                            "service": service,
-                            "exists": row.get("exists"),
-                            "rate_limit": row.get("rateLimit"),
-                            "recovery_email": None,
-                            "recovery_phone": None,
-                        },
-                    )
+        rows = _parse_holehe_output(result.stdout)
+        findings: list[Finding] = []
+        for row in rows:
+            service = row.get("domain") or "unknown-service"
+            findings.append(
+                Finding.now(
+                    source=self.name,
+                    category="email-account-presence",
+                    identifier=f"{service}:{clean}".casefold(),
+                    title=str(service),
+                    url=f"https://{service}",
+                    confidence="medium",
+                    provenance=_tool_provenance(self.name, command),
+                    data={
+                        "email": clean,
+                        "service": service,
+                        "exists": True,
+                        "rate_limit": False,
+                        "recovery_email": None,
+                        "recovery_phone": None,
+                        "verification": "tool-asserted",
+                    },
                 )
+            )
 
-            return findings
+        return findings

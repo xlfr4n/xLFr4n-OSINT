@@ -33,17 +33,35 @@ def render_markdown_report(report: ScanReport) -> str:
         f"- **Query:** `{report.query}`",
         f"- **Started:** `{report.started_at}`",
         f"- **Findings:** {len(report.findings)}",
-        f"- **Correlated entities:** {len(correlation)}",
+        f"- **Exact-selector entities:** {len(correlation)}",
         f"- **Exact relationships:** {len(relationships)}",
         f"- **Duplicate groups:** {len(duplicates)}",
         f"- **Evidence records:** {len(evidence)}",
         f"- **Sources:** {summary['source_count']}",
         f"- **Categories:** {summary['category_count']}",
         "",
-        "## Findings",
+        "## Provider execution",
         "",
-    ]
+        ]
 
+    if report.provider_runs:
+        for execution in report.provider_runs:
+            status = execution.get("status", "unknown")
+            detail = str(execution.get("finding_count", 0)) + " findings"
+            if status == "no-findings":
+                detail = "no findings"
+            elif execution.get("error"):
+                detail = str(execution.get("error"))
+            lines.append(
+                "- **" + str(execution.get("provider", "unknown")) + "** — `" +
+                str(status) + "` — " + detail + " — `" +
+                str(execution.get("duration_seconds", 0)) + "s`"
+            )
+        lines.append("")
+    else:
+        lines.extend(["No provider execution records.", ""])
+
+    lines.extend(["## Findings", ""])
     if report.findings:
         for finding in report.findings:
             lines.extend([
@@ -54,6 +72,7 @@ def render_markdown_report(report: ScanReport) -> str:
                 f"- **URL:** {finding.url}",
                 f"- **Observed:** `{finding.observed_at}`",
                 f"- **Confidence:** `{finding.confidence}`",
+                *([f"- **Verification:** `{finding.data['verification']}`"] if finding.data.get("verification") else []),
                 "",
                 "```json",
                 json.dumps(finding.data, ensure_ascii=False, indent=2, sort_keys=True),
@@ -72,9 +91,9 @@ def render_markdown_report(report: ScanReport) -> str:
         lines.append("")
 
     lines.extend([
-        "## Correlation",
+        "## Exact-selector correlation",
         "",
-        "Correlation is deterministic and based on normalized exact matches. It is not an identity assertion.",
+        "Relationships are deterministic links created from normalized exact selectors. They are not identity assertions and do not establish that accounts belong to the same person.",
         "",
         "```json",
         json.dumps(

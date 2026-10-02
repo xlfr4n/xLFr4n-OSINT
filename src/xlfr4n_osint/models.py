@@ -28,6 +28,7 @@ class ScanReport:
     query: str
     findings: list[Finding] = field(default_factory=list)
     errors: list[dict[str, str]] = field(default_factory=list)
+    provider_runs: list[dict[str, Any]] = field(default_factory=list)
     scan_id: str = field(default_factory=lambda: uuid4().hex)
     started_at: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -54,4 +55,5 @@ class ScanReport:
                 for item in self.findings
             ],
             "errors": self.errors,
+            "provider_runs": self.provider_runs,
         }

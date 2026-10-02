@@ -5,6 +5,7 @@ import json
 from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
+from xlfr4n_osint.execution import execute_providers
 from xlfr4n_osint.filemeta import ExifToolProvider
 from xlfr4n_osint.gui import run_gui
 from xlfr4n_osint.logging_utils import configure_logging
@@ -36,6 +37,8 @@ from xlfr4n_osint.providers.gitea import GiteaProvider
 from xlfr4n_osint.providers.github import GitHubProvider
 from xlfr4n_osint.providers.gitlab import GitLabProvider
 from xlfr4n_osint.providers.hibp_breaches import HIBPBreachesProvider
+from xlfr4n_osint.providers.hibp_exposure import HIBPPastesProvider, HIBPStealerLogsProvider
+from xlfr4n_osint.providers.hibp_domain import HIBPDomainBreachesProvider, HIBPStealerLogDomainProvider
 from xlfr4n_osint.providers.intelligence_x import IntelligenceXProvider
 from xlfr4n_osint.providers.hibp_passwords import HIBPPwnedPasswordsProvider
 from xlfr4n_osint.providers.hudsonrock import HudsonRockProvider
@@ -85,6 +88,10 @@ def build_registry() -> ProviderRegistry:
     registry.register("hibp-passwords", HIBPPwnedPasswordsProvider, capabilities={"password"})
     registry.register("exiftool", ExifToolProvider, capabilities={"file"}, default_enabled=False)
     registry.register("hibp-breaches", HIBPBreachesProvider, capabilities={"email"}, default_enabled=False)
+    registry.register("hibp-pastes", HIBPPastesProvider, capabilities={"email"}, default_enabled=False)
+    registry.register("hibp-stealerlogs", HIBPStealerLogsProvider, capabilities={"email"}, default_enabled=False)
+    registry.register("hibp-domain-breaches", HIBPDomainBreachesProvider, capabilities={"domain"}, default_enabled=False)
+    registry.register("hibp-stealerlogs-domain", HIBPStealerLogDomainProvider, capabilities={"domain"}, default_enabled=False)
     return registry
 
 
@@ -376,7 +383,7 @@ def _run_username(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
         return 2
 
-    report = UsernameScanner(providers).run(args.value)
+    report = UsernameScanner(providers, max_workers=config.provider_workers).run(args.value)
     _print_report(report, args.json, subject="username", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
 
@@ -418,17 +425,16 @@ def _run_number(
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name=method_name,
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value.strip())
-    for provider in providers:
-        try:
-            method = getattr(provider, method_name)
-            report.findings.extend(method(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(
         report,
@@ -498,17 +504,16 @@ def _run_identifier(
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name=method_name,
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=query or args.value.strip())
-    for provider in providers:
-        try:
-            method = getattr(provider, method_name)
-            report.findings.extend(method(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(
         report,
@@ -551,16 +556,16 @@ def _run_file(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="inspect_file",
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value)
-    for provider in providers:
-        try:
-            report.findings.extend(provider.inspect_file(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(report, args.json, subject="file", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
@@ -660,16 +665,16 @@ def _run_password(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         )
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="check_password",
+        value=secret,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query="<redacted-password>")
-    for provider in providers:
-        try:
-            report.findings.extend(provider.check_password(secret))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     del secret
     _print_report(
@@ -706,16 +711,16 @@ def _run_domain(args: argparse.Namespace, registry: ProviderRegistry) -> int:
         _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
         return 2
 
+    findings, errors, executions = execute_providers(
+        providers,
+        method_name="search_domain",
+        value=args.value,
+        max_workers=config.provider_workers,
+    )
     report = ScanReport(query=args.value.strip())
-    for provider in providers:
-        try:
-            report.findings.extend(provider.search_domain(args.value))
-        except Exception as exc:
-            report.errors.append({
-                "source": provider.name,
-                "error": str(exc),
-                "type": type(exc).__name__,
-            })
+    report.findings.extend(findings)
+    report.errors.extend(errors)
+    report.provider_runs.extend(execution.to_dict() for execution in executions)
 
     _print_report(report, args.json, subject="domain", output=args.output, output_format=args.format)
     return 0 if not report.errors else 2
@@ -734,6 +739,7 @@ def _run_batch(args: argparse.Namespace, registry: ProviderRegistry) -> int:
             user_agent=user_agent,
             max_workers=args.workers,
             all_sources=args.all_sources,
+            provider_workers=config.provider_workers,
         )
     except (OSError, ValueError, TypeError) as exc:
         print(f"Batch error: {exc}")

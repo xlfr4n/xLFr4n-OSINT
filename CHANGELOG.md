@@ -2,6 +2,27 @@
 
 All notable changes to **xLFr4n-OSINT** are documented here.
 
+## 2026-10-02 — Transparent orchestration / Exposure intelligence
+
+### Added
+
+- ⚡ Bounded concurrent provider execution for investigations and batch items.
+- 🧾 Per-provider execution ledger with status, duration, finding count, errors and skip reasons.
+- 🔐 Accurate authenticated-provider readiness reporting in `doctor`.
+- 🕷️ Kali SpiderFoot executable detection now defaults to `spiderfoot`.
+- 🧩 HIBP paste and stealer-log metadata adapters.
+- 🌐 HIBP verified-domain breach and stealer-log metadata adapters.
+- 🔗 Exact public-selector correlation across distinct providers without identity assertions.
+- ⚙️ Configurable provider concurrency via TOML/environment.
+- 🖥️ GUI collection ledger and explicit skipped-provider state.
+- 🧹 Hardened external username findings: generic Sherlock homepages are filtered, tool-only account results are explicitly marked, and SpiderFoot seed echoes are discarded.
+- 🧠 Correlation graphs now use bounded exact-selector edges instead of quadratic cliques, while preserving selector evidence.
+
+### Documentation
+
+- 📚 Expanded breach/exposure coverage and provenance boundaries.
+- 🧭 Updated provider catalog and CLI contract.
+
 ## 2026-10-02
 
 - Added provider readiness doctor and Kali external-tool bootstrap.
