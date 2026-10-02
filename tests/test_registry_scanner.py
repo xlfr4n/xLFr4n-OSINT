@@ -79,3 +79,24 @@ def test_registry_defaults_exclude_opt_in_providers() -> None:
     assert registry.names("username", default_only=True) == ("default",)
     assert registry.names("username") == ("default", "optional")
     assert registry.is_default_enabled("optional") is False
+
+
+def test_registry_can_build_all_registered_providers() -> None:
+    class OptionalProvider(Provider):
+        name = "optional"
+
+        def search_username(self, username: str) -> list[Finding]:
+            return []
+
+    registry = ProviderRegistry()
+    registry.register("default", FakeProvider, capabilities={"username"})
+    registry.register(
+        "optional",
+        OptionalProvider,
+        capabilities={"username"},
+        default_enabled=False,
+    )
+
+    providers = registry.build(capability="username", all_sources=True)
+
+    assert [provider.name for provider in providers] == ["default", "optional"]
