@@ -71,3 +71,13 @@ IANA publishes separate bootstrap registries for IPv4 and AS Number space, with 
 - **LeakCheck Public** — free public API for breach-source/category exposure. It does not return passwords or full records. urlLeakCheck API docshttps://docs.leakcheck.io/overview
 - **HIBP Pwned Passwords** — free password exposure check using k-anonymity; only a five-character SHA-1 prefix is sent. urlHIBP API docshttps://haveibeenpwned.com/API/V3
 - **HIBP breach email search** — authenticated API; will remain an optional connector requiring the user's own API key. urlHIBP API docshttps://haveibeenpwned.com/API/V3
+
+
+### Direct Certificate Transparency
+
+`crt.sh` is available as a separate opt-in provider in addition to the existing CT aggregator. The direct provider queries `q=%.<domain>` with expired certificates excluded and deduplication enabled.
+
+
+### External account-presence tools
+
+Holehe is an opt-in external adapter. Its upstream project documents checks using forgotten-password mechanisms and can return partially masked recovery contact information; xLFr4n intentionally discards those recovery fields and retains account-presence metadata only.
