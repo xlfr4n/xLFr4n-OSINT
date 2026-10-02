@@ -269,6 +269,7 @@ class InvestigationService:
                 if isinstance(item, dict)
             ],
             errors=list(payload.get("errors") or []),
+            provider_runs=list(payload.get("provider_runs") or []),
             scan_id=str(payload.get("scan_id", scan_id)),
             started_at=str(payload.get("started_at", "")),
         )
