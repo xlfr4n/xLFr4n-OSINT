@@ -11,8 +11,11 @@ from xlfr4n_osint.providers.base import Provider, ProviderError
 
 class GitHubProvider(Provider):
     name = "github"
+    api_base = "https://api.github.com"
 
     def __init__(self, timeout: float = 10.0) -> None:
+        if timeout <= 0:
+            raise ValueError("timeout must be greater than zero")
         self.timeout = timeout
 
     def search_username(self, username: str) -> list[Finding]:
@@ -22,7 +25,7 @@ class GitHubProvider(Provider):
 
         encoded = urllib.parse.quote(clean, safe="")
         request = urllib.request.Request(
-            f"https://api.github.com/users/{encoded}",
+            f"{self.api_base}/users/{encoded}",
             headers={
                 "Accept": "application/vnd.github+json",
                 "User-Agent": "xLFr4n-OSINT/0.1.0",
@@ -42,8 +45,6 @@ class GitHubProvider(Provider):
             raise ProviderError("github returned invalid JSON") from exc
 
         html_url = str(payload.get("html_url") or f"https://github.com/{clean}")
-        public_repos = payload.get("public_repos")
-        followers = payload.get("followers")
 
         return [
             Finding.now(
@@ -60,8 +61,8 @@ class GitHubProvider(Provider):
                     "company": payload.get("company"),
                     "location": payload.get("location"),
                     "blog": payload.get("blog"),
-                    "public_repos": public_repos,
-                    "followers": followers,
+                    "public_repos": payload.get("public_repos"),
+                    "followers": payload.get("followers"),
                     "following": payload.get("following"),
                     "created_at": payload.get("created_at"),
                     "updated_at": payload.get("updated_at"),
