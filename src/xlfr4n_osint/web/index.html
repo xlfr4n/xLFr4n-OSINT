@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08090d" />
+  <meta name="description" content="xLFr4n OSINT local investigation console" />
+  <title>xLFr4n // OSINT Console</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">⚡</div>
+        <div>
+          <div class="brand-name">xLFr4n</div>
+          <div class="brand-sub">OSINT CONSOLE</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span><span>Dashboard</span></button>
+        <button class="nav-item" data-view="investigation"><span>◎</span><span>New investigation</span></button>
+        <button class="nav-item" data-view="history"><span>◷</span><span>History</span></button>
+        <button class="nav-item" data-view="sources"><span>◈</span><span>Sources</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="status-card">
+          <div class="status-dot"></div>
+          <div><strong id="server-status">Checking local engine…</strong><span>Local-only service</span></div>
+        </div>
+        <div class="signature">⚡ xLFr4n · Investigate → Verify → Document</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">OPEN-SOURCE INTELLIGENCE</div>
+          <h1 id="page-title">Investigation dashboard</h1>
+        </div>
+        <button class="primary-btn" id="quick-scan-btn">＋ New investigation</button>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="hero">
+          <div>
+            <div class="hero-kicker">⚡ xLFr4n / LOCAL LAB</div>
+            <h2>Investigate. Correlate. Preserve.</h2>
+            <p>Run the same provider engine exposed by the CLI, inspect deterministic correlations, and keep reports locally reproducible.</p>
+          </div>
+          <div class="hero-grid">
+            <div><span>Targets</span><strong id="stat-reports">0</strong></div>
+            <div><span>Findings</span><strong id="stat-findings">0</strong></div>
+            <div><span>Entities</span><strong id="stat-entities">0</strong></div>
+            <div><span>Sources</span><strong id="stat-sources">0</strong></div>
+          </div>
+        </div>
+
+        <div class="grid-two">
+          <section class="panel">
+            <div class="panel-head">
+              <div><div class="eyebrow">RECENT</div><h3>Recent investigations</h3></div>
+              <button class="ghost-btn" data-view-jump="history">View all</button>
+            </div>
+            <div id="recent-list" class="list-empty">No investigations yet.</div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><div><div class="eyebrow">WORKFLOW</div><h3>Engine pipeline</h3></div></div>
+            <div class="pipeline">
+              <div><b>01</b><span><strong>Collect</strong><small>Provider adapters</small></span></div>
+              <div><b>02</b><span><strong>Normalize</strong><small>Stable findings</small></span></div>
+              <div><b>03</b><span><strong>Correlate</strong><small>Exact selectors</small></span></div>
+              <div><b>04</b><span><strong>Preserve</strong><small>Evidence + provenance</small></span></div>
+              <div><b>05</b><span><strong>Report</strong><small>JSON + local history</small></span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel principle-panel">
+          <div class="eyebrow">PROJECT CONTRACT</div>
+          <div class="principles">
+            <span>Evidence over assumptions</span><span>Provenance over opaque output</span><span>Public sources first</span><span>Reproducible by design</span><span>Data minimization</span>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-investigation">
+        <div class="section-head">
+          <div><div class="eyebrow">NEW CASE</div><h2>Start an investigation</h2><p>Choose one target type, then control exactly which collectors participate.</p></div>
+        </div>
+        <div class="investigation-grid">
+          <section class="panel form-panel">
+            <label class="field-label">Target type</label>
+            <div class="type-grid" id="type-grid"></div>
+
+            <label class="field-label" for="target-value">Target</label>
+            <div class="input-wrap">
+              <input id="target-value" autocomplete="off" placeholder="xLFr4n, example.com, user@example.com…" />
+              <span id="input-suffix"></span>
+            </div>
+
+            <div id="password-note" class="notice hidden">Password checks are privacy-preserving. The value is not stored as the report query.</div>
+
+            <div class="mode-row">
+              <div><label class="field-label compact">Source mode</label><select id="source-mode"><option value="default">Default sources</option><option value="custom">Custom selection</option><option value="all">All registered sources (opt-in)</option></select></div>
+              <div><label class="field-label compact">Timeout</label><input id="timeout" type="number" min="1" max="120" value="10" /></div>
+            </div>
+
+            <div class="source-box hidden" id="custom-sources">
+              <div class="source-box-head"><span>Available providers</span><button class="ghost-btn" id="select-defaults">Select defaults</button></div>
+              <div id="source-list" class="source-list"></div>
+            </div>
+
+            <button class="primary-btn scan-btn" id="run-scan-btn"><span id="scan-btn-icon">⌁</span><span id="scan-btn-text">Run investigation</span></button>
+            <div id="scan-error" class="error-box hidden"></div>
+          </section>
+
+          <section class="panel scan-info">
+            <div class="eyebrow">HOW IT WORKS</div>
+            <h3>One engine, many sources.</h3>
+            <p>The GUI does not reimplement the collectors. It calls the same registry and normalized finding model used by the command line.</p>
+            <div class="info-list">
+              <div><b>Public</b><span>RDAP, DNS, CT, TLS, Git hosts and public archives.</span></div>
+              <div><b>Opt-in</b><span>External CLIs and authenticated providers stay explicit.</span></div>
+              <div><b>Correlation</b><span>Only deterministic exact matches are shown as relationships.</span></div>
+              <div><b>Evidence</b><span>Reports keep provenance and evidence fingerprints.</span></div>
+              <div><b>History</b><span>Reports are saved locally under the OSINT data directory.</span></div>
+            </div>
+            <div class="security-note"><strong>Local console</strong><span>By default the server binds to 127.0.0.1. Do not expose it publicly without adding your own access controls.</span></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-results">
+        <div class="results-toolbar">
+          <button class="ghost-btn" id="back-to-investigation">← New scan</button>
+          <div class="toolbar-actions"><button class="ghost-btn" id="download-json">Download JSON</button><button class="ghost-btn" id="copy-scan-id">Copy scan ID</button></div>
+        </div>
+        <div id="results-root"></div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="section-head"><div><div class="eyebrow">LOCAL ARCHIVE</div><h2>Investigation history</h2><p>Recent reports stored by the local engine.</p></div><button class="ghost-btn" id="refresh-history">↻ Refresh</button></div>
+        <section class="panel"><div id="history-list" class="history-table"></div></section>
+      </section>
+
+      <section class="view" id="view-sources">
+        <div class="section-head"><div><div class="eyebrow">PROVIDER REGISTRY</div><h2>Sources & capabilities</h2><p>Registered collectors exposed by the Python engine.</p></div></div>
+        <section class="panel">
+          <div class="source-filter-row">
+            <select id="source-capability-filter">
+              <option value="">All capabilities</option><option value="username">Username</option><option value="domain">Domain</option><option value="email">Email</option><option value="phone">Phone</option><option value="url">URL</option><option value="ip">IP</option><option value="asn">ASN</option><option value="hash">Hash</option><option value="file">File</option><option value="person">Person</option><option value="password">Password</option>
+            </select>
+          </div>
+          <div id="registry-grid" class="registry-grid"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
