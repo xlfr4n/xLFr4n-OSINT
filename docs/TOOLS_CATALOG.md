@@ -26,6 +26,8 @@ El objetivo no es reescribir herramientas maduras. El objetivo es reunir su cobe
 | Breach metadata | HIBP Breach API | user's API key | ✅ opt-in |
 | Paste exposure metadata | HIBP PasteAccount API | user's API key | ✅ opt-in |
 | Stealer-log exposure metadata | HIBP StealerLogsByEmail API | user's API key + plan | ✅ opt-in |
+| Verified-domain breach metadata | HIBP BreachedDomain API | user's API key + verified domain | ✅ opt-in |
+| Verified-domain stealer-log metadata | HIBP StealerLogsByWebsiteDomain API | user's API key + verified domain + plan | ✅ opt-in |
 | Historical web scans | URLScan | authenticated API | ✅ opt-in |
 | Threat / host intelligence | VirusTotal | authenticated API | ✅ opt-in |
 | Host intelligence | Censys | authenticated API | ✅ opt-in |
@@ -86,3 +88,8 @@ JSON / Markdown / future PDF
 ```
 
 > ⚡ xLFr4n rule: reuse what is already maintained; own the normalization and evidence layer.
+
+
+## Registry coverage
+
+The current registry contains **35 provider adapters** across username, domain, email, phone, URL, IP, ASN, person, hash, file and password capabilities. `ALL SOURCES` selects every registered provider applicable to the selected target capability; execution status is preserved per provider.
