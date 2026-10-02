@@ -41,6 +41,8 @@ Planned provider families:
 - [x] Certificate Transparency hosts
 - [x] TLS certificate inspection
 - [x] HTTPS metadata
+- [x] IP registration / RDAP
+- [x] ASN registration / RDAP
 - [ ] DNS / certificate intelligence
 - [x] public code-platform profiles
   - [x] GitHub
