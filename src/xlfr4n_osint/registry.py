@@ -9,11 +9,12 @@ ProviderFactory = Callable[..., Provider]
 
 
 class ProviderRegistry:
-    """Registry for explicitly enabled OSINT providers and capabilities."""
+    """Registry for explicitly enabled OSINT providers."""
 
     def __init__(self) -> None:
         self._factories: dict[str, ProviderFactory] = {}
         self._capabilities: dict[str, set[str]] = {}
+        self._defaults: set[str] = set()
 
     def register(
         self,
@@ -21,6 +22,7 @@ class ProviderRegistry:
         factory: ProviderFactory,
         *,
         capabilities: set[str] | frozenset[str],
+        default_enabled: bool = True,
     ) -> None:
         key = name.strip().lower()
         if not key:
@@ -32,19 +34,38 @@ class ProviderRegistry:
 
         self._factories[key] = factory
         self._capabilities[key] = set(capabilities)
+        if default_enabled:
+            self._defaults.add(key)
 
-    def names(self, capability: str | None = None) -> tuple[str, ...]:
-        if capability is None:
-            return tuple(sorted(self._factories))
+    def names(
+        self,
+        capability: str | None = None,
+        *,
+        default_only: bool = False,
+    ) -> tuple[str, ...]:
+        wanted = capability.strip().lower() if capability else None
+        names = self._factories.keys()
 
-        wanted = capability.strip().lower()
-        return tuple(
-            sorted(
+        if wanted:
+            names = (
                 name
-                for name, capabilities in self._capabilities.items()
-                if wanted in capabilities
+                for name in names
+                if wanted in self._capabilities[name]
             )
-        )
+
+        if default_only:
+            names = (name for name in names if name in self._defaults)
+
+        return tuple(sorted(names))
+
+    def capabilities(self, name: str) -> tuple[str, ...]:
+        key = name.strip().lower()
+        if key not in self._factories:
+            raise ValueError(f"unknown provider: {key}")
+        return tuple(sorted(self._capabilities[key]))
+
+    def is_default_enabled(self, name: str) -> bool:
+        return name.strip().lower() in self._defaults
 
     def build(
         self,
@@ -53,10 +74,15 @@ class ProviderRegistry:
         capability: str | None = None,
         **kwargs: object,
     ) -> list[Provider]:
-        selected = [item.strip().lower() for item in names or self.names(capability)]
+        if names is None:
+            selected = list(self.names(capability, default_only=True))
+        else:
+            selected = [item.strip().lower() for item in names]
+
         available = set(self.names(capability))
         unknown = sorted(set(selected) - available)
         if unknown:
             label = capability or "registered"
             raise ValueError(f"unknown {label} provider(s): {', '.join(unknown)}")
+
         return [self._factories[name](**kwargs) for name in selected]
