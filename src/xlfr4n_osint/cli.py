@@ -6,6 +6,7 @@ from getpass import getpass
 
 from xlfr4n_osint.batch import load_jsonl, run_batch
 from xlfr4n_osint.filemeta import ExifToolProvider
+from xlfr4n_osint.gui import run_gui
 from xlfr4n_osint.logging_utils import configure_logging
 from xlfr4n_osint.notifications import notify_report_file
 from xlfr4n_osint.config import ScanConfig
@@ -316,6 +317,20 @@ def build_parser(registry: ProviderRegistry | None = None) -> argparse.ArgumentP
     notify_cmd.add_argument("--timeout", type=float, default=None)
     notify_cmd.add_argument("--user-agent", default=None)
     
+    gui = subparsers.add_parser(
+        "gui",
+        help="Launch the local graphical investigation console.",
+    )
+    gui.add_argument("--host", default="127.0.0.1", help="Bind address (default: 127.0.0.1).")
+    gui.add_argument("--port", type=int, default=8787, help="Bind port (default: 8787).")
+    gui.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Do not open the GUI automatically in the default browser.",
+    )
+    gui.add_argument("--timeout", type=float, default=10.0)
+    gui.add_argument("--user-agent", default="xLFr4n-OSINT-GUI/1.0")
+
     sources = subparsers.add_parser("sources", help="List enabled providers.")
     sources.add_argument("--json", action="store_true", help="Emit machine-readable JSON.")
 
@@ -812,6 +827,16 @@ def main() -> int:
 
     if args.command == "notify":
         return _run_notify(args)
+
+    if args.command == "gui":
+        run_gui(
+            host=args.host,
+            port=args.port,
+            open_browser=not args.no_browser,
+            timeout=args.timeout,
+            user_agent=args.user_agent,
+        )
+        return 0
 
     if args.command == "sources":
         if args.json:
