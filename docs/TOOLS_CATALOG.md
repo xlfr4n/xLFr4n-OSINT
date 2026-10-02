@@ -24,6 +24,17 @@ El objetivo no es reescribir herramientas maduras. El objetivo es reunir su cobe
 | Breach exposure metadata | LeakCheck Public | native public API | ✅ opt-in |
 | Password exposure | HIBP Pwned Passwords | k-anonymity | ✅ |
 | Breach metadata | HIBP Breach API | user's API key | ✅ opt-in |
+| Historical web scans | URLScan | authenticated API | ✅ opt-in |
+| Threat / host intelligence | VirusTotal | authenticated API | ✅ opt-in |
+| Host intelligence | Censys | authenticated API | ✅ opt-in |
+| Host/service intelligence | Shodan | authenticated API | ✅ opt-in |
+| DNS / infrastructure history | SecurityTrails | authenticated API | ✅ opt-in |
+| Email discovery / verification | Hunter | authenticated API | ✅ opt-in |
+| Infostealer exposure metadata | Hudson Rock | authenticated API, sanitized | ✅ opt-in |
+| Indexed exposure metadata | Intelligence X | authenticated API, sanitized | ✅ opt-in |
+| Local file metadata | ExifTool | local CLI | ✅ opt-in |
+| Web archives | Wayback | public CDX API | ✅ opt-in |
+| Web archives | Common Crawl | public CDXJ index | ✅ opt-in |
 
 ## Coverage through upstream aggregators
 
@@ -31,7 +42,7 @@ theHarvester currently catalogues a broad set of discovery sources, including ce
 
 SpiderFoot provides a separate broad module ecosystem and correlation layer. xLFr4n treats it as an external enrichment engine rather than copying its module tree.
 
-## Catalog-only / authenticated integrations
+## Still catalog-only / not yet bridged
 
 | Tool / service | Role | xLFr4n position |
 |---|---|---|
