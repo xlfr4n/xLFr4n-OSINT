@@ -13,7 +13,6 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from xlfr4n_osint.batch import BatchItem, run_item
-from xlfr4n_osint.cli import build_registry
 from xlfr4n_osint.logging_utils import get_logger
 from xlfr4n_osint.reporting import build_json_report, write_json
 from xlfr4n_osint.registry import ProviderRegistry
@@ -67,7 +66,11 @@ class InvestigationService:
         timeout: float = 10.0,
         user_agent: str = "xLFr4n-OSINT-GUI/1.0",
     ) -> None:
-        self.registry = registry or build_registry()
+        if registry is None:
+            from xlfr4n_osint.cli import build_registry
+
+            registry = build_registry()
+        self.registry = registry
         self.timeout = timeout
         self.user_agent = user_agent
         self._lock = threading.Lock()
