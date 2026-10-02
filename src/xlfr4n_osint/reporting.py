@@ -7,12 +7,14 @@ from typing import Any
 from xlfr4n_osint.correlation import CorrelationEngine
 from xlfr4n_osint.evidence import EvidenceBundle
 from xlfr4n_osint.models import ScanReport
+from xlfr4n_osint.summary import build_summary
 
 
 def build_json_report(report: ScanReport) -> dict[str, Any]:
     payload = report.to_dict()
     payload["correlation"] = CorrelationEngine().build(report).to_dict()
     payload["evidence"] = EvidenceBundle.from_report(report).to_dict()
+    payload["summary"] = build_summary(report).to_dict()
     return payload
 
 
@@ -22,6 +24,7 @@ def render_markdown_report(report: ScanReport) -> str:
     relationships = payload["correlation"]["relationships"]
     duplicates = payload["correlation"]["duplicates"]
     evidence = payload["evidence"]["records"]
+    summary = payload["summary"]
 
     lines = [
         "# ⚡ xLFr4n-OSINT Investigation Report",
@@ -34,6 +37,8 @@ def render_markdown_report(report: ScanReport) -> str:
         f"- **Exact relationships:** {len(relationships)}",
         f"- **Duplicate groups:** {len(duplicates)}",
         f"- **Evidence records:** {len(evidence)}",
+        f"- **Sources:** {summary["source_count"]}",
+        f"- **Categories:** {summary["category_count"]}",
         "",
         "## Findings",
         "",
