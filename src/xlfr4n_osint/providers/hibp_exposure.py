@@ -64,6 +64,7 @@ class HIBPPastesProvider(_HIBPEmailProvider):
 
         clean = normalize_email(email)
         findings: list[Finding] = []
+        clean = normalize_email(email)
         for paste in payload:
             if not isinstance(paste, dict):
                 continue
