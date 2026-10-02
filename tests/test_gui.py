@@ -119,7 +119,7 @@ def test_markdown_export_rebuilds_report(tmp_path: Path, monkeypatch) -> None:
     )
     markdown = service.get_markdown(report["scan_id"])
 
-    assert "# Investigation Report" in markdown
+    assert "# ⚡ xLFr4n-OSINT Investigation Report" in markdown
     assert "fake" in markdown
     assert "demo" in markdown
 
