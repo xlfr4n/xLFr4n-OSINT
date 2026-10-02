@@ -301,3 +301,7 @@ Common ecosystem rules:
   <strong>⚡ xLFr4n</strong><br>
   <sub>One signature. Different laboratories.</sub>
 </p>
+
+### Automation
+
+The repository includes `.github/workflows/scheduled-osint.yml` for manual or explicitly enabled weekly scans. Scheduled execution requires the repository variable `XLFR4N_OSINT_SCHEDULE_ENABLED=true`; manual runs can optionally enable `--all-sources`.
