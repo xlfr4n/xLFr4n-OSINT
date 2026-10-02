@@ -45,7 +45,7 @@ La selección de fuentes tiene tres modos:
 - **Custom selection** — selección explícita por provider.
 - **All registered sources** — incluye providers opt-in y requiere activación explícita.
 
-**Results** muestra findings normalizados, fuentes, métricas, entidades correlacionadas, grafo de relaciones deterministas, errores de providers y el reporte JSON completo.
+**Results** muestra findings normalizados, fuentes, métricas, entidades basadas en coincidencias exactas, grafo de selectores compartidos, errores de providers y el reporte JSON completo.
 
 **History** conserva los informes de las investigaciones locales.
 
