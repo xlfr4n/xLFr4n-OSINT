@@ -124,6 +124,13 @@ def test_core_targets_expose_all_source_mode() -> None:
         assert args.all_sources is True
 
 
+def test_parser_exposes_doctor_command() -> None:
+    parser = build_parser(build_registry())
+    args = parser.parse_args(["doctor", "--json"])
+    assert args.command == "doctor"
+    assert args.json is True
+
+
 def test_parser_exposes_gui_command() -> None:
     parser = build_parser(build_registry())
     args = parser.parse_args([
