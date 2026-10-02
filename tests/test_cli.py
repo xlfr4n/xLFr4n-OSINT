@@ -88,3 +88,16 @@ def test_print_report_writes_requested_markdown(
     assert output.exists()
     assert "Investigation Report" in output.read_text(encoding="utf-8")
     assert "domain: example.com" in capsys.readouterr().out
+
+
+def test_parser_exposes_all_source_mode() -> None:
+    parser = build_parser(build_registry())
+
+    args = parser.parse_args([
+        "email",
+        "user@example.com",
+        "--all-sources",
+    ])
+
+    assert args.all_sources is True
+    assert args.source is None
