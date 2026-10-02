@@ -65,10 +65,10 @@ A provider enters the project only after its source, limits, provenance and test
 
 - [x] evidence bundles
 - [x] payload fingerprints
-- [ ] JSON export
-- [ ] Markdown reports
+- [x] JSON export
+- [x] Markdown reports
 - [ ] investigation summaries
-- [ ] reproducibility metadata
+- [x] reproducibility metadata
 
 ## Phase 06 — Automation
 
