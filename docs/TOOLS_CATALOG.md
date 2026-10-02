@@ -24,6 +24,8 @@ El objetivo no es reescribir herramientas maduras. El objetivo es reunir su cobe
 | Breach exposure metadata | LeakCheck Public | native public API | ✅ opt-in |
 | Password exposure | HIBP Pwned Passwords | k-anonymity | ✅ |
 | Breach metadata | HIBP Breach API | user's API key | ✅ opt-in |
+| Paste exposure metadata | HIBP PasteAccount API | user's API key | ✅ opt-in |
+| Stealer-log exposure metadata | HIBP StealerLogsByEmail API | user's API key + plan | ✅ opt-in |
 | Historical web scans | URLScan | authenticated API | ✅ opt-in |
 | Threat / host intelligence | VirusTotal | authenticated API | ✅ opt-in |
 | Host intelligence | Censys | authenticated API | ✅ opt-in |
