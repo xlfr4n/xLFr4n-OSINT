@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, urlparse
 
 from xlfr4n_osint.batch import BatchItem, run_item
 from xlfr4n_osint.logging_utils import get_logger
-from xlfr4n_osint.reporting import build_json_report, write_json
+from xlfr4n_osint.reporting import build_json_report
 from xlfr4n_osint.registry import ProviderRegistry
 
 logger = get_logger(__name__)
@@ -192,6 +192,15 @@ class _Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", f"{content_type}; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; style-src 'self'; script-src 'self'; "
+            "img-src 'self' data:; object-src 'none'; base-uri 'none'; "
+            "frame-ancestors 'none'; form-action 'none'",
+        )
         self.end_headers()
         self.wfile.write(body)
 
@@ -272,7 +281,7 @@ def run_gui(
     user_agent: str = "xLFr4n-OSINT-GUI/1.0",
     allow_remote: bool = False,
 ) -> None:
-    loopback_hosts = {"127.0.0.1", "::1", "localhost"}
+    loopback_hosts = {"127.0.0.1", "localhost"}
     if host not in loopback_hosts and not allow_remote:
         raise ValueError(
             "refusing non-loopback GUI binding; pass allow_remote=True only when remote access is intentionally secured"
