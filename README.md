@@ -21,7 +21,7 @@
 
 **xLFr4n-OSINT** es el laboratorio destinado a investigar, normalizar y automatizar trabajo de **OSINT (Open-Source Intelligence)** usando información disponible públicamente.
 
-El repositorio acaba de establecerse y esta primera etapa es deliberadamente **docs-first**: antes de añadir collectors, correlación o automatización, se fija una arquitectura clara, trazabilidad de fuentes y límites operativos.
+La base funcional ya está establecida y el proyecto está entrando en la fase de expansión controlada de fuentes. La arquitectura, provenance, correlación, evidencia y reporting se mantienen como contratos estables mientras se añaden nuevos collectors.
 
 ### 🧭 Objetivo
 
@@ -102,17 +102,21 @@ PHASE 06  Automation
 
 ### 🚧 Estado actual
 
-🟢 **Core v0.1 / Núcleo v0.1**
+🟢 **Core + public-source infrastructure / Núcleo + infraestructura de fuentes**
 
-La primera base funcional ya está disponible:
+La base funcional actual incluye:
 
-- 🐍 paquete Python sin dependencias externas;
-- 🧩 arquitectura de providers intercambiables;
-- 🔎 búsqueda inicial de username mediante GitHub, GitLab y Gitea;
-- 🧾 modelo normalizado de findings con timestamp y provenance;
-- 📦 salida JSON para automatización;
-- 🧪 tests iniciales;
-- ⚙️ CLI reproducible.
+- 🐍 paquete Python;
+- 🧩 provider registry con capabilities explícitas;
+- 👤 GitHub, GitLab y Gitea;
+- 🌐 RDAP, DNS, Certificate Transparency, TLS y HTTPS metadata;
+- 🌍 IP y ASN mediante RDAP;
+- 🧾 findings normalizados con provenance;
+- 🧠 correlación determinista;
+- 🧪 evidence ledger con fingerprints;
+- 📊 JSON + Markdown reporting;
+- ⚙️ configuración TOML / entorno / CLI;
+- ✅ CI con tests deterministas.
 
 Ejemplo:
 
@@ -121,7 +125,7 @@ python -m xlfr4n_osint username xlfr4n
 python -m xlfr4n_osint username xlfr4n --json
 ```
 
-La búsqueda de GitHub es solo el **primer provider**. Las siguientes fases ampliarán fuentes y tipos de investigación sin convertir el proyecto en una colección opaca de scrapers.
+Los providers públicos son solo la primera capa. Las siguientes fases incorporarán fuentes de exposición, herramientas externas y collectors especializados sin convertir el núcleo en una colección opaca de scrapers.
 
 ---
 
