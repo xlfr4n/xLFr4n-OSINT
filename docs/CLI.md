@@ -18,7 +18,25 @@
 | `batch <JSONL>` | bounded multi-target scans |
 | `notify <JSON>` | send report summary to optional webhook |
 | `gui` | launch the local graphical investigation console |
-| `sources` | list all registered providers and capabilities |
+| `doctor` | inspect provider dependencies, credentials and readiness |
+| `sources` | list all registered providers, readiness and capabilities |
+
+## Provider readiness
+
+`doctor` distinguishes installed native/public providers from external tools and authenticated providers that still need local setup:
+
+```bash
+xlfr4n-osint doctor
+xlfr4n-osint doctor --json
+```
+
+`ready` means the provider can be constructed with the current environment. `missing-dependency` means its external executable is not installed. `missing-credentials` means an authenticated provider has no configured credential.
+
+On Kali, optional external tools can be provisioned with:
+
+```bash
+bash scripts/install-kali-tools.sh
+```
 
 ## Provider selection
 
@@ -144,4 +162,4 @@ Launch the local graphical console:
 xlfr4n-osint gui
 ```
 
-The default bind address is `127.0.0.1:8787`. Use `--no-browser` to keep the command headless.
+The default bind address is `127.0.0.1:8787`. Use `--no-browser` to keep the command headless. Non-loopback binding is rejected unless `--allow-remote` is explicitly supplied.
