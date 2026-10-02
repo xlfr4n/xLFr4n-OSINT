@@ -109,3 +109,34 @@ def test_parser_exposes_all_source_mode() -> None:
 
     assert args.all_sources is True
     assert args.source is None
+
+
+def test_core_targets_expose_all_source_mode() -> None:
+    parser = build_parser(build_registry())
+
+    for command, value in [
+        ("username", "xLFr4n"),
+        ("domain", "example.com"),
+        ("ip", "192.0.2.10"),
+        ("asn", "AS64500"),
+    ]:
+        args = parser.parse_args([command, value, "--all-sources"])
+        assert args.all_sources is True
+
+
+def test_parser_exposes_gui_command() -> None:
+    parser = build_parser(build_registry())
+    args = parser.parse_args([
+        "gui",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8787",
+        "--no-browser",
+    ])
+
+    assert args.command == "gui"
+    assert args.host == "127.0.0.1"
+    assert args.port == 8787
+    assert args.no_browser is True
+    assert args.allow_remote is False
