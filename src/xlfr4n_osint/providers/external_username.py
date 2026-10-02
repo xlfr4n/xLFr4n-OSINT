@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 
 from xlfr4n_osint.config import ScanConfig
+from xlfr4n_osint.identifiers import normalize_email, normalize_phone, normalize_username
 from xlfr4n_osint.models import Finding
 from xlfr4n_osint.providers.base import EmailProvider, ProviderError, UsernameProvider
 from xlfr4n_osint.tooling import run_external_command
@@ -76,7 +77,7 @@ class MaigretProvider(UsernameProvider):
         self.all_sites = all_sites
 
     def search_username(self, username: str) -> list[Finding]:
-        clean = username.strip().lstrip("@")
+        clean = normalize_username(username)
         if not clean:
             return []
 
@@ -223,7 +224,7 @@ class HoleheProvider(EmailProvider):
 
 
     def search_email(self, email: str) -> list[Finding]:
-        clean = email.strip()
+        clean = normalize_email(email)
         if not clean:
             return []
 
