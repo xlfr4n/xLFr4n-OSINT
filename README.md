@@ -278,6 +278,8 @@ Default:
 
 `http://127.0.0.1:8787/`
 
+Remote/non-loopback binding is blocked by default. Use `--allow-remote` only when you intentionally place the console behind your own access controls.
+
 The console provides:
 - dashboard metrics and recent cases;
 - target-type selection across supported engine capabilities;
