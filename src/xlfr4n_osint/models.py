@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
+from uuid import uuid4
 
 
 @dataclass(slots=True)
@@ -26,10 +27,17 @@ class ScanReport:
     query: str
     findings: list[Finding] = field(default_factory=list)
     errors: list[dict[str, str]] = field(default_factory=list)
+    scan_id: str = field(default_factory=lambda: uuid4().hex)
+    started_at: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "schema_version": "1.0",
+            "scan_id": self.scan_id,
             "query": self.query,
+            "started_at": self.started_at,
             "findings": [
                 {
                     "source": item.source,
