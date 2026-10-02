@@ -63,3 +63,24 @@ class ASNProvider(Provider):
     def search_asn(self, asn: str) -> list[Finding]:
         """Return public registration data for an AS number."""
         raise NotImplementedError
+
+
+class EmailProvider(Provider):
+    @abstractmethod
+    def search_email(self, email: str) -> list[Finding]:
+        """Return public exposure findings for an email address."""
+        raise NotImplementedError
+
+
+class PhoneProvider(Provider):
+    @abstractmethod
+    def search_phone(self, phone: str) -> list[Finding]:
+        """Return public exposure findings for a phone number."""
+        raise NotImplementedError
+
+
+class PasswordProvider(Provider):
+    @abstractmethod
+    def check_password(self, password: str) -> list[Finding]:
+        """Return password exposure risk metadata without retaining the password."""
+        raise NotImplementedError
