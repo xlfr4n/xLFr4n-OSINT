@@ -2,49 +2,28 @@
 
 ## Identity
 
-**Display name:** xLFr4n  
-**Repository:** xLFr4n-OSINT  
-**Signature:** ⚡ xLFr4n
+**Display:** ⚡ xLFr4n  
+**Handle:** xlfr4n  
+**Repository:** xLFr4n-OSINT
+
+## 🇪🇸 Español
+
+La documentación debe seguir: **fuente → observación → evidencia → interpretación**.
+
+Lo público no equivale automáticamente a verificado, completo o actual. Registrar fuente, contexto de recuperación, transformaciones y limitaciones.
+
+## 🇺🇸 English
+
+Documentation should follow: **source → observation → evidence → interpretation**.
+
+Publicly accessible does not automatically mean verified, complete or current. Record source, retrieval context, transformations and limitations.
 
 ## Visual language
 
-| Element | Rule |
-|---|---|
-| ⚡ Red | identity, focus and intentional highlights |
-| ◼ Dark | primary surface |
-| ◻ White | readable information |
-| 🔎 Icons | semantic, not decorative noise |
+**dark surfaces · white information · red signal · semantic icons**
 
-## Writing
+## Canonical standard
 
-Spanish and English documentation should describe the same behavior. Avoid inflated claims, invented capabilities and unsupported conclusions.
-
-Prefer:
-
-> source → observation → evidence → interpretation
-
-over:
-
-> tool → assumption → conclusion
-
-## OSINT-specific rule
-
-Publicly accessible does not automatically mean verified, complete or current.
-
-Record:
-
-- source;
-- retrieval context;
-- relevant timestamp;
-- transformation performed;
-- confidence/limitations.
-
-## Signature
+Follow the shared [xLFr4n ecosystem standard](https://github.com/xlfr4n/xLFr4n/blob/main/ECOSYSTEM.md).
 
 > **⚡ xLFr4n · Investigate → Verify → Document**
-
-## Canonical ecosystem standard
-
-This project follows the shared [xLFr4n ecosystem standard](https://github.com/xlfr4n/xLFr4n/blob/main/ECOSYSTEM.md).
-
-> **⚡ xLFr4n — One signature. Different laboratories.**
