@@ -6,8 +6,10 @@ from unittest.mock import patch
 import pytest
 
 from xlfr4n_osint.http import get_json
+from xlfr4n_osint.retry import RetryPolicy
 from xlfr4n_osint.providers.base import (
     ProviderAccessError,
+    ProviderError,
     ProviderHTTPError,
     ProviderNotFoundError,
     ProviderRateLimitError,
@@ -48,3 +50,31 @@ def test_get_json_classifies_http_errors(
             )
 
     assert raised.value.status_code == status
+
+
+def test_get_json_wraps_network_errors_without_name_error() -> None:
+    with patch(
+        "xlfr4n_osint.http.urllib.request.urlopen",
+        side_effect=urllib.error.URLError("offline"),
+    ):
+        with pytest.raises(ProviderError, match="network error"):
+            get_json(
+                "https://example.test",
+                timeout=1,
+                user_agent="xLFr4n-test",
+                retry_policy=RetryPolicy(max_attempts=1),
+            )
+
+
+def test_get_json_wraps_invalid_json_without_name_error() -> None:
+    from io import BytesIO
+
+    response = BytesIO(b"not-json")
+    with patch("xlfr4n_osint.http.urllib.request.urlopen", return_value=response):
+        with pytest.raises(ProviderError, match="invalid JSON"):
+            get_json(
+                "https://example.test",
+                timeout=1,
+                user_agent="xLFr4n-test",
+                retry_policy=RetryPolicy(max_attempts=1),
+            )

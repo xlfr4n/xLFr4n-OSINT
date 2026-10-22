@@ -9,6 +9,7 @@ from typing import Any
 from xlfr4n_osint.logging_utils import get_logger
 from xlfr4n_osint.providers.base import (
     ProviderAccessError,
+    ProviderError,
     ProviderHTTPError,
     ProviderNotFoundError,
     ProviderRateLimitError,
