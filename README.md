@@ -1,163 +1,190 @@
-# 🔎 xLFr4n // OSINT
+<div align="center">
 
-> **Public-source intelligence tooling with provenance, normalization and reproducible output.**
+# ⚡ xLFr4n / OSINT
 
-<p align="center">
+**Investigar con fuentes públicas, conservar la procedencia y poder revisar cada hallazgo.**
+
+<p>
   <a href="https://github.com/xlfr4n/xLFr4n-OSINT/actions"><img src="https://img.shields.io/github/actions/workflow/status/xlfr4n/xLFr4n-OSINT/ci.yml?branch=main&label=CI&logo=githubactions&style=for-the-badge" alt="Estado de CI"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11 o superior"></a>
-  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-111827?style=for-the-badge" alt="Licencia MIT"></a>
+  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-252A34?style=for-the-badge" alt="Licencia MIT"></a>
 </p>
 
-## 🇪🇸 Español
-
-### 🎯 Qué es
-
-xLFr4n-OSINT es mi entorno para organizar investigaciones con fuentes públicas. Los proveedores se separan por capacidad; los resultados se normalizan y los informes conservan la procedencia para poder revisar de dónde salió cada dato.
-
-El principio operativo es:
-
-> **fuente → observación → evidencia → interpretación**
-
-Que un dato aparezca en una fuente pública no significa que sea correcto, completo ni reciente. Los resultados sirven como pistas de investigación y deben contrastarse antes de sacar conclusiones.
-
-### 🧭 Capacidades
-
-| Target | Ejemplo |
-|---|---|
-| Username | `python -m xlfr4n_osint username xLFr4n` |
-| Domain | `python -m xlfr4n_osint domain example.com` |
-| Email | public exposure / account-presence research |
-| Phone | public exposure research |
-| URL | historical/public URL research |
-| Person | public name/person queries |
-| IP / ASN | registration and optional host intelligence |
-| Hash | hash intelligence through enabled providers |
-| File | local metadata and hashes |
-| Password | privacy-preserving exposure check |
-| Batch | bounded JSONL scans |
-
-### 📦 Estado
-
-🟢 **Functional toolkit + local GUI**
-
-El árbol actual incluye CLI Python, registry de providers, providers públicos, adaptadores externos opt-in, correlación determinista, evidence ledger, reporting JSON/Markdown y una consola gráfica local.
-
-### 🇺🇸 English
-
-xLFr4n-OSINT is a research toolkit for **publicly accessible sources**. It separates providers by capability, normalizes results, preserves provenance and produces reproducible reports.
-
-The operating principle is:
-
-> **source → observation → evidence → interpretation**
-
-Publicly accessible data is not automatically accurate, complete or current. Treat findings as leads and cross-check them before drawing conclusions.
+</div>
 
 ---
 
-# 🚀 Quick start
+## Qué es
 
-~~~bash
+**xLFr4n-OSINT** es un entorno para organizar investigaciones basadas en fuentes públicas. Separa los proveedores por capacidades, normaliza los resultados y conserva información de procedencia para revisar de dónde salió cada hallazgo y cuándo se obtuvo.
+
+El criterio de trabajo es sencillo:
+
+> **Fuente → Observación → Evidencia → Interpretación**
+
+Que un dato esté disponible públicamente no significa que sea correcto, completo o reciente. Los resultados son pistas que deben contrastarse antes de sacar conclusiones.
+
+## Tipos de objetivo
+
+| Objetivo | Uso previsto |
+| --- | --- |
+| **Usuario** | Buscar presencia pública con proveedores habilitados. |
+| **Dominio** | Consultar registro, DNS, certificados y fuentes seleccionadas. |
+| **Correo / teléfono** | Investigación de exposición o presencia pública. |
+| **URL** | Consultas históricas y otras fuentes de URL habilitadas. |
+| **Persona** | Consultas basadas en nombres públicos. |
+| **IP / ASN** | Datos de registro y, si se habilita, inteligencia de host. |
+| **Hash / archivo** | Consultas de inteligencia de hashes y metadatos locales. |
+| **Lotes** | Procesamiento acotado de entradas JSONL. |
+
+La cobertura real depende de los proveedores configurados y de la disponibilidad de las fuentes externas.
+
+## Inicio rápido
+
+Desde la raíz del repositorio:
+
+```bash
 python -m xlfr4n_osint username xLFr4n
 python -m xlfr4n_osint username xLFr4n --json
 python -m xlfr4n_osint domain example.com --source rdap --source dns
-~~~
+```
 
-### Report
+## Generar informes
 
-~~~bash
+Informe JSON:
+
+```bash
 python -m xlfr4n_osint domain example.com --output report.json --format json
+```
+
+Informe Markdown:
+
+```bash
 python -m xlfr4n_osint domain example.com --output report.md --format markdown
-~~~
+```
 
-### Batch
+## Procesamiento por lotes
 
-~~~json
+Un lote utiliza una entrada JSONL: un objeto JSON por línea.
+
+```json
 {"type":"username","value":"octocat","sources":["github"]}
 {"type":"domain","value":"example.com","sources":["rdap","dns","ctlogs"]}
-~~~
+```
 
-Batch execution is bounded and sequential by default.
+La ejecución por lotes es acotada y secuencial de forma predeterminada. Selecciona solo los tipos de objetivo y fuentes que necesitas.
 
----
+## Proveedores y diagnóstico
 
-# 🧠 Provider model
+Los proveedores se registran por capacidad y muestran si están preparados para usarse con el entorno actual.
 
-Providers are capability-based and explicitly track readiness.
-
-~~~bash
+```bash
 xlfr4n-osint sources
 xlfr4n-osint doctor
 xlfr4n-osint doctor --json
 xlfr4n-osint doctor --json --strict
-~~~
+```
 
-`ready` means a provider can be constructed with the current environment. External tools and authenticated providers can remain opt-in.
+Un proveedor marcado como `ready` puede construirse con la configuración actual; no significa que la fuente externa esté disponible en ese instante ni que vaya a devolver resultados.
 
-Use exact sources with `--source`. Use `--all-sources` only when you deliberately want every opt-in provider for the capability.
+Usa `--source` para seleccionar fuentes concretas. Emplea `--all-sources` solo cuando quieras activar deliberadamente todos los proveedores opcionales para esa capacidad.
 
----
+## Consola local
 
-# 🖥️ Local GUI
+Inicia la interfaz con:
 
-~~~bash
+```bash
 xlfr4n-osint gui
-~~~
+```
 
-Default address: `http://127.0.0.1:8787/`.
+La dirección predeterminada es `http://127.0.0.1:8787/`.
 
-The local console exposes dashboard metrics, target selection, provider registry state, findings, deterministic correlations, error information, normalized reports, history and JSON export.
+La consola reúne métricas de sesión, selección de objetivos, estado del registro de proveedores, hallazgos, correlaciones deterministas, errores, informes normalizados, historial y exportación JSON. La escucha fuera de localhost está bloqueada salvo que se pase explícitamente `--allow-remote`.
 
-Non-loopback binding is blocked unless `--allow-remote` is explicitly supplied.
+## Evidencia y procedencia
 
----
+Un hallazgo útil debe permitir responder:
 
-# 🧾 Evidence & provenance
+- ¿Qué fuente lo proporcionó?
+- ¿Cuándo se obtuvo?
+- ¿Qué transformación se aplicó?
+- ¿Qué parte es un dato y qué parte es una inferencia?
+- ¿Qué limitaciones siguen pendientes?
 
-Every normalized finding should retain enough context to answer:
+Los informes pueden incluir procedencia de fuentes, entidades correlacionadas, grupos de duplicados, huellas de evidencia, resúmenes y errores tipados de los proveedores.
 
-- where did this come from?
-- when was it retrieved?
-- what transformation was applied?
-- what is known versus inferred?
-- what limitations remain?
+## Comprobaciones
 
-Generated reports include source provenance, correlation entities, duplicate groups, evidence fingerprints, summaries and typed provider errors.
-
----
-
-# 🔐 Security & responsible use
-
-The project is intended for lawful public-source research, defensive security work and authorized environments.
-
-Never commit API keys, cookies, webhook secrets, private keys, passwords or private datasets.
-
-Password checks are privacy-preserving; password values are not written to reports.
-
----
-
-# 🧪 Verification
-
-~~~bash
+```bash
 python -m pytest
-~~~
+```
 
-The project keeps provider behavior and frontend syntax under automated verification.
+Las pruebas cubren el comportamiento de proveedores y comprobaciones de sintaxis de la interfaz. Antes de publicar cambios, ejecuta la suite y revisa el efecto de las modificaciones sobre el origen y la interpretación de los datos.
 
----
+## Uso responsable
 
-# 📚 Documentation
+El proyecto está orientado a investigación lícita con fuentes públicas, seguridad defensiva y entornos autorizados. Respeta la legislación aplicable y las condiciones de las fuentes consultadas.
 
-- `docs/CLI.md` — command and output contract
-- `docs/GUI.md` — local GUI
-- `docs/SOURCES.md` — source inventory
-- `docs/PROVENANCE.md` — provenance contract
-- `docs/INTEGRATIONS.md` — provider and external-tool boundaries
-- `docs/KALI-SETUP.md` — Kali provider setup
-- `docs/TOOLS_CATALOG.md` — tool coverage catalog
-- `BRAND.md` — xLFr4n project identity
+No incluyas API keys, cookies, tokens, claves privadas, contraseñas ni conjuntos de datos privados en Git. Las comprobaciones de exposición de contraseñas están diseñadas para no escribir los valores de contraseña en los informes.
 
----
+## Documentación
 
-# ⚡ xLFr4n standard
+- `docs/CLI.md` — comandos y formatos de salida.
+- `docs/GUI.md` — consola local.
+- `docs/SOURCES.md` — inventario de fuentes.
+- `docs/PROVENANCE.md` — criterios de procedencia.
+- `docs/INTEGRATIONS.md` — proveedores y herramientas externas.
+- `docs/KALI-SETUP.md` — configuración en Kali.
+- `docs/TOOLS_CATALOG.md` — catálogo de herramientas.
+- `BRAND.md` — identidad del proyecto.
 
-<div align="center"><strong>INVESTIGATE → VERIFY → DOCUMENT</strong><br><sub>Evidence first · Provenance always</sub></div>
+<div align="center">
+
+**Investigar → Verificar → Documentar**  
+<sub>⚡ xLFr4n · Primero la evidencia · Procedencia siempre</sub>
+
+</div>
+
+<details>
+<summary><strong>English</strong></summary>
+
+## Overview
+
+xLFr4n-OSINT is a toolkit for research based on publicly accessible sources. It separates providers by capability, normalizes their output and preserves provenance so findings can be reviewed and traced back to their source.
+
+**Source → Observation → Evidence → Interpretation**
+
+Public data is not automatically accurate, complete or current. Treat results as leads and verify them before drawing conclusions.
+
+## Quick start
+
+```bash
+python -m xlfr4n_osint username xLFr4n
+python -m xlfr4n_osint username xLFr4n --json
+python -m xlfr4n_osint domain example.com --source rdap --source dns
+```
+
+Write reports as JSON or Markdown:
+
+```bash
+python -m xlfr4n_osint domain example.com --output report.json --format json
+python -m xlfr4n_osint domain example.com --output report.md --format markdown
+```
+
+Start the local GUI with `xlfr4n-osint gui`. By default it listens at `http://127.0.0.1:8787/`; remote binding requires the explicit `--allow-remote` option.
+
+## Providers and verification
+
+```bash
+xlfr4n-osint sources
+xlfr4n-osint doctor --json
+python -m pytest
+```
+
+A provider marked `ready` can be constructed with the current environment; this does not guarantee that an external source is reachable or will return data. Select providers explicitly with `--source`, and use `--all-sources` only when you intentionally want every optional provider for the selected capability.
+
+## Responsible use
+
+The project is intended for lawful public-source research, defensive security work and authorized environments. Never commit API keys, cookies, credentials, private datasets or other secrets. Password-exposure checks do not write password values into reports.
+
+</details>
