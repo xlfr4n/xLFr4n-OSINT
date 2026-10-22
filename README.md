@@ -7,7 +7,7 @@
 <p>
   <a href="https://github.com/xlfr4n/xLFr4n-OSINT/actions"><img src="https://img.shields.io/github/actions/workflow/status/xlfr4n/xLFr4n-OSINT/ci.yml?branch=main&label=CI&logo=githubactions&style=for-the-badge" alt="Estado de CI"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11 o superior"></a>
-  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-252A34?style=for-the-badge" alt="Licencia MIT"></a>
+  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-FF3344?style=for-the-badge&labelColor=111318" alt="Licencia MIT"></a>
 </p>
 
 </div>
@@ -141,7 +141,7 @@ No incluyas API keys, cookies, tokens, claves privadas, contraseñas ni conjunto
 <div align="center">
 
 **Investigar → Verificar → Documentar**  
-<sub>⚡ xLFr4n · Primero la evidencia · Procedencia siempre</sub>
+<sub>⚡ xLFr4n · Cyber-red / charcoal · Primero la evidencia</sub>
 
 </div>
 
