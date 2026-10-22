@@ -3,22 +3,22 @@
 > **Public-source intelligence tooling with provenance, normalization and reproducible output.**
 
 <p align="center">
-[![CI](https://img.shields.io/github/actions/workflow/status/xlfr4n/xLFr4n-OSINT/ci.yml?branch=main&label=CI&logo=githubactions&style=for-the-badge)](https://github.com/xlfr4n/xLFr4n-OSINT/actions)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-111827?style=for-the-badge)](https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE)
+  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/actions"><img src="https://img.shields.io/github/actions/workflow/status/xlfr4n/xLFr4n-OSINT/ci.yml?branch=main&label=CI&logo=githubactions&style=for-the-badge" alt="Estado de CI"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11 o superior"></a>
+  <a href="https://github.com/xlfr4n/xLFr4n-OSINT/blob/main/LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-111827?style=for-the-badge" alt="Licencia MIT"></a>
 </p>
 
 ## 🇪🇸 Español
 
 ### 🎯 Qué es
 
-xLFr4n-OSINT es un toolkit de investigación sobre **fuentes públicamente accesibles**. El proyecto separa proveedores por capacidad, normaliza sus resultados, conserva provenance y construye reporting reproducible.
+xLFr4n-OSINT es mi entorno para organizar investigaciones con fuentes públicas. Los proveedores se separan por capacidad; los resultados se normalizan y los informes conservan la procedencia para poder revisar de dónde salió cada dato.
 
 El principio operativo es:
 
 > **fuente → observación → evidencia → interpretación**
 
-Lo público no equivale automáticamente a verificado, completo o actual.
+Que un dato aparezca en una fuente pública no significa que sea correcto, completo ni reciente. Los resultados sirven como pistas de investigación y deben contrastarse antes de sacar conclusiones.
 
 ### 🧭 Capacidades
 
@@ -50,7 +50,7 @@ The operating principle is:
 
 > **source → observation → evidence → interpretation**
 
-Publicly accessible data is not automatically verified, complete or current.
+Publicly accessible data is not automatically accurate, complete or current. Treat findings as leads and cross-check them before drawing conclusions.
 
 ---
 
